@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class=" d-flex justify-content-end">
+         <a href="{% url 'assessment_analysis_pdf' assessment_id %}" class="btn btn-info">Print</a>
+    </div>
+
+    <br>
+    <ol class="list-group list-group-numbered">
+        {% for item in assessment_result_list %}
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <div class="fw-bold">{{ item.student }}</div>
+                  <a href="{% url 'assessment_result' item.pk %}">View</a>
+                </div>
+                <span class="badge text-bg-warning rounded-pill">Score: {{ item.total_score }}</span>
+              </li>
+        {% empty %}
+            <li>
+                <h2>No Exam Listed by Learners yet.</h2>
+            </li>
+        {% endfor %}
+    </ol>
+{% endblock %}

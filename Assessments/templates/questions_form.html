@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block nav %}
+    <form method="post" action="{% url 'publish_assessment' assessment.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">📢 Publish Assessment</button>
+    </form>
+{% endblock %}
+{% block content %}
+<div class="container my-5">
+    <h3 class="mb-4">Questions for: <span class="text-primary">{{ assessment.title }}</span></h3>
+
+    <div class="row">
+        <!-- Question Form Section -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow border-0">
+                <div class="card-body">
+                    <h4 class="card-title text-center mb-4">Add New Question</h4>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.text.label }}</label>
+                            {{ form.text }}
+                            {% if form.text.errors %}
+                                <div class="text-danger small">{{ form.text.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <h5 class="fw-semibold mt-4">Choices</h5>
+                        {{ formset.management_form }}
+
+                        <div class="row g-3">
+                            {% for choice_form in formset %}
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-light rounded border">
+                                        <div class="mb-2">
+                                            <label class="form-label">{{ choice_form.text.label }}</label>
+                                            {{ choice_form.text }}
+                                            {% if choice_form.text.errors %}
+                                                <div class="text-danger small">{{ choice_form.text.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-check">
+                                            {{ choice_form.is_correct }}
+                                            <label class="form-check-label">{{ choice_form.is_correct.label }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="bi bi-check-circle me-1"></i> Save Question
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scrollable & Reversed Questions Section -->
+        <div class="col-lg-4">
+            <h2>Options:</h2>
+
+            <hr>
+            <h5 class="mb-3">Existing Questions</h5>
+
+            <div class="border rounded p-2 shadow-sm" style="max-height: 600px; overflow-y: auto;">
+                {% for question in assessment.questions.all|dictsortreversed:"id" %}
+                    <div class="card mb-3 border-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h6 class="card-title fw-bold">{{ question.text }}</h6>
+                                <a href="{% url 'update_question' assessment.pk question.pk  %}" class="btn btn-sm btn-outline">
+                                    ✏️ Edit
+                                </a>
+                            </div>
+                            <ul class="list-unstyled">
+                                {% for choice in question.choices.all %}
+                                    {% with letter=forloop.counter0|add:"1" %}
+                                        {% if choice.is_correct %}
+                                            <li class="text-success fw-bold">
+                                                {{ letter }}. {{ choice.text }} ✔️
+                                            </li>
+                                        {% else %}
+                                            <li class="text-muted">
+                                                {{ letter }}. {{ choice.text }}
+                                            </li>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% empty %}
+                                    <li><em>No choices available</em></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                {% empty %}
+                    <p class="text-muted">No questions added yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assessment Summary</title>
+    <style>
+        @page {
+            margin: 2cm;
+        }
+        body {
+            font-family: "Century Gothic", sans-serif;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .letterhead {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .letterhead h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        .meta {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .summary-stats {
+            background: #f0f8ff;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .summary-stats p {
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #e3f2fd;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="letterhead">
+        <h1>🏫 United Matunda Academy</h1>
+        <small>Assessment Summary Report</small>
+    </div>
+
+    <div class="meta">
+        <p><strong>📘 Assessment:</strong> {{ assessment.title }}</p>
+        <p><strong>📅 Date:</strong> {{ now|date:"F d, Y" }}</p>
+    </div>
+
+    <div class="summary-stats">
+        <p><strong>👥 Total Learners:</strong> {{ total_learners }}</p>
+        <p><strong>📊 Average Score:</strong> {{ average_score }}%</p>
+        <p><strong>🏆 Highest Score:</strong> {{ highest_score }}%</p>
+        <p><strong>📉 Lowest Score:</strong> {{ lowest_score }}%</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Learner Name</th>
+                <th>Score (%)</th>
+                <th>Correct</th>
+                <th>Total</th>
+                <th>Rank</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for learner in ranked_learners %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ learner.name }}</td>
+                <td>{{ learner.percentage }}%</td>
+                <td>{{ learner.correct }}</td>
+                <td>{{ learner.total }}</td>
+                <td>{{ learner.rank }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        📩 Powered by ICT United Matunda Academy | {{ now|date:"Y" }}
+    </div>
+
+</body>
+</html>

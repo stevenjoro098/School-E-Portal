@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Learner Greeting -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Hello, {{ student_name }} 👋</h2>
+        <h4 class="text-muted">Here's your result for <strong>{{ assessment.title }}</strong></h4>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="card shadow-sm mb-4 border-0 bg-light">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-2">
+                    <p class="mb-1"><strong>Subject:</strong> {{ assessment.subject.name }}</p>
+                    <p class="mb-1">
+                        <strong>Score:</strong>
+                        <span class="fw-bold">{{ correct_count }}/{{ total }}</span>
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5 class="text-success mb-0">🎯 <span class="fw-bold">{{ percentage }}%</span> Performance</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Download Button -->
+    <div class="text-center mb-4">
+        <a class="btn btn-outline-primary btn-lg" href="{% url 'download_result_pdf' result.id %}">
+            📥 Download PDF Report
+        </a>
+    </div>
+
+    <!-- Questions Display -->
+    {% for item in questions_data %}
+        <div class="card mb-4 shadow-sm border {% if item.is_correct %}border-success{% else %}border-danger{% endif %}">
+            <div class="card-header bg-white">
+                <strong>Question {{ forloop.counter }}</strong>
+            </div>
+            <div class="card-body">
+                <p class="fs-5"><strong>Q:</strong> {{ item.question }}</p>
+
+                <p class="fs-6 mb-1">
+                    <strong>Your Answer:</strong>
+                    <span class="{% if item.is_correct %}text-success{% else %}text-danger{% endif %} fw-semibold">
+                        {{ item.selected|default:"No answer" }}
+                        {% if item.is_correct %}
+                            ✅
+                        {% else %}
+                            ❌
+                        {% endif %}
+                    </span>
+                </p>
+
+                {% if not item.is_correct %}
+                <p class="fs-6">
+                    <strong>Correct Answer:</strong>
+                    <span class="text-success">
+                        {{ item.correct|default:"Not available" }}
+                    </span>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">No questions found for this assessment.</p>
+    {% endfor %}
+
+</div>
+{% endblock %}

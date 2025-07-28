@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Welcome, {{ user.get_full_name }}</h2>
+<h4>Upcoming Assessments</h4>
+<div class="row mt-4">
+    <div class="col-md-9">
+        <ul class="list-group">
+            {% for a in assessments %}
+                <div class="card">
+                  <h5 class="card-header">{{ a.grade }}</h5>
+                  <div class="card-body">
+                    <h5 class="card-title">{{ a.title }}</h5>
+                      <h6 class="card-subtitle mb-2 text-muted">{{ a.teacher }}</h6>
+                    <p class="card-text">Subject: {{ a.subject.name }}</p>
+                    <a href="{% url 'take_assessment' a.id %}" class="btn btn-success">Take Assessment</a>
+                  </div>
+                </div>
+                <hr>
+            {% empty %}
+                <li class="list-group-item">No upcoming assessments.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-3">
+        <h3>E-Learning Portal</h3>
+    </div>
+</div>
+{% endblock %}

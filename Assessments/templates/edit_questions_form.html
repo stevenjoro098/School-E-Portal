@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container my-5">
+    <h3 class="mb-4 text-primary">Editing Question</h3>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow border-0">
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.text.label }}</label>
+                            {{ form.text }}
+                            {% if form.text.errors %}
+                                <div class="text-danger small">{{ form.text.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <h5 class="fw-semibold mt-4">Choices</h5>
+                        {{ formset.management_form }}
+
+                        <div class="row g-3">
+                            {% for choice_form in formset %}
+    <div class="col-md-6">
+        <div class="p-3 bg-light rounded border">
+            {{ choice_form.id }}  <!-- 👈 REQUIRED for editing existing choices -->
+
+            <div class="mb-2">
+                <label class="form-label">{{ choice_form.text.label }}</label>
+                {{ choice_form.text }}
+                {% if choice_form.text.errors %}
+                    <div class="text-danger small">{{ choice_form.text.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-check">
+                {{ choice_form.is_correct }}
+                <label class="form-check-label">{{ choice_form.is_correct.label }}</label>
+            </div>
+            {{ choice_form.DELETE }}  <!-- keep this for optional deletion -->
+        </div>
+    </div>
+{% endfor %}
+
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-warning px-4">
+                                <i class="bi bi-pencil-square me-1"></i> Update Question
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

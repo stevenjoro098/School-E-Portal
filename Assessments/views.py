@@ -71,11 +71,13 @@ class AssessmentAnalysis(LoginRequiredMixin, ListView):
     context_object_name = 'assessment_result_list'
 
     def get_queryset(self):
-        assessment = get_object_or_404(Assessment, pk=self.kwargs['assessment_id'])
-        return AssessmentResult.objects.filter(assessment=assessment)
+        self.assessment = get_object_or_404(Assessment, pk=self.kwargs['assessment_id'])
+        return AssessmentResult.objects.filter(assessment=self.assessment)
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['assessment_id'] = self.kwargs['assessment_id']
+        context['assessment'] = self.assessment
         return context
 
 class AssessmentEditView(LoginRequiredMixin, UpdateView):

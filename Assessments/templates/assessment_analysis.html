@@ -1,10 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class=" d-flex justify-content-end">
-         <a href="{% url 'assessment_analysis_pdf' assessment_id %}" class="btn btn-info">Print</a>
+    <div class="row">
+        <div class=" d-flex justify-content-between">
+            <h2>{{ assessment }}</h2>
+             <a href="{% url 'assessment_analysis_pdf' assessment_id %}" class="btn btn-info">Print</a>
+        </div>
     </div>
-
+    <div class="row">
+        <h5>{{ assessment.teacher }}, {{ assessment.grade }}</h5>
+    </div>
+    <div class="row">
+        <h6>{{ assessment.created }}</h6>
+    </div>
     <br>
     <ol class="list-group list-group-numbered">
         {% for item in assessment_result_list %}

@@ -10,7 +10,6 @@ class Assessment(models.Model):
     grade = models.ForeignKey(Grade, related_name='grade_assessments', on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     teacher = models.CharField(max_length=250)
-
     scheduled_date = models.DateTimeField()
     duration_minutes = models.PositiveIntegerField()
     created = models.DateTimeField(auto_now_add=True)

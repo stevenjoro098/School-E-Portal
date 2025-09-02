@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} Subjects {% endblock %}
+
+{% block content %}
+   <div class="row row-cols-1 row-cols-md-4 g-4">
+      {% for item in subjects_list %}
+        <div class="col">
+          <div class="card">
+            <img src="https://images.theconversation.com/files/49135/original/22qc7r28-1400667334.jpg?ixlib=rb-4.1.0&q=45&auto=format&w=600&h=429&fit=crop&dpr=1" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">{{ item }}</h5>
+              <p class="card-text"></p>
+              <a href="{% url 'subject_strands' item.pk %}" class="btn btn-warning">View</a>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <h2>No Grades Available</h2>
+      {% endfor %}
+  </div>
+{% endblock %}

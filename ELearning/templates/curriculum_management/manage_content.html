@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div id="app" class="container mt-4">
+  <div class="card p-4 shadow-sm">
+    <h4 class="mb-3">Simple Content Manager</h4>
+
+    <!-- subject (server-side rendered) -->
+    <div class="mb-3">
+      <label class="form-label">Subject</label>
+      <select class="form-select" v-model="selectedSubject" @change="fetchStrands">
+        <option value="">-- select subject --</option>
+        {% for subj in subjects %}
+          <option value="{{ subj.id }}">{{ subj.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- strand -->
+    <div class="mb-3">
+      <label class="form-label">Strand</label>
+      <div class="d-flex gap-2">
+        <select class="form-select" v-model="selectedStrand" @change="fetchSubStrands">
+          <option value="">-- select strand --</option>
+          <option v-for="s in strands" :key="s.id" :value="s.id">{{ s.title }}</option>
+        </select>
+
+        <!-- add inline -->
+        <div style="width:260px">
+          <input class="form-control mb-1" v-model="newStrandTitle" placeholder="New strand title">
+          <button class="btn btn-sm btn-primary w-100" @click="addStrand" :disabled="!selectedSubject || !newStrandTitle">
+            Add Strand
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- sub-strand -->
+    <div class="mb-3">
+      <label class="form-label">Sub-strand</label>
+      <div class="d-flex gap-2">
+        <select class="form-select" v-model="selectedSubStrand" @change="fetchNotes">
+          <option value="">-- select sub-strand --</option>
+          <option v-for="ss in subStrands" :key="ss.id" :value="ss.id">{{ ss.title }}</option>
+        </select>
+
+        <div style="width:260px">
+          <input class="form-control mb-1" v-model="newSubStrandTitle" placeholder="New sub-strand title">
+          <button class="btn btn-sm btn-primary w-100" @click="addSubStrand" :disabled="!selectedStrand || !newSubStrandTitle">
+            Add Sub-strand
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- notes for selected sub-strand -->
+    <div class="mb-3">
+      <label class="form-label">Notes for selected Sub-strand</label>
+
+      <div v-if="!selectedSubStrand" class="alert alert-secondary">Select a sub-strand to view/add notes</div>
+
+      <div v-else>
+        <div class="mb-2 d-flex gap-2">
+          <input class="form-control" v-model="newNoteContent" placeholder="Enter a teaching note or list item">
+          <button class="btn btn-success" @click="addNote" :disabled="!newNoteContent">Add Note</button>
+        </div>
+
+        <ul class="list-group">
+          <li class="list-group-item" v-for="note in notes" :key="note.id">
+            <div v-if="editingId !== note.id" class="d-flex justify-content-between align-items-start">
+              <div style="white-space:pre-wrap;">{{ note.content }}</div>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-secondary" @click="startEdit(note)">Edit</button>
+                <button class="btn btn-outline-danger" @click="deleteNote(note)">Delete</button>
+              </div>
+            </div>
+
+            <div v-else>
+              <textarea class="form-control mb-2" v-model="editingContent"></textarea>
+              <div class="d-flex gap-2">
+                <button class="btn btn-primary btn-sm" @click="saveEdit(note)">Save</button>
+                <button class="btn btn-secondary btn-sm" @click="cancelEdit">Cancel</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+  <!-- hidden csrf token input as fallback -->
+  <input type="hidden" id="hidden-csrf" value="{{ csrf_token }}">
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  const { createApp } = Vue;
+
+  function getCSRFFromCookieOrHidden() {
+    const name = 'csrftoken';
+    const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    if (m) return m.pop();
+    const el = document.getElementById('hidden-csrf');
+    if (el) return el.value;
+    return '';
+  }
+
+  axios.defaults.headers.common['X-CSRFToken'] = getCSRFFromCookieOrHidden();
+
+  createApp({
+    data() {
+      return {
+        selectedSubject: '',
+        strands: [],
+        selectedStrand: '',
+        subStrands: [],
+        selectedSubStrand: '',
+        notes: [],
+
+        newStrandTitle: '',
+        newSubStrandTitle: '',
+        newNoteContent: '',
+
+        // editing
+        editingId: null,
+        editingContent: ''
+      };
+    },
+    methods: {
+      async fetchStrands() {
+        this.strands = []; this.subStrands = []; this.selectedStrand=''; this.selectedSubStrand=''; this.notes=[];
+        if (!this.selectedSubject) return;
+        try {
+          const res = await axios.get('/curriculum/api/strands/', { params: { subject_id: this.selectedSubject }});
+          this.strands = res.data.strands || [];
+        } catch (err) { console.error(err); alert('Failed to load strands (see console)'); }
+      },
+
+      async addStrand() {
+        if (!this.newStrandTitle || !this.selectedSubject) return;
+        const fd = new FormData();
+        fd.append('subject_id', this.selectedSubject);
+        fd.append('title', this.newStrandTitle);
+        try {
+          const res = await axios.post('/elearning/api/add-strand/', fd);
+          if (res.data.status === 'success') {
+            this.strands.push({ id: res.data.id, title: res.data.title });
+            this.selectedStrand = res.data.id;
+            this.newStrandTitle = '';
+            // fetch sub-strands anew
+            this.fetchSubStrands();
+          } else {
+            alert('Failed to add strand');
+          }
+        } catch (err) { console.error(err); alert('Error adding strand'); }
+      },
+
+      async fetchSubStrands() {
+        this.subStrands = []; this.selectedSubStrand=''; this.notes=[];
+        if (!this.selectedStrand) return;
+        try {
+          const res = await axios.get('/curriculum/api/substrands/', { params: { strand_id: this.selectedStrand }});
+          this.subStrands = res.data.substrands || [];
+        } catch (err) { console.error(err); alert('Failed to load sub-strands'); }
+      },
+
+      async addSubStrand() {
+        if (!this.newSubStrandTitle || !this.selectedStrand) return;
+        const fd = new FormData();
+        fd.append('strand_id', this.selectedStrand);
+        fd.append('title', this.newSubStrandTitle);
+        try {
+          const res = await axios.post('/curriculum/api/add-substrand/', fd);
+          if (res.data.status === 'success') {
+            this.subStrands.push({ id: res.data.id, title: res.data.title });
+            this.selectedSubStrand = res.data.id;
+            this.newSubStrandTitle = '';
+            // fetch notes for the new substrand (empty)
+            this.fetchNotes();
+          } else alert('Failed to add sub-strand');
+        } catch (err) { console.error(err); alert('Error adding sub-strand'); }
+      },
+
+      async fetchNotes() {
+        this.notes = [];
+        if (!this.selectedSubStrand) return;
+        try {
+          const res = await axios.get('/curriculum/api/notes/', { params: { substrand_id: this.selectedSubStrand }});
+          this.notes = res.data.notes || [];
+        } catch (err) { console.error(err); alert('Failed to load notes'); }
+      },
+
+      async addNote() {
+        if (!this.newNoteContent || !this.selectedSubStrand) return;
+        const fd = new FormData();
+        fd.append('substrand_id', this.selectedSubStrand);
+        fd.append('content', this.newNoteContent);
+        try {
+          const res = await axios.post('/curriculum/api/add-note/', fd);
+          if (res.data.status === 'success') {
+            this.notes.unshift({ id: res.data.id, content: res.data.content });
+            this.newNoteContent = '';
+          } else alert('Failed to save note');
+        } catch (err) { console.error(err); alert('Error saving note'); }
+      },
+
+      startEdit(note) {
+        this.editingId = note.id;
+        this.editingContent = note.content;
+      },
+      cancelEdit() {
+        this.editingId = null;
+        this.editingContent = '';
+      },
+
+      async saveEdit(note) {
+        if (!this.editingContent) return alert('Content cannot be empty');
+        try {
+          const res = await axios.put('/curriculum/api/note/' + note.id + '/', { content: this.editingContent });
+          if (res.data.status === 'success') {
+            note.content = res.data.content;
+            this.cancelEdit();
+          } else alert('Failed to update note');
+        } catch (err) { console.error(err); alert('Error updating note'); }
+      },
+
+      async deleteNote(note) {
+        if (!confirm('Delete this note?')) return;
+        try {
+          const res = await axios.delete('/curriculum/api/note/' + note.id + '/');
+          if (res.data.status === 'success') {
+            this.notes = this.notes.filter(n => n.id !== note.id);
+          } else alert('Failed to delete note');
+        } catch (err) { console.error(err); alert('Error deleting note'); }
+      }
+    }
+  }).mount('#app');
+})();
+</script>
+{% endblock %}

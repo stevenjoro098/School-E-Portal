@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %} Lesson Notes {% endblock %}
+
+{% block extra_head %}
+    <style>
+        .custom-img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <h2><u>Sub-Strands List</u></h2>
+    <ol>
+        {% for item in sub_strands_list %}
+             <h3><li>{{ item.name }}</li></h3>
+            {% for out_come in item.learning_outcomes.all %}
+                <p><strong><h5>Learning Outcome: </h5></strong> {{ out_come.description }} </p>
+
+            {% empty %}
+                <p>No Learning Outcome provided</p>
+            {% endfor %}
+            <div class="row">
+                <div class="col-md-8">
+                    {% for note in item.notes.all %}
+                        <p>{{ note.content|safe }}</p>
+                    {% empty %}
+                        <p>No notes available.</p>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-4">
+                    {% for image in item.images.all %}
+                        <img src="{{ image.image.url }}" alt="Image" class="custom-img img-fluid">
+                    {% empty %}
+                        <p>No images available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+        {% empty %}
+        {% endfor %}
+    </ol>
+{% endblock %}
+

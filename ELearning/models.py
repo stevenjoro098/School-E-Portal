@@ -9,7 +9,7 @@ class Subject(models.Model):
     grade = models.ForeignKey(Grade, related_name='grade_subject', on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.name} - Grade {self.grade}"
+        return f"{self.name}"
 
 class Strand(models.Model):
     subject = models.ForeignKey(Subject, related_name='strands', on_delete=models.CASCADE)
@@ -26,7 +26,7 @@ class SubStrand(models.Model):
         return self.name
 
 class LearningOutcome(models.Model):
-    substrand = models.ForeignKey(SubStrand, related_name='outcomes', on_delete=models.CASCADE)
+    substrand = models.ForeignKey(SubStrand, related_name='learning_outcomes', on_delete=models.CASCADE)
     description = models.TextField()
 
     def __str__(self):
@@ -58,3 +58,29 @@ class Assessment(models.Model):
 
     def __str__(self):
         return f"{self.assessment_type} for {self.outcome}"
+
+class SubStrandNote(models.Model):
+    strand = models.ForeignKey(Strand, related_name='notes', on_delete=models.CASCADE)
+    content = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order', 'created_at']
+
+    def __str__(self):
+        return f"Note {self.id} for Strand {self.strand_id}"
+
+class Note(models.Model):
+    substrand = models.ForeignKey(SubStrand, on_delete=models.CASCADE, related_name="notes")
+    content = models.TextField()
+
+class ImageResource(models.Model):
+    substrand = models.ForeignKey(SubStrand, on_delete=models.CASCADE, related_name="images")
+    name = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='substrand_images/')
+
+class VideoResource(models.Model):
+    substrand = models.ForeignKey(SubStrand, on_delete=models.CASCADE, related_name="videos")
+    url = models.URLField()

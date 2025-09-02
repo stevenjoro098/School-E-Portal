@@ -35,7 +35,7 @@ def register(request):
 def Home(request):
     #user_profile = request.user.studentprofile
     assessments = Assessment.objects.filter(is_published=True)
-    return render(request, 'home.html', {'assessments': assessments})
+    return render(request, 'assessment_home_page.html', {'assessments': assessments})
 
 
 class Dashboard(LoginRequiredMixin, ListView):

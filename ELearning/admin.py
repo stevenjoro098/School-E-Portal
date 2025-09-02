@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from ELearning.models import Subject, Strand
+from ELearning.models import Subject, Strand, SubStrand, LearningOutcome, Note, ImageResource
 
 
 # Register your models here.
@@ -10,4 +10,21 @@ class SubjectAdmin(admin.ModelAdmin):
 
 @admin.register(Strand)
 class StrandAdmin(admin.ModelAdmin):
-    list_display = ['subject','name']
+    list_display = ['name','subject',]
+
+@admin.register(SubStrand)
+class SubStrandAdmin(admin.ModelAdmin):
+    list_display = ['name','strand',]
+
+
+@admin.register(Note)
+class NoteAdmin(admin.ModelAdmin):
+    list_display = ['substrand']
+
+@admin.register(ImageResource)
+class NoteAdmin(admin.ModelAdmin):
+    list_display = ['substrand']
+
+@admin.register(LearningOutcome)
+class LearningOutcomeAdmin(admin.ModelAdmin):
+    list_display = ['substrand','description']

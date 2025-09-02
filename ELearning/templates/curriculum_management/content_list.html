@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    <a href="#" class="btn btn-success">Add Subject</a>
+{% endblock %}
+{% block content %}
+    <h3>Content</h3>
+    {% for item in grades_list %}
+    <ul>
+        <div class="card text-start" style="#">
+          <div class="card-body">
+            <h5 class="card-title">{{ item }}</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="{% url 'subjects_list_page' item.pk%}" class="btn btn-primary">View Subjects</a>
+          </div>
+        </div>
+    </ul>
+    {% endfor %}
+{% endblock %}

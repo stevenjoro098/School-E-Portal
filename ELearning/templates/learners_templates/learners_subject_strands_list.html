@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %} Strands {% endblock %}
+
+{% block content %}
+     <div class="list-group">
+        {% for item in strands_list %}
+         <div class="card" style="width: 18rem;">
+          <img src="..." class="card-img-top" alt="...">
+          <div class="card-body">
+            <p class="card-text">{{ item }}</p>
+              <a href="{% url 'substrands_list' item.pk %}" class="btn btn-info">View Substrands</a></p>
+          </div>
+        </div>
+        {% empty %}
+            <h3>No Strands Available </h3>
+        {% endfor %}
+     </div>
+{% endblock %}

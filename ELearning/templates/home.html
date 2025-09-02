@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      <div class="col">
+        <div class="card">
+          <img src="https://lh7-rt.googleusercontent.com/docsz/AD_4nXe6P7mbfgpONtYfzvnGQSiQ8Ez3R3uTJyBWmGttHvRvHFs7h_tQSDFjUzJ24iqtOyvgi9D3FmjstHqHPndaNQrWC5h8YPFezqFWRYcitr_98n3iFN4Lmj-3FA14EoAJ8wt886pY1A?key=T_aycTv0bE9OwIrH60BQ3w" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">E-Learning</h5>
+            <p class="card-text">Access to Notes and Resources for all Strands and their Substrands</p>
+            <p><a href="{% url 'learners_grades_list' %}" class="btn btn-info">View</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <img src="https://thinkexam.com/blog/wp-content/uploads/2022/01/Top-5-Essential-Features-of-Online-Assessment-Platform-for-Hiring-Solutions.jpg" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">Assessment Portal</h5>
+            <p class="card-text">Access Exams and Assessment for various Subjects</p>
+              <p><a href="{% url 'assessment_home' %}" class="btn btn-info">View</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}

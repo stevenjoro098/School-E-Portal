@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ strand.name }} - SubStrands {% endblock %}
+
+{% block extra_head %}
+<!-- ✅ Vue.js 2 & Axios -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div id="app">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">SubStrands for: {{ strand.name }}</h2>
+        <a href="#" class="btn btn-warning" @click.prevent="showModal = true">Add SubStrand</a>
+    </div>
+
+    <!-- ✅ SubStrands List -->
+    <div class="d-flex flex-wrap gap-3">
+        <div v-for="ss in substrands" :key="ss.id" class="card text-bg-info mb-3" style="max-width: 18rem;">
+            <div class="card-header">
+                <h4 class="mb-0">1: [[ ss.name ]]</h4>
+            </div>
+            <div class="card-body">
+                <a :href="`{% url 'add_notes' 0 %}`.replace('0', ss.id)" class="btn btn-light btn-sm">Add Notes</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Modal -->
+    <div v-if="showModal" class="modal fade show d-block" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New SubStrand</h5>
+                    <button type="button" class="btn-close" @click="showModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" v-model="newSubStrand" placeholder="Enter sub-strand name" class="form-control">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @click="showModal = false">Cancel</button>
+                    <button class="btn btn-primary" @click="addSubStrand">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Success Alert -->
+    <div v-if="successMessage" class="alert alert-success position-fixed bottom-0 end-0 m-3" style="z-index:999;">
+        [[ successMessage ]]
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: {
+            substrands: {{ substrands_json|safe }},
+            newSubStrand: '',
+            showModal: false,
+            successMessage: '',
+            strandId: {{ view.kwargs.strand_id }},
+            csrfToken: '{{ csrf_token }}'
+        },
+        methods: {
+            async addSubStrand() {
+                if (!this.newSubStrand.trim()) {
+                    alert('Please enter a sub-strand name.');
+                    return;
+                }
+
+                try {
+                    const response = await axios.post('/api/add-substrand/', {
+                        strand_id: this.strandId,
+                        title: this.newSubStrand
+                    }, {
+                        headers: {
+                            'X-CSRFToken': this.csrfToken,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.data.status === 'success') {
+                        this.substrands.push({ id: response.data.id, title: response.data.title });
+                        this.newSubStrand = '';
+                        this.showModal = false;
+
+                        this.successMessage = 'Sub-strand added successfully!';
+                        setTimeout(() => this.successMessage = '', 3000);
+                    } else {
+                        alert(response.data.message || 'Failed to add sub-strand.');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert('Error adding sub-strand.');
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

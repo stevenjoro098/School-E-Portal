@@ -3,9 +3,7 @@
 {% block title %} {{ strand.name }} - SubStrands {% endblock %}
 
 {% block extra_head %}
-<!-- ✅ Vue.js 2 & Axios -->
-<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -19,7 +17,10 @@
     <div class="d-flex flex-wrap gap-3">
         <div v-for="ss in substrands" :key="ss.id" class="card text-bg-info mb-3" style="max-width: 18rem;">
             <div class="card-header">
-                <h4 class="mb-0">1: [[ ss.name ]]</h4>
+                <h4 class="mb-0">[[ ss.name ]]</h4>
+                <h5>
+                    <a :href="`{% url 'resources_view' 0 %}`.replace('0', ss.id)">View Notes</a>
+                </h5>
             </div>
             <div class="card-body">
                 <a :href="`{% url 'add_notes' 0 %}`.replace('0', ss.id)" class="btn btn-light btn-sm">Add Notes</a>
@@ -55,53 +56,54 @@
 
 {% block scripts %}
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    new Vue({
-        el: '#app',
-        delimiters: ['[[', ']]'],
-        data: {
+const { createApp } = Vue;
+
+createApp({
+    delimiters: ['[[', ']]'],  // Django-safe delimiters
+    data() {
+        return {
             substrands: {{ substrands_json|safe }},
             newSubStrand: '',
             showModal: false,
             successMessage: '',
             strandId: {{ view.kwargs.strand_id }},
             csrfToken: '{{ csrf_token }}'
-        },
-        methods: {
-            async addSubStrand() {
-                if (!this.newSubStrand.trim()) {
-                    alert('Please enter a sub-strand name.');
-                    return;
-                }
+        };
+    },
+    methods: {
+        async addSubStrand() {
+            if (!this.newSubStrand.trim()) {
+                alert('Please enter a sub-strand name.');
+                return;
+            }
 
-                try {
-                    const response = await axios.post('/api/add-substrand/', {
-                        strand_id: this.strandId,
-                        title: this.newSubStrand
-                    }, {
-                        headers: {
-                            'X-CSRFToken': this.csrfToken,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-
-                    if (response.data.status === 'success') {
-                        this.substrands.push({ id: response.data.id, title: response.data.title });
-                        this.newSubStrand = '';
-                        this.showModal = false;
-
-                        this.successMessage = 'Sub-strand added successfully!';
-                        setTimeout(() => this.successMessage = '', 3000);
-                    } else {
-                        alert(response.data.message || 'Failed to add sub-strand.');
+            try {
+                const response = await axios.post('/api/add-substrand/', {
+                    strand_id: this.strandId,
+                    title: this.newSubStrand
+                }, {
+                    headers: {
+                        'X-CSRFToken': this.csrfToken,
+                        'Content-Type': 'application/json'
                     }
-                } catch (error) {
-                    console.error(error);
-                    alert('Error adding sub-strand.');
+                });
+
+                if (response.data.status === 'success') {
+                    this.substrands.push({ id: response.data.id, title: response.data.title });
+                    this.newSubStrand = '';
+                    this.showModal = false;
+
+                    this.successMessage = 'Sub-strand added successfully!';
+                    setTimeout(() => this.successMessage = '', 3000);
+                } else {
+                    alert(response.data.message || 'Failed to add sub-strand.');
                 }
+            } catch (error) {
+                console.error(error);
+                alert('Error adding sub-strand.');
             }
         }
-    });
-});
+    }
+}).mount('#app');
 </script>
 {% endblock %}

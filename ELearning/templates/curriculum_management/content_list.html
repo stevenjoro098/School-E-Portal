@@ -1,19 +1,26 @@
 {% extends 'base.html' %}
 
+{% block title %} Grades {% endblock %}
+
 {% block nav %}
     <a href="#" class="btn btn-success">Add Subject</a>
 {% endblock %}
 {% block content %}
-    <h3>Content</h3>
-    {% for item in grades_list %}
-    <ul>
-        <div class="card text-start" style="#">
-          <div class="card-body">
-            <h5 class="card-title">{{ item }}</h5>
-            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-            <a href="{% url 'subjects_list_page' item.pk%}" class="btn btn-primary">View Subjects</a>
-          </div>
-        </div>
-    </ul>
-    {% endfor %}
+    <h3>Select Grade</h3>
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        {% for item in grades_list %}
+            <div class="col-md-4">
+                <div class="card text-start" style="#">
+                  <div class="card-body">
+                    <h4 class="card-title">{{ item }}</h4>
+                    <p class="card-text"></p>
+                    <a href="{% url 'subjects_list_page' item.pk%}" class="btn btn-primary">View Subjects</a>
+                  </div>
+                </div>
+            </div>
+        {% empty %}
+            <h3>No Grades Provided </h3>
+        {% endfor %}
+    </div>
+
 {% endblock %}

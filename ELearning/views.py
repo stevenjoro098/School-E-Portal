@@ -1,14 +1,15 @@
 import json
-from distutils.dir_util import remove_tree
+from django.urls import reverse
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.template.defaultfilters import title
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import TemplateView, View, ListView
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.views.generic import TemplateView, View, ListView, UpdateView, DeleteView
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import get_object_or_404, render
+from rest_framework.reverse import reverse_lazy
 
 from Subjects.models import Grade
 from .models import Subject, Strand, SubStrand, SubStrandNote, Note, ImageResource, VideoResource
@@ -136,9 +137,58 @@ class AddNoteView(TemplateView):
         n = SubStrandNote.objects.create(substrand_id=substrand_id, content=content)
         return JsonResponse({'status': 'success', 'id': n.id, 'content': n.content})
 
+class NoteEditView(UpdateView):
+    model = Note
+    template_name = 'curriculum_management/edit_notes.html'
+    fields = ['content']
+    success_url = reverse_lazy('add_substrands')
+
+    def get_success_url(self):
+        # Access extra variables
+        substrand_id = self.kwargs['substrand_id']
+        return reverse('resources_view', kwargs={'substrand_id': substrand_id})
+
+class NoteDeleteView(DeleteView):
+    template_name = 'curriculum_management/delete_note.html'
+    model = Note
+
+    def get_success_url(self):
+        # Access extra variables
+        substrand_id = self.kwargs['substrand_id']
+        return reverse('resources_view', kwargs={'substrand_id': substrand_id})
+
+
+class ImageDeleteView(DeleteView):
+    model = ImageResource
+    template_name = 'curriculum_management/delete_image.html'
+
+    def get_success_url(self):
+        # Access extra variables
+        substrand_id = self.kwargs['substrand_id']
+        return reverse('resources_view', kwargs={'substrand_id': substrand_id})
+
 
 # Update / Delete note (PUT and DELETE)
-class NoteDetailView(View):
+class SubstrandResourceView(TemplateView):
+    template_name = 'curriculum_management/view_substrand_resources.html'
+
+    def get(self, request, *args, **kwargs):
+        try:
+            substrand = get_object_or_404(SubStrand, id=self.kwargs['substrand_id'])
+            notes = Note.objects.filter(substrand=substrand)
+            images = ImageResource.objects.filter(substrand=substrand)
+            videos = VideoResource.objects.filter(substrand=substrand)
+
+            context = {
+                'substrand': substrand,
+                'notes': notes,
+                'images': images,
+                'videos': videos,
+            }
+            return render(request, self.template_name, context)
+        except Exception as e:
+            return HttpResponse(f"Unable to load resources: {e}", status=500)
+
     def put(self, request, note_id):
         try:
             data = json.loads(request.body.decode('utf-8'))
@@ -187,6 +237,8 @@ def save_video(request):
         video = request.POST.get('video') or request.body.decode()
         VideoResource.objects.create(url=video, substrand_id=1)
         return JsonResponse({'message': 'Video saved'})
+
+
  # ==================================== Learners View =========================================================
 
 class LearnersGradeList(ListView):
@@ -220,3 +272,4 @@ class SubStrandsList(ListView):
     def get_queryset(self):
         strand = get_object_or_404(Strand, id=self.kwargs['strand_id'])
         return SubStrand.objects.filter(strand=strand)
+

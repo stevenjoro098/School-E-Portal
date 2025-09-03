@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %} {{ substrand }} {% endblock %}
+{% block content %}
+    <h3>{{ substrand }}</h3>
+    <div class="row">
+        <div class="col-md-8">
+    {% for item in notes %}
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-end">
+                    <a href="{% url 'edit_notes' item.pk substrand.id %}" class="btn btn-warning">Edit</a>
+                    <a href="{% url 'delete_notes' item.pk substrand.id %}" class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+            <div class="card-body">
+                {{ item.content | safe }}
+            </div>
+        </div>
+    {% empty %}
+    {% endfor %}
+        </div>
+        <div class="col-md-4">
+            {% for item in images %}
+                <div class="card">
+                    <div class="card-header">
+                        <a href="#" class="btn btn-warning">Edit</a>
+                        <a href="{% url 'delete_image' item.pk %}" class="btn btn-danger">Delete</a>
+                    </div>
+                    <img src="{{ item.image.url }}" style="width:20rem;">
+                </div>
+            {% empty %}
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

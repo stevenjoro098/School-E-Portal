@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        Are you sure you want to delete Image?
+        <button type="submit">Delete</button>
+        <button>Cancel</button>
+    </form>
+{% endblock %}

@@ -13,7 +13,12 @@
                     <div class="col-md-6">
                         <div class="card">
                       <div class="card-body">
-                        <h5 class="card-title">{{ i }}</h5>
+                          <div class="d-flex justify-content-between">
+                              <h5 class="card-title">{{ i }}</h5>
+                              {% if i.is_published %}
+                                <a href="{% url 'questions_list_pdf' i.id %}" class="btn btn-light btn-sm">Print</a>
+                              {% endif %}
+                          </div>
 
                         {% if i.is_published %}
                           <span style="background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 20px;">

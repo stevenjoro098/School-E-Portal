@@ -184,6 +184,7 @@ def take_assessment(request, assessment_id):
 
 def check_if_taken(request, assessment_id):
     name = request.GET.get('name')
+    print(name)
     taken = AssessmentResult.objects.filter(assessment_id=assessment_id, student__iexact=name).exists()
     return JsonResponse({'taken': taken})
 
@@ -231,7 +232,7 @@ class SubmitAssessmentView(View):
             "score": correct,
             "max_score": total,
             "percentage": percentage,
-            "redirect_url": f"/result/{result.id}/"
+            "redirect_url": f"/assessment/result/{result.id}/"
         })
 
 class AssessmentResultView(DetailView):
@@ -368,6 +369,20 @@ def download_result_pdf(request, result_id):
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="assessment_result_{result.id}.pdf"'
     return response
+def questions_list_pdf(request, assessment_id):
+    assessment = get_object_or_404(Assessment, id=assessment_id)
+    questions = Question.objects.filter(assessment=assessment)
+
+    context = {
+        'questions': questions,
+        'assessment': assessment
+    }
+    html_string = render_to_string("pdf/questions_list_pdf.html", context)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    response = HttpResponse(pdf_file, content_type="application/pdf")
+    response['Content-Disposition'] = f'attachment; filename="assessment_questions_{assessment.id}.pdf"'
+    return response
 
 def generate_assessment_summary_pdf(request, assessment_id):
     assessment = get_object_or_404(Assessment, id=assessment_id)
@@ -422,3 +437,18 @@ def generate_assessment_summary_pdf(request, assessment_id):
     response = HttpResponse(pdf_file, content_type="application/pdf")
     response['Content-Disposition'] = f'attachment; filename="assessment_summary_{assessment.id}.pdf"'
     return response
+
+class QuestionsListView(ListView):
+    template_name = 'view_questions_list.html'
+    model = Question
+    context_object_name = 'questions_list'
+
+
+    def get_queryset(self):
+        self.assessment = get_object_or_404(Assessment, id=self.kwargs['assessment_id'])
+        return Question.objects.filter(assessment=self.assessment)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['assessment'] = self.assessment
+        return context

@@ -7,23 +7,27 @@
 {% block content %}
 <div id="app">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Strands List for: {{ subject.name }}</h2>
+        <h2 class="mb-0">Strands for : {{ subject.name }}</h2>
+        <hr>
         <a href="#" class="btn btn-warning" @click.prevent="showModal = true">Add Strand</a>
     </div>
-
+    <hr>
     <div class="d-flex flex-wrap gap-3">
-        <div v-for="strand in strands" :key="strand.id" class="card text-bg-info mb-3" style="max-width: 18rem;">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">[[ strand.name ]]</h4>
-                <!-- ✅ Link to sub-strands using Django URL -->
-                <a :href="`{% url 'api_substrands' 0 %}`.replace('0', strand.id)" class="btn btn-light btn-sm">View</a>
-            </div>
-            <div class="card-body">
-                <h6 class="card-title">No. of Sub-Strands: 0</h6>
-                <p class="card-text">Teaching content coming soon...</p>
+    <div v-for="strand in strands"
+         :key="strand.id"
+         class="card"
+         > <!-- 👈 uniform size -->
+
+        <div class="card-body">
+            <h4 class="card-title">[[ strand.name ]]</h4>
+            <div class="mt-auto d-flex gap-2"> <!-- 👈 pushes buttons to bottom -->
+                <a :href="`{% url 'api_substrands' 0 %}`.replace('0', strand.id)"
+                   class="btn btn-warning btn-sm">View</a>
             </div>
         </div>
     </div>
+</div>
+
 
     <!-- Modal -->
     <div v-if="showModal" class="modal fade show d-block" style="background: rgba(0,0,0,0.5);">

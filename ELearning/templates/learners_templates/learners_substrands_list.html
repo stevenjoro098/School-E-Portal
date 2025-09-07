@@ -5,8 +5,8 @@
 {% block extra_head %}
     <style>
         .custom-img {
-            width: 150px;
-            height: 150px;
+            width: 400px;
+            height: 400px;
             object-fit: cover;
             display: block;
             margin-bottom: 10px;
@@ -14,36 +14,45 @@
     </style>
 {% endblock %}
 {% block content %}
-    <h2><u>Sub-Strands List</u></h2>
-    <ol>
-        {% for item in sub_strands_list %}
-             <h3><li>{{ item.name }}</li></h3>
-            {% for out_come in item.learning_outcomes.all %}
-                <p><strong><h5>Learning Outcome: </h5></strong> {{ out_come.description }} </p>
+    <div class="container-fluid">
+        <h2><u>Sub-Strands List</u></h2>
+        <ol>
+            {% for item in sub_strands_list %}
+                 <h3><li>{{ item.name }}</li></h3>
+                {% for out_come in item.learning_outcomes.all %}
+                <p><strong><h5>Learning Outcome: </h5></strong><strong>{{ out_come.description }}</strong></p>
+                {% empty %}
+                    <h5 class="text-warning">No Learning Outcome provided</h5>
+                {% endfor %}
+                <div class="row">
+                    <div class="col-md-8">
+                        {% for note in item.notes.all %}
+                            <p>{{ note.content|safe }}</p>
+                        {% empty %}
+                            <p>No notes available.</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-4">
+                        {% for image in item.images.all %}
+                            <div class="card mb-3">
+                              <img src="{{ image.image.url }}" alt="Image" class="custom-img img-fluid">
+                              <div class="card-body">
+                                <p class="card-text">{{ image.image }}</p>
+                              </div>
+                            </div>
+
+
+                        {% empty %}
+                            <p>No images available.</p>
+                        {% endfor %}
+                    </div>
+                </div>
 
             {% empty %}
-                <p>No Learning Outcome provided</p>
+                <h3>No Substrands Available.</h3>
             {% endfor %}
-            <div class="row">
-                <div class="col-md-8">
-                    {% for note in item.notes.all %}
-                        <p>{{ note.content|safe }}</p>
-                    {% empty %}
-                        <p>No notes available.</p>
-                    {% endfor %}
-                </div>
-
-                <div class="col-md-4">
-                    {% for image in item.images.all %}
-                        <img src="{{ image.image.url }}" alt="Image" class="custom-img img-fluid">
-                    {% empty %}
-                        <p>No images available.</p>
-                    {% endfor %}
-                </div>
-            </div>
-
-        {% empty %}
-        {% endfor %}
-    </ol>
+        </ol>
+    </div>
 {% endblock %}
 

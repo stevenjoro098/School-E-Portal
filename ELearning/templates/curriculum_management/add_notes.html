@@ -15,16 +15,16 @@
 {% endblock %}
 
 {% block content %}
-<div id="app" class="container-fluid mt-4">
+<div id="app" class="container-fluid">
     <div class="row">
         <!-- Left Column: Input -->
-        <div class="col-md-6">
+        <div class="col-md-8">
             <h3>Add Lesson Content</h3>
 
             <!-- Notes Section -->
             <div class="mb-4">
                 <h5>Notes</h5>
-                <div id="quill-editor" style="height: 200px;"></div>
+                <div id="quill-editor" style="height: 450px;"></div>
                 <button class="btn btn-primary mt-2" @click="saveNotes">Save Notes</button>
             </div>
 
@@ -44,7 +44,7 @@
         </div>
 
         <!-- Right Column: Preview -->
-        <div class="col-md-6">
+        <div class="col-md-4">
             <h3 class="mb-2 d-flex justify-content-between">Preview</h3>
             <div class="border p-3 bg-light" style="min-height: 400px;">
                 <!-- Preview Notes -->
@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 axios.post('/api/save-image/', formData, {
                     headers: {
                         'X-CSRFToken': this.csrfToken,
-                        'Content-Type': 'multipart/form-data'
+                        //'Content-Type': 'multipart/form-data'
                     }
                 }).then(() => alert('Image saved successfully!'))
                   .catch(error => { console.error(error); alert('Error saving image.'); });

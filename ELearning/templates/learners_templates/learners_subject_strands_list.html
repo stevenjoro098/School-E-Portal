@@ -1,34 +1,36 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %} Strands {% endblock %}
 
 {% block content %}
+    <h3>{{ subject }}</h3>
+    <hr>
      <div class="list-group">
-        {% for item in strands_list %}
-         <div class="card mb-3" style="max-width: 540px;">
-          <div class="row g-0">
-            <div class="col-md-4">
-              <img src="" class="img-fluid rounded-start" alt="...">
-            </div>
-            <div class="col-md-8">
-              <div class="card-body">
-                <h5 class="card-title">{{ item }}</h5>
-                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                 <a href="{% url 'substrands_list' item.pk %}" class="btn btn-info">View Substrands</a></p>
-                  <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-              </div>
-            </div>
-          </div>
-        </div>
-         <div class="card" style="width: 18rem;">
-          <img src="..." class="card-img-top" alt="...">
-          <div class="card-body">
-            <p class="card-text"></p>
-              <a href="{% url 'substrands_list' item.pk %}" class="btn btn-info">View Substrands</a></p>
-          </div>
-        </div>
-        {% empty %}
-            <h3>No Strands Available </h3>
-        {% endfor %}
+         <div class="row">
+             {% for item in strands_list %}
+                 <div class="col-md-6">
+                     <div class="card mb-3" style="max-width: 540px;">
+                      <div class="row g-0">
+                        <div class="col-md-4">
+                          <img src="{% static 'images/strands.jpg' %}" style="width:18rem;" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                          <div class="card-body">
+                            <h4 class="card-title">{{ item }}</h4>
+                            <p class="card-text"></p>
+                             <a href="{% url 'substrands_list' item.pk %}" class="btn btn-info">View Substrands</a></p>
+                              <p class="card-text"><small class="text-body-secondary"></small></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                 </div>
+            {% empty %}
+                <h3>No Strands Available </h3>
+            {% endfor %}
+         </div>
+
      </div>
 {% endblock %}

@@ -12,19 +12,24 @@
         <h2 class="mb-0">SubStrands for: {{ strand.name }}</h2>
         <a href="#" class="btn btn-warning" @click.prevent="showModal = true">Add SubStrand</a>
     </div>
+    <hr>
 
     <!-- ✅ SubStrands List -->
     <div class="d-flex flex-wrap gap-3">
-        <div v-for="ss in substrands" :key="ss.id" class="card text-bg-info mb-3" style="max-width: 18rem;">
-            <div class="card-header">
-                <h4 class="mb-0">[[ ss.name ]]</h4>
-                <h5>
-                    <a :href="`{% url 'resources_view' 0 %}`.replace('0', ss.id)">View Notes</a>
-                </h5>
-            </div>
+        <div v-for="ss in substrands" :key="ss.id" class="card text-bg-warning mb-3" style="flex: 1 1 18rem; max-width: 25rem; min-height: 100px;">
             <div class="card-body">
-                <a :href="`{% url 'add_notes' 0 %}`.replace('0', ss.id)" class="btn btn-light btn-sm">Add Notes</a>
+                <h5 class="mb-0">[[ ss.name ]]</h5>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <h5>
+                         <a :href="`{% url 'add_notes' 0 %}`.replace('0', ss.id)" class="btn btn-light btn-sm">Add Notes</a>
+                    </h5>
+                    <h5>
+                        <a :href="`{% url 'resources_view' 0 %}`.replace('0', ss.id)" class="btn btn-primary">View Notes</a>
+                    </h5>
+                </div>
             </div>
+
         </div>
     </div>
 

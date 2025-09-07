@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %} {{ assessment.title }} {% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between">
+        <h4>Questions for {{ assessment.title  }}</h4>
+        <a href="{% url 'questions_list_pdf' assessment.id %}" class="btn btn-warning">Print</a>
+    </div>
+
+    <hr>
+     <div class="container-fluid">
+         <ol>
+            {% for item in questions_list %}
+                <li>
+                    <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-text">
+                                {{ item }}
+                            </div>
+                            <div class="container-fluid">
+                                <ol>
+                               {% for i in item.choices.all %}
+                                    {% if i.is_correct %}
+                                        <li>{{ i }} - Correct Answer</li>
+                                    {% else %}
+                                        <li>{{ i }}</li>
+                                    {% endif %}
+                                {% empty %}
+                                    <h6>No choices available</h6>
+                                {% endfor %}
+                               </ol>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                </li>
+            {% empty %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-text">
+                            No Questions Available
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+         </ol>
+    </div>
+
+{% endblock %}

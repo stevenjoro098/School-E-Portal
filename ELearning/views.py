@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView, View, ListView, UpdateView, DeleteView
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, render
+from fontTools.misc.bezierTools import segmentSegmentIntersections
 from rest_framework.reverse import reverse_lazy
 
 from Subjects.models import Grade
@@ -77,6 +78,18 @@ class SubStrandListView(ListView):
 
         return context
 
+
+class StrandDelete(DeleteView):
+    template_name = 'curriculum_management/delete_strand.html'
+    model = Strand
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['strand'] = get_object_or_404(Strand, id=self.kwargs['strand_id'])
+        return context
+
+    def get_success_url(self):
+        return reverse('strands_list', kwargs=self.kwargs['subject_id'])
 
 class NoteListView(View):
     def get(self, request):
@@ -152,6 +165,12 @@ class NoteDeleteView(DeleteView):
     template_name = 'curriculum_management/delete_note.html'
     model = Note
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['note'] = get_object_or_404(Note, id=self.kwargs['pk'])
+        context['substrand'] = self.kwargs['substrand_id']
+        return context
+
     def get_success_url(self):
         # Access extra variables
         substrand_id = self.kwargs['substrand_id']
@@ -224,13 +243,26 @@ def save_notes(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
 
-@csrf_exempt
 def save_image(request):
-    if request.method == 'POST':
-        image = request.FILES.get('image')
-        ImageResource.objects.create(image=image, substrand_id=1)
-        return JsonResponse({'message': 'Image saved'})
+    if request.method == "POST":
+        image = request.FILES.get("image")
+        substrand_id = request.POST.get("substrand_id")
 
+        if not image:
+            return JsonResponse({"status": "error", "message": "No image provided"}, status=400)
+
+        substrand = get_object_or_404(SubStrand, id=substrand_id)
+        image_resource = ImageResource.objects.create(substrand=substrand, image=image)
+        # Example: Save image to MEDIA
+        # from django.core.files.storage import default_storage
+        # filename = default_storage.save(f"substrands/{image.name}", image)
+
+        return JsonResponse({
+            "status": "success",
+            "substrand_id": substrand_id
+        })
+
+    return JsonResponse({"status": "error", "message": "Invalid request"}, status=405)
 @csrf_exempt
 def save_video(request):
     if request.method == 'POST':
@@ -252,8 +284,13 @@ class GradeSubjectList(ListView):
     context_object_name = 'subjects_list'
 
     def get_queryset(self):
-        grade = get_object_or_404(Grade, id=self.kwargs['grade_id'])
-        return Subject.objects.filter(grade=grade)
+        self.grade = get_object_or_404(Grade, id=self.kwargs['grade_id'])
+        return Subject.objects.filter(grade=self.grade)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['grade'] = self.grade
+        return context
 
 class SubjectStrandsList(ListView):
     model = Strand
@@ -261,8 +298,13 @@ class SubjectStrandsList(ListView):
     context_object_name = 'strands_list'
 
     def get_queryset(self):
-        subject = get_object_or_404(Subject, id=self.kwargs['subject_id'])
-        return Strand.objects.filter(subject=subject)
+        self.subject = get_object_or_404(Subject, id=self.kwargs['subject_id'])
+        return Strand.objects.filter(subject=self.subject)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['subject'] = self.subject
+        return context
 
 class SubStrandsList(ListView):
     model = SubStrand

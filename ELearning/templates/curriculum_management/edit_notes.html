@@ -1,9 +1,51 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block title %} Edit Notes {% endblock %}
+{% block extra_head %}
+<link href="{% static 'quill/quill.snow.css' %}" rel="stylesheet">
+<style>
+  #id_content {
+    display: none;  /* 👈 hides raw textarea */
+  }
+</style>
+
+{% endblock %}
 
 {% block content %}
-    <form>
-        {{ form.as_p }}
-        {% csrf_token %}
-        <button type="submit">Submit</button>
-    </form>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <!-- Hidden textarea Django will actually submit -->
+    {{ form.content }}
+
+    <!-- Visible Quill editor -->
+    <div id="quill-editor" style="height: 450px;"></div>
+
+    <button type="submit" class="btn btn-primary mt-2">Save Notes</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'quill/quill.min.js' %}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var quill = new Quill('#quill-editor', {
+      theme: 'snow',
+      placeholder: 'Edit your note...'
+    });
+
+    var contentField = document.getElementById("id_content");
+
+    // Pre-fill Quill with saved content
+    if (contentField.value) {
+        quill.root.innerHTML = contentField.value;
+    }
+
+    // On form submit, update hidden textarea
+    document.querySelector("form").onsubmit = function () {
+        contentField.value = quill.root.innerHTML;
+    };
+});
+</script>
 {% endblock %}

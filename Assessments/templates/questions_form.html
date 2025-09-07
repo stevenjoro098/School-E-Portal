@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
+{% block title %} Questions Form {% endblock %}
 {% block nav %}
     <form method="post" action="{% url 'publish_assessment' assessment.pk %}">
         {% csrf_token %}
@@ -8,16 +9,16 @@
     </form>
 {% endblock %}
 {% block content %}
-<div class="container my-5">
-    <h3 class="mb-4">Questions for: <span class="text-primary">{{ assessment.title }}</span></h3>
-
+<div class="container-fluid my-5">
+    <h4 class="mb-4">Questions for: <span class="text-primary">{{ assessment.title }}</span></h4>
+    <hr>
     <div class="row">
         <!-- Question Form Section -->
-        <div class="col-lg-8 mb-4">
+        <div class="col-md-8 mb-4">
             <div class="card shadow border-0">
                 <div class="card-body">
-                    <h4 class="card-title text-center mb-4">Add New Question</h4>
-
+                    <h4 class="card-title mb-1"><span class="text-warning">Add New Question</span></h4>
+                    <i><p class="text-primary">N/B: Questions once saved will be available even after logging out for all unpublished assessments.</p></i>
                     <form method="post" novalidate>
                         {% csrf_token %}
 
@@ -29,14 +30,14 @@
                             {% endif %}
                         </div>
 
-                        <h5 class="fw-semibold mt-4">Choices</h5>
+                        <h5 class="fw-semibold mt-4"><span class="text-success">Choices</span></h5>
                         {{ formset.management_form }}
 
                         <div class="row g-3">
                             {% for choice_form in formset %}
                                 <div class="col-md-6">
                                     <div class="p-3 bg-light rounded border">
-                                        <div class="mb-2">
+                                        <div class="mb-1">
                                             <label class="form-label">{{ choice_form.text.label }}</label>
                                             {{ choice_form.text }}
                                             {% if choice_form.text.errors %}
@@ -63,12 +64,9 @@
         </div>
 
         <!-- Scrollable & Reversed Questions Section -->
-        <div class="col-lg-4">
-            <h2>Options:</h2>
-
+        <div class="col-md-4">
             <hr>
             <h5 class="mb-3">Existing Questions</h5>
-
             <div class="border rounded p-2 shadow-sm" style="max-height: 600px; overflow-y: auto;">
                 {% for question in assessment.questions.all|dictsortreversed:"id" %}
                     <div class="card mb-3 border-0">

@@ -1,53 +1,53 @@
 {% extends 'base.html' %}
-
+{% block title %} Exam Dashboard {% endblock %}
 {% block nav %}
     <a href="{% url 'create_assessment' %}" class="btn btn-success">Create Assessment</a>
 {% endblock %}
 {% block content %}
-    <div class="row">
-        <div class="col-md-6">
-        <h2>Welcome, {{ request.user.username | capfirst }}</h2>
-            <h4>List of Assessments</h4>
-            {% for i in teacher_assessment_list %}
-            <br>
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">{{ i }}</h5>
+    <div class="container-fluid">
+        <h2>Welcome, {{ request.user.username | capfirst }}.</h2>
+            <h4>List of your Assessments</h4>
+            <hr>
+            <div class="row">
+                {% for i in teacher_assessment_list %}
+                    <div class="col-md-6">
+                        <div class="card">
+                      <div class="card-body">
+                        <h5 class="card-title">{{ i }}</h5>
 
-                    {% if i.is_published %}
-                      <span style="background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 20px;">
-                        ✅ Published
-                      </span>
-                    {% else %}
-                      <span style="background-color: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 20px;">
-                        ⏳ Not Published
-                      </span>
-                    {% endif %}
-                    <hr>
-                    <!--h6 class="card-subtitle mb-2 text-muted">Created On: {{ i.created }}</h6-->
-                      <h6 class="card-subtitle mb-2 text-muted">Scheduled For: {{ i.scheduled_date }}</h6>
-                    <p class="card-text">{{ i.description }}</p>
-
-                    <div class="d-flex gap-2 flex-wrap">
                         {% if i.is_published %}
-                            <a href="{% url 'assessment_analysis' i.pk %}" class="btn btn-primary">View Performance</a>
+                          <span style="background-color: #d4edda; color: #155724; padding: 5px 10px; border-radius: 20px;">
+                            ✅ Published
+                          </span>
                         {% else %}
-                            <a href="{% url 'create_questions' i.pk %}" class="btn btn-primary">➕ Add Questions</a>
-                            <a href="{% url 'assessment_edit' i.pk %}" class="btn btn-warning">Edit</a>
+                          <span style="background-color: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 20px;">
+                            ⏳ Not Published
+                          </span>
                         {% endif %}
+                        <hr>
+                        <!--h6 class="card-subtitle mb-2 text-muted">Created On: {{ i.created }}</h6-->
+                          <h6 class="card-subtitle mb-2 text-muted">Scheduled For: {{ i.scheduled_date }}</h6>
+                        <p class="card-text">{{ i.description }}</p>
 
-                      <a href="{% url 'delete_assessment' i.pk %}" class="btn btn-danger">🗑️ Delete</a>
+                        <div class="d-flex gap-2 flex-wrap">
+                            {% if i.is_published %}
+                                <a href="{% url 'assessment_analysis' i.pk %}" class="btn btn-primary">View Performance</a>
+                                <a href="{% url 'questions_list' i.pk %}" class="btn btn-warning">View Questions</a>
+                            {% else %}
+                                <a href="{% url 'create_questions' i.pk %}" class="btn btn-primary">➕ Add Questions</a>
+                                <a href="{% url 'assessment_edit' i.pk %}" class="btn btn-warning">Edit</a>
+                            {% endif %}
+
+                          <a href="{% url 'delete_assessment' i.pk %}" class="btn btn-danger">🗑️ Delete</a>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                    </div>
+                {% empty %}
+                    <h3>No Assessments Available</h3>
+                {% endfor %}
+            </div>
 
-            {% empty %}
-                <h3>No Assessments Available</h3>
-            {% endfor %}
-        </div>
-        <div class="col-md-6">
-
-        </div>
     </div>
 
 {% endblock %}

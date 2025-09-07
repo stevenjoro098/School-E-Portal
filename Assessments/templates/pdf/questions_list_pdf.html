@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assessment Results</title>
+    <style>
+        @page {
+            margin: 2cm;
+        }
+        body {
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .letterhead {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .letterhead h1 {
+            margin: 0;
+            font-size: 26px;
+            color: #2c3e50;
+        }
+        .letterhead small {
+            font-size: 13px;
+            display: block;
+            color: #555;
+        }
+
+        .meta {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .meta p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+
+        .score-box {
+            background: #e8fce8;
+            border: 2px solid #4CAF50;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .score-box h2 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            color: #2c3e50;
+        }
+        .score-box p {
+            font-size: 16px;
+            margin: 4px 0;
+        }
+
+        .question-block {
+            margin-bottom: 20px;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+        .question-block p {
+            margin: 6px 0;
+        }
+
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .wrong {
+            color: red;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 11px;
+            margin-top: 30px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="letterhead">
+        <h1>🏫 United Matunda Academy</h1>
+        <small>Assessment Results | {{ now|date:"F d, Y" }}</small>
+    </div>
+
+    <div class="meta">
+        <p>📘 Assessment: <strong>{{ assessment }}</strong></p>
+        <p>Duration: {{ assessment.duration_minutes }} mins.</p>
+    </div>
+
+    {% for item in questions %}
+        <div class="question-block">
+            <p><strong>Q{{ forloop.counter }}:</strong> {{ item }}</p>
+            {% for choice in item.choices.all %}
+                {% if choice.is_correct %}
+                     <p>🟢{{ choice }} - <strong>Correct Answer</strong></p>
+                {% else %}
+                    <p>🟢{{ choice }}</p>
+                {% endif %}
+            {% empty %}
+            {% endfor %}
+
+        </div>
+    {% endfor %}
+
+    <footer>
+        📩 Powered by ICT United Matunda Academy | {{ now|date:"Y" }}
+    </footer>
+
+</body>
+</html>

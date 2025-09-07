@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
   <form method="post">
-    Are you sure you want to delete?
+    Are you sure you want to delete Notes: description {{ note.id }}?
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Delete</button>
-    <button>Cancel</button>
+
+    <p><button type="submit" class="btn btn-warning">Delete</button></p>
+    <a href="{% url 'resources_view' substrand %}" class="btn btn-primary">Cancel</a>
   </form>
 {% endblock %}

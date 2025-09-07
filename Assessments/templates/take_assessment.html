@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 
-{% block extra_head %}
-<script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
-{% endblock %}
+
 
 {% block content %}
 <div id="quizApp">
@@ -110,7 +108,7 @@ createApp({
             const name = this.studentName.trim();
             if (!name) return;
 
-            fetch(`/check/assessment/${this.assessment.id}/?name=${encodeURIComponent(name)}`)
+            fetch(`/assessment/check/assessment/${this.assessment.id}/?name=${encodeURIComponent(name)}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.taken) {
@@ -160,7 +158,7 @@ createApp({
                 return;
             }
 
-            fetch(`/assessment/${this.assessment.id}/submit/`, {
+            fetch(`/assessment/assessment/${this.assessment.id}/submit/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

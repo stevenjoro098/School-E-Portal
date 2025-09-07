@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %} E-Learning Portal {% endblock %}
 
 {% block content %}
@@ -7,9 +9,10 @@
     {% for item in grade_list %}
       <div class="col">
         <div class="card">
-          <img src="https://i0.wp.com/calmatters.org/wp-content/uploads/2021/08/class-size.jpg?resize=1200%2C700&ssl=1" class="card-img-top" alt="...">
+          <img src="{% static 'images/class-size.jpg' %}" class="card-img-top" alt="...">
           <div class="card-body">
             <h5 class="card-title">{{ item }}</h5>
+            <hr>
             <p class="card-text"></p>
             <a href="{% url 'grade_subject_list' item.pk %}" class="btn btn-warning">View</a>
           </div>

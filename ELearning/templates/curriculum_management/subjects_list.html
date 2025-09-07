@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %} Subjects {% endblock %}
-
+{% block nav %}
+    <a href="{% url 'add_subject' grade.id %}" class="btn btn-success">Add Subject</a>
+{% endblock %}
 {% block content %}
     <h3>Subjects.</h3>
     <hr>
@@ -15,7 +17,11 @@
                     </div>
                     <div class="col-md-8">
                       <div class="card-body">
-                        <h5 class="card-title">{{ item.name }}</h5>
+                          <div class="d-flex justify-content-between">
+                              <h5 class="card-title">{{ item.name }}</h5>
+                              <a href="{% url 'delete_subject' grade.id item.pk%}" class="btn btn-warning btn-sm">Delete</a>
+                          </div>
+
                         <p class="card-text"></p>
                           <p><a href="{% url 'strands_list' item.pk %}" class="btn btn-primary">View Strands</a> </p>
                         <p class="card-text"><small class="text-body-secondary"></small></p>

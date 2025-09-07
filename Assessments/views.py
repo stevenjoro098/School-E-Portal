@@ -322,7 +322,7 @@ def download_result_pdf(request, result_id):
     }
 
     # Load template and render to HTML
-    template = get_template("result_pdf.html")
+    template = get_template("pdf/result_pdf.html")
     html_content = template.render(context)
 
     # Path to your custom font (ensure it exists)
@@ -431,7 +431,7 @@ def generate_assessment_summary_pdf(request, assessment_id):
         "ranked_learners": ranked_learners,
     }
 
-    html_string = render_to_string("assessment_analysis_pdf.html", context)
+    html_string = render_to_string("pdf/assessment_analysis_pdf.html", context)
     pdf_file = HTML(string=html_string).write_pdf()
 
     response = HttpResponse(pdf_file, content_type="application/pdf")

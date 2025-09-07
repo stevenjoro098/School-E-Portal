@@ -5,7 +5,9 @@ urlpatterns = [
     path('', views.HomePage.as_view(), name='home_page'),
     path('manage/', views.GradeList.as_view(), name='elearning_home'),
     path('subjects/list/<int:grade_id>/', views.SubjectsList.as_view(), name='subjects_list_page'),
+    path('subjects/add/form/page/<int:grade_id>/', views.AddSubjectView.as_view(), name='add_subject'),
     path('subjects/strands/list/<int:subject_id>/', views.StrandsList.as_view(),name='strands_list'),
+    path('subject/delete/<int:grade_id>/<int:pk>/', views.SubjectDelete.as_view(), name='delete_subject'),
     path('substrand/resources/view/<int:substrand_id>/', views.SubstrandResourceView.as_view(), name='resources_view'),
 
     path('substrands/<int:strand_id>/', views.SubStrandListView.as_view(), name='api_substrands'),

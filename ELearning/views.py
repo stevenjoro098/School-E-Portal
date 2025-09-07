@@ -6,7 +6,7 @@ from django.template.defaultfilters import title
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import TemplateView, View, ListView, UpdateView, DeleteView
+from django.views.generic import TemplateView, View, ListView, UpdateView, DeleteView, CreateView
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from fontTools.misc.bezierTools import segmentSegmentIntersections
@@ -20,7 +20,7 @@ class HomePage(TemplateView):
 
 class GradeList(ListView):
     model = Grade
-    template_name = 'curriculum_management/content_list.html'
+    template_name = 'curriculum_management/grades_list.html'
     context_object_name = 'grades_list'
 
 class SubjectsList(ListView):
@@ -29,8 +29,31 @@ class SubjectsList(ListView):
     context_object_name = 'subjects_list'
 
     def get_queryset(self):
-        grade = get_object_or_404(Grade, id=self.kwargs['grade_id'])
-        return Subject.objects.filter(grade=grade)
+        self.grade = get_object_or_404(Grade, id=self.kwargs['grade_id'])
+        return Subject.objects.filter(grade=self.grade)
+
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['grade'] = self.grade
+        return context
+
+
+class AddSubjectView(CreateView):
+    model = Subject
+    template_name = 'curriculum_management/add_subject_form.html'
+    fields = ['grade', 'name']
+
+    def get_success_url(self):
+        return reverse('subjects_list_page', kwargs={'grade_id': self.kwargs['grade_id']})
+
+class SubjectDelete(DeleteView):
+    template_name = 'curriculum_management/delete_subject.html'
+    model = Subject
+
+    def get_success_url(self):
+        return reverse('subjects_list_page', kwargs={'grade_id': self.kwargs['grade_id']})
+
 
 class StrandsList(ListView):
     model = Strand

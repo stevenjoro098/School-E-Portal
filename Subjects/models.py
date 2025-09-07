@@ -8,7 +8,7 @@ class Grade(models.Model):
         return f"{self.name}"
 
 class Subject(models.Model):
-    #grade = models.ForeignKey(Grade, on_delete=models.CASCADE, blank=True)
+    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, blank=True)
     name = models.CharField(max_length=250)
 
     def __str__(self):

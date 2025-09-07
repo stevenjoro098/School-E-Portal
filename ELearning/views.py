@@ -28,6 +28,10 @@ class SubjectsList(ListView):
     template_name = 'curriculum_management/subjects_list.html'
     context_object_name = 'subjects_list'
 
+    def get_queryset(self):
+        grade = get_object_or_404(Grade, id=self.kwargs['grade_id'])
+        return Subject.objects.filter(grade=grade)
+
 class StrandsList(ListView):
     model = Strand
     template_name = 'curriculum_management/strand_list.html'

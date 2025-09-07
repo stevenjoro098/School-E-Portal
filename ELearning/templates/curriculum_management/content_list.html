@@ -7,14 +7,18 @@
 {% endblock %}
 {% block content %}
     <h3>Select Grade</h3>
+    <hr>
     <div class="row row-cols-1 row-cols-md-4 g-4">
         {% for item in grades_list %}
             <div class="col-md-4">
                 <div class="card text-start" style="#">
                   <div class="card-body">
-                    <h4 class="card-title">{{ item }}</h4>
-                    <p class="card-text"></p>
-                    <a href="{% url 'subjects_list_page' item.pk%}" class="btn btn-primary">View Subjects</a>
+                      <div class="d-flex justify-content-between">
+                          <h4 class="card-title">{{ item }}</h4>
+                        <a href="{% url 'subjects_list_page' item.pk%}" class="btn btn-primary">View Subjects</a>
+                      </div>
+
+
                   </div>
                 </div>
             </div>

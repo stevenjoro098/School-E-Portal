@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
-
-
+{% block title %} Take Assessment {% endblock %}
 {% block content %}
 <div id="quizApp">
     <h3>[[ assessment.title ]]</h3>
@@ -10,11 +9,16 @@
     </p>
 
     <!-- NAME INPUT -->
-    <div v-if="!nameSubmitted && !alreadyTaken" class="mb-4">
-        <label for="studentName" class="form-label">Enter Your Name:</label>
-        <input type="text" id="studentName" v-model="studentName" class="form-control" placeholder="e.g. Jane Doe" required>
-        <button class="btn btn-primary mt-2" @click="checkIfTaken" :disabled="!studentName">Proceed</button>
+    <div class="card">
+        <div class="card-body">
+            <div v-if="!nameSubmitted && !alreadyTaken" class="mb-4">
+                <label for="studentName" class="form-label">Enter Your Name:</label>
+                <input type="text" id="studentName" v-model="studentName" class="form-control" placeholder="e.g. Jane Doe" required>
+                <button class="btn btn-primary mt-2" @click="checkIfTaken" :disabled="!studentName">Proceed</button>
+            </div>
+        </div>
     </div>
+
 
     <!-- BLOCKED MESSAGE -->
     <div v-if="alreadyTaken" class="alert alert-danger">

@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %} Subjects {% endblock %}
 
 {% block content %}
+    <h3>Subjects.</h3>
+    <hr>
     <div class="row row-cols-1 row-cols-md-4 g-4">
         {% for item in subjects_list %}
             <div class="col-md-6">
                 <div class="card mb-3" style="max-width: 540px;">
                   <div class="row g-0">
                     <div class="col-md-4">
-                      <img src="https://learningstyles101com.wordpress.com/wp-content/uploads/2017/02/read-and-write-style.gif" class="img-fluid rounded-start" alt="...">
+                      <img src="{% static 'images/read.gif' %}" class="img-fluid rounded-start" alt="...">
                     </div>
                     <div class="col-md-8">
                       <div class="card-body">

@@ -7,44 +7,49 @@
     </div>
 
     <hr>
-     <div class="container-fluid">
-         <ol>
-            {% for item in questions_list %}
-                <li>
-                    <div class="col-md-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="card-text">
-                                {{ item }}
-                            </div>
-                            <div class="container-fluid">
-                                <ol>
-                               {% for i in item.choices.all %}
-                                    {% if i.is_correct %}
-                                        <li>{{ i }} - Correct Answer</li>
-                                    {% else %}
-                                        <li>{{ i }}</li>
-                                    {% endif %}
-                                {% empty %}
-                                    <h6>No choices available</h6>
-                                {% endfor %}
-                               </ol>
-                            </div>
+<div class="container-fluid">
+  <div class="row">
+    {% for item in questions_list %}
+      <div class="col-md-4 mb-3"> <!-- 3 columns per row -->
+        <div class="card h-100">
+          <div class="card-body">
+            <!-- Question number -->
+              <h6 class="card-title"><strong>Question {{ forloop.counter }}</strong></h6>
 
-                        </div>
-                    </div>
-                </div>
-                </li>
-            {% empty %}
-                <div class="card">
-                    <div class="card-body">
-                        <div class="card-text">
-                            No Questions Available
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-         </ol>
-    </div>
+            <!-- Question text -->
+            <p class="card-text">{{ item.text }}</p>
+
+            <!-- Choices -->
+            <div class="container-fluid mt-2">
+              <ol>
+                {% for i in item.choices.all %}
+                  {% if i.is_correct %}
+                    <li>{{ i }} - <strong>Correct Answer</strong></li>
+                  {% else %}
+                    <li>{{ i }}</li>
+                  {% endif %}
+                {% empty %}
+                  <h6>No choices available</h6>
+                {% endfor %}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="card-text">
+              No Questions Available
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+
 
 {% endblock %}

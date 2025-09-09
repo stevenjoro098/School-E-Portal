@@ -33,6 +33,7 @@ class Question(models.Model):
     text = models.TextField()
     marks = models.PositiveIntegerField(default=1)
 
+
     def __str__(self):
         return self.text[:60]
 
@@ -61,5 +62,7 @@ class AssessmentResult(models.Model):
     #max_score = models.PositiveIntegerField(blank=True)
     completed_on = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ('-total_score',)
     def __str__(self):
         return f"{ self.student } - { self.assessment.title }"

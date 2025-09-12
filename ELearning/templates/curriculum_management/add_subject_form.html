@@ -8,9 +8,9 @@
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit">Add</button>
-                    <a href="#" class="btn btn-primary">Cancel</a>
+                    {{ form }}
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <a href="#" class="btn btn-warning">Cancel</a>
                 </form>
             </div>
         </div>

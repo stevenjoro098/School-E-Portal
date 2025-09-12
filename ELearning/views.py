@@ -42,7 +42,13 @@ class SubjectsList(ListView):
 class AddSubjectView(CreateView):
     model = Subject
     template_name = 'curriculum_management/add_subject_form.html'
-    fields = ['grade', 'name']
+    fields = ['name']  # exclude 'grade' so it's not shown in the form
+
+    def form_valid(self, form):
+        # Pre-fill grade with the grade_id from URL
+        grade = get_object_or_404(Grade, pk=self.kwargs['grade_id'])
+        form.instance.grade = grade
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse('subjects_list_page', kwargs={'grade_id': self.kwargs['grade_id']})

@@ -367,8 +367,9 @@ def download_result_pdf(request, result_id):
 
     pdf_file = HTML(string=html_content).write_pdf(stylesheets=[css])
     response = HttpResponse(pdf_file, content_type="application/pdf")
-    response["Content-Disposition"] = f'attachment; filename="assessment_result_{result.id}.pdf"'
+    response["Content-Disposition"] = f'attachment; filename="{ result.student } -- { result.assessment.title }_result_.pdf"'
     return response
+
 def questions_list_pdf(request, assessment_id):
     assessment = get_object_or_404(Assessment, id=assessment_id)
     questions = Question.objects.filter(assessment=assessment)

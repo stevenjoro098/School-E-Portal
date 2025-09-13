@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Subjects.apps.SubjectsConfig',
     'Assessments.apps.AssessmentsConfig',
-    'ELearning.apps.ElearningConfig'
+    'ELearning.apps.ElearningConfig',
+    'Students.apps.StudentsConfig'
 # 'widget_tweaks'
 ]
 MIDDLEWARE = [

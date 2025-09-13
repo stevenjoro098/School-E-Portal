@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Student Profile {% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <!-- Profile Card -->
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
+
+          <!-- Top section with photo -->
+          <div class="d-flex align-items-center mb-4">
+            {% if object.image %}
+              <img src="{{ object.image.url }}" alt="Profile photo"
+                   class="rounded-circle shadow-sm me-4"
+                   style="width: 120px; height: 120px; object-fit: cover;">
+            {% else %}
+              <img src="{% static 'images/default-avatar.png' %}" alt="Profile photo"
+                   class="rounded-circle shadow-sm me-4"
+                   style="width: 120px; height: 120px; object-fit: cover;">
+            {% endif %}
+
+            <div>
+              <h2 class="fw-bold mb-1">{{ object.first_name }} {{ object.second_name }} {{ object.third_name }}</h2>
+              <span class="badge bg-primary fs-6">Grade {{ object.grade }}</span>
+            </div>
+          </div>
+
+          <hr>
+
+          <!-- Info Grid -->
+          <div class="row g-4">
+            <div class="col-md-6">
+              <h6 class="text-muted">Gender</h6>
+              <p class="fs-5">{{ object.gender }}</p>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-muted">Residence</h6>
+              <p class="fs-5">{{ object.residence }}</p>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-muted">Favorite Sport</h6>
+              <p class="fs-5">{{ object.favorite_sport }}</p>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-muted">Hobbies</h6>
+              <p class="fs-5">{{ object.hobbies }}</p>
+            </div>
+          </div>
+
+          <hr>
+
+          <!-- Action Buttons -->
+          <div class="d-flex justify-content-end mt-3">
+            <a href="{% url 'update_student' object.pk %}" class="btn btn-warning">Edit Profile</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

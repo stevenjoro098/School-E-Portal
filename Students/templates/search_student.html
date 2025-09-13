@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %} Find Student {% endblock %}
+{% block nav %} <a href="{% url 'student_register' %}" class="btn btn-warning">Register</a>{% endblock %}
+{% block content %}
+    <div id="app" class="container mt-4">
+      <h3>Find a Student</h3>
+
+      <!-- Grade dropdown -->
+      <label for="gradeSelect">Select Grade:</label>
+      <select id="gradeSelect" v-model="selectedGrade" @change="fetchStudents" class="form-select">
+        <option value="">-- Choose Grade --</option>
+        <option v-for="grade in grades" :key="grade.id" :value="grade.id">
+          [[ grade.name ]]
+        </option>
+      </select>
+
+      <!-- Student dropdown -->
+      <label for="studentSelect" class="mt-3">Select Student:</label>
+      <select id="studentSelect" v-model="selectedStudent" class="form-select">
+        <option value="">-- Choose Student --</option>
+        <option v-for="student in students" :key="student.id" :value="student.id">
+          [[ student.first_name ]] [[ student.second_name ]]
+        </option>
+      </select>
+
+      <button class="btn btn-primary mt-3" :disabled="!selectedStudent" @click="goToStudent">
+        Go
+      </button>
+    </div>
+
+    <script>
+const { createApp } = Vue;
+
+createApp({
+  delimiters: ['[[', ']]'],   // <-- important fix
+  data() {
+    return {
+      grades: {{ grades|safe }},   // injected from Django context
+      selectedGrade: "",
+      students: [],
+      selectedStudent: ""
+    }
+  },
+  methods: {
+    async fetchStudents() {
+      this.students = [];
+      this.selectedStudent = "";
+      if (this.selectedGrade) {
+        try {
+          const response = await axios.get(`/students/students/by-grade/${this.selectedGrade}/`);
+          this.students = response.data;
+        } catch (error) {
+          console.error("Error fetching students:", error);
+        }
+      }
+    },
+    goToStudent() {
+      if (this.selectedStudent) {
+        window.location.href = `/students/${this.selectedStudent}/`;
+      }
+    }
+  }
+}).mount("#app");
+</script>
+{% endblock %}

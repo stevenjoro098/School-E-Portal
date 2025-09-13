@@ -1,37 +1,28 @@
 {% extends 'base.html' %}
 
 {% block title %} Take Assessment {% endblock %}
+
 {% block content %}
 <div id="quizApp">
     <h3>[[ assessment.title ]]</h3>
-    <p class="text-muted">
+    <h5 class="text-primary"><strong>
         [[ assessment.subject.name ]] | Duration: [[ assessment.duration_minutes ]] minutes
-    </p>
+    </strong>
 
-    <!-- NAME INPUT -->
-    <div class="card">
-        <div class="card-body">
-            <div v-if="!nameSubmitted && !alreadyTaken" class="mb-4">
-                <label for="studentName" class="form-label">Enter Your Name:</label>
-                <input type="text" id="studentName" v-model="studentName" class="form-control" placeholder="e.g. Jane Doe" required>
-                <button class="btn btn-primary mt-2" @click="checkIfTaken" :disabled="!studentName">Proceed</button>
-            </div>
+    </h5>
+    {% if taken %}
+        <div class="alert alert-danger">
+            You have already taken this assessment.
+            <a href="">View Results</a>
         </div>
-    </div>
-
-
-    <!-- BLOCKED MESSAGE -->
-    <div v-if="alreadyTaken" class="alert alert-danger">
-        You have already taken this assessment.
-        <a href="#">View Results</a>
-    </div>
-
+    {% else %}
     <!-- WELCOME MESSAGE & START BUTTON -->
-    <div v-if="nameSubmitted && !quizStarted" class="text-center my-4">
-        <h4 class="mb-3">Welcome,[[ studentName ]]!</h4>
-        <p class="lead">Wishing you all the best in your assessment.</p>
-        <button class="btn btn-lg btn-success" @click="startAssessment">Click to Start Assessment</button>
-    </div>
+        <div v-if="!quizStarted" class="text-center my-4">
+            <h4 class="mb-3">Welcome,{{ student.first_name }} {{ student.second_name }} from {{ student.grade }}!</h4>
+            <p class="lead">Wishing you all the best in your assessment.</p>
+            <button class="btn btn-lg btn-success" @click="startAssessment">Click to Start Assessment</button>
+        </div>
+    {% endif %}
 
     <!-- TIMER & QUESTIONS -->
     <div v-if="quizStarted">
@@ -99,7 +90,8 @@ createApp({
                     name: "{{ assessment.subject.name }}"
                 },
                 duration_minutes: {{ assessment.duration_minutes }}
-            }
+            },
+
         };
     },
     computed: {
@@ -170,7 +162,7 @@ createApp({
                 },
                 body: JSON.stringify({
                     answers: this.selectedAnswers,
-                    student_name: this.studentName
+                    student_id: {{ student.id }}
                 })
             })
             .then(response => response.json())

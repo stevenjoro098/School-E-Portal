@@ -14,7 +14,7 @@
                     <h5 class="card-title">{{ a.title }}</h5>
                       <h6 class="card-subtitle mb-2 text-muted">By {{ a.teacher }}</h6>
                     <p class="card-text">Subject: {{ a.subject.name }}</p>
-                    <a href="{% url 'find_student'%}" class="btn btn-success">Take Assessment</a>
+                    <a href="{% url 'find_student' a.id %}" class="btn btn-success">Take Assessment</a>
                   </div>
                 </div>
             </div>

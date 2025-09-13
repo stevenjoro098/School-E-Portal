@@ -32,6 +32,7 @@ class SearchStudentPage(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['assessment_id'] = self.kwargs['assessment_id']
         context['grades'] = list(Grade.objects.values("id", "name"))
         return context
 

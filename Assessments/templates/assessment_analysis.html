@@ -16,11 +16,12 @@
         {% for item in assessment_result_list %}
               <li class="list-group-item d-flex justify-content-between align-items-start">
                 <div class="ms-2 me-auto">
-                  <div class="fw-bold">{{ item.student }}</div>
+                  <div class="fw-bold">{{ item.student.first_name }} {{ item.student.second_name }}</div>
 
                 </div>
                   <div class="d-flex justify-content-end">
                       <span class="badge text-bg-warning rounded-pill">Score: {{ item.total_score }}</span>
+                      <span class="badge text-bg-info rounded-pill">{{ item.student.grade }}</span>
                       <a href="{% url 'assessment_result' item.pk %}" class="btn btn-light btn-sm">View</a>
                       <a href="#" class="btn btn-primary btn-sm">Print</a>
                   </div>

@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, DeleteView, UpdateView
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from Students.models import Student
 from .forms import *
 from django.http import JsonResponse
 from .models import Assessment, StudentAnswer, Question, Choice, AssessmentResult
@@ -168,16 +169,19 @@ class QuestionUpdateView(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-def take_assessment(request, assessment_id):
+def take_assessment(request, assessment_id, student_id):
     assessment = get_object_or_404(Assessment, pk=assessment_id)
     questions = assessment.questions.prefetch_related('choices').all()
-
+    student = get_object_or_404(Student, id=student_id)
+    taken = AssessmentResult.objects.filter(assessment_id=assessment_id, student=student).exists()
     question_data = []
     for q in questions:
         choices = [{'id': c.id, 'text': c.text} for c in q.choices.all()]
         question_data.append({'id': q.id, 'text': q.text, 'choices': choices})
 
     return render(request, 'take_assessment.html', {
+        "taken": taken,
+        'student': student,
         'assessment': assessment,
         'questions_json': json.dumps(question_data)
     })
@@ -198,8 +202,8 @@ class SubmitAssessmentView(View):
             return JsonResponse({"error": "Invalid JSON"}, status=400)
 
         answers = data.get('answers', [])
-        student_name = data.get('student_name')
-        if not student_name:
+        student_id = data.get('student_id')
+        if not student_id:
             return JsonResponse({"error": "Missing student name"}, status=400)
 
         assessment = get_object_or_404(Assessment, id=assessment_id)
@@ -220,9 +224,9 @@ class SubmitAssessmentView(View):
                 answer_map[str(question.id)] = None  # No answer
 
         percentage = round((correct / total) * 100, 2) if total > 0 else 0
-
+        student = get_object_or_404(Student, id=student_id)
         result = AssessmentResult.objects.create(
-            student=student_name,
+            student=student,
             assessment=assessment,
             total_score=correct,
             answers=answer_map  # Save answers

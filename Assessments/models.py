@@ -1,4 +1,6 @@
 from django.db import models
+
+from Students.models import Student
 from Subjects.models import Subject, Grade
 from django.contrib.auth.models import User
 # Create your models here.
@@ -55,7 +57,7 @@ class StudentAnswer(models.Model):
         return self.selected_choice.is_correct
 
 class AssessmentResult(models.Model):
-    student = models.CharField(max_length=250)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     assessment = models.ForeignKey(Assessment,  on_delete=models.CASCADE)
     total_score = models.PositiveIntegerField()
     answers = models.JSONField(null=True, blank=True)

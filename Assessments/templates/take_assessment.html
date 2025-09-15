@@ -13,7 +13,7 @@
     {% if taken %}
         <div class="alert alert-danger">
             You have already taken this assessment.
-            <a href="">View Results</a>
+            <a href="{% url 'assessment_result' result.pk %}">View Results</a>
         </div>
     {% else %}
     <!-- WELCOME MESSAGE & START BUTTON -->

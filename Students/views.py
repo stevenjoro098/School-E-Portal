@@ -1,3 +1,5 @@
+import json
+
 from django.http import JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -19,6 +21,12 @@ class StudentDetailView(DetailView):
     model = Student
     template_name = 'student_detail_view.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['students_assessments'] = self.object.student_assessments.all()
+        return context
+
 class UpdateStudent(UpdateView):
     model = Student
     template_name = 'register_student.html'
@@ -33,7 +41,8 @@ class SearchStudentPage(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['assessment_id'] = self.kwargs['assessment_id']
-        context['grades'] = list(Grade.objects.values("id", "name"))
+        grades = list(Grade.objects.values("id", "name"))
+        context['grades_json'] = json.dumps(grades)   # make it valid JSON
         return context
 
 
@@ -41,3 +50,8 @@ class StudentsByGradeView(View):
     def get(self, request, grade_id):
         students = Student.objects.filter(grade_id=grade_id).values("id", "first_name", "second_name")
         return JsonResponse(list(students), safe=False)
+
+class StudentsList(TemplateView, View):
+    model = Student
+    template_name = 'student_list.html'
+

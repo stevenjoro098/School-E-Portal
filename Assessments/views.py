@@ -176,17 +176,19 @@ def take_assessment(request, assessment_id, student_id):
     taken = AssessmentResult.objects.filter(assessment_id=assessment_id, student=student).exists()
     if taken:
         assessment_result = AssessmentResult.objects.get(assessment=assessment, student=student)
+    else:
+        assessment_result = {'pk':0}
     question_data = []
     for q in questions:
         choices = [{'id': c.id, 'text': c.text} for c in q.choices.all()]
         question_data.append({'id': q.id, 'text': q.text, 'choices': choices})
 
     return render(request, 'take_assessment.html', {
-        'result': assessment_result,
         "taken": taken,
         'student': student,
         'assessment': assessment,
-        'questions_json': json.dumps(question_data)
+        'questions_json': json.dumps(question_data),
+        'result': assessment_result,
     })
 
 def check_if_taken(request, assessment_id):

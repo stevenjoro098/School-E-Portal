@@ -64,9 +64,9 @@
           <span>Hello, {{ user.username }}</span>
         </a>
       </li>
-      <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+      <li class="nav-item"><a class="nav-link btn btn-danger" href="{% url 'logout' %}">Logout</a></li>
     {% else %}
-      <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+      <li class="nav-item"><a class="nav-link btn btn-primary" href="{% url 'login' %}">Login</a></li>
     {% endif %}
   </ul>
 </nav>

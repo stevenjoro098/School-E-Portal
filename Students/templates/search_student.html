@@ -38,7 +38,7 @@ createApp({
   delimiters: ['[[', ']]'],
   data() {
     return {
-      grades: {{ grades|safe }},
+      grades: {{ grades_json |safe }},
       assessmentId: {{ assessment_id }},   // inject from Django
       selectedGrade: "",
       students: [],

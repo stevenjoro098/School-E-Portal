@@ -17,7 +17,7 @@
             {% if object.image %}
               <img src="{{ object.image.url }}" alt="Profile photo"
                    class="rounded-circle shadow-sm me-4"
-                   style="width: 120px; height: 120px; object-fit: cover;">
+                   style="width: 180px; height: 180px; object-fit: cover;">
             {% else %}
               <img src="{% static 'images/default-avatar.png' %}" alt="Profile photo"
                    class="rounded-circle shadow-sm me-4"
@@ -63,5 +63,8 @@
       </div>
     </div>
   </div>
+</div>
+<div>
+  {{ students_assessments }}
 </div>
 {% endblock %}

@@ -7,21 +7,7 @@
     <div class="card-body">
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="row">
-          <div class="col-md-6">
-            {{ form.first_name|as_crispy_field }}
-            {{ form.second_name|as_crispy_field }}
-            {{ form.third_name|as_crispy_field }}
-            {{ form.grade|as_crispy_field }}
-          </div>
-          <div class="col-md-6">
-            {{ form.gender|as_crispy_field }}
-            {{ form.image|as_crispy_field }}
-            {{ form.residence|as_crispy_field }}
-            {{ form.favorite_sport|as_crispy_field }}
-            {{ form.hobbies|as_crispy_field }}
-          </div>
-        </div>
+        {{ form | crispy }}
         <button class="btn btn-primary" type="submit">Submit</button>
         <a href="#" class="btn btn-warning">Cancel</a>
       </form>

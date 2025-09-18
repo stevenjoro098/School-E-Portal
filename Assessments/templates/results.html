@@ -4,8 +4,8 @@
 {% block content %}
 <div class="container mt-5">
     <div class="d-flex align-items-center mb-4">
-            {% if object.image %}
-              <img src="{{ object.image.url }}" alt="Profile photo"
+            {% if student_name.image %}
+              <img src="{{ student_name.image.url }}" alt="Profile photo"
                    class="rounded-circle shadow-sm me-4"
                    style="width: 180px; height: 180px; object-fit: cover;">
             {% else %}

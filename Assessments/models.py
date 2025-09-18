@@ -67,5 +67,6 @@ class AssessmentResult(models.Model):
 
     class Meta:
         ordering = ('-total_score',)
+        unique_together = ('student', 'assessment')
     def __str__(self):
         return f"{ self.student } - { self.assessment.title }"

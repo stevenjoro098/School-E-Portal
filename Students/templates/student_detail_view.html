@@ -76,9 +76,9 @@
             <tr>
               <th scope="row"></th>
               <td class="text-primary">{{ item.assessment }}</td>
-              <td>{{ item.total_score }}/{{ item.total_questions }}</td>
+              <td>{{ item.total_score }} of {{ item.total_questions }}</td>
               <td>{{ item.percentage }} %</td>
-              <td>{{ item.assessment.duration_minutes }}</td>
+              <td>{{ item.assessment.duration_minutes }} mins.</td>
               <td><a href="{% url 'assessment_result' item.pk %}" class="btn btn-info">View</a></td>
             </tr>
           {% empty %}

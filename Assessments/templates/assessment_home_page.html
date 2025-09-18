@@ -6,20 +6,20 @@
 <h5><span class="text-success">Upcoming Assessments.</span> </h5>
 <br>
 <div class="row row-cols-1 row-cols-md-4 g-4">
-        {% for a in assessments %}
-            <div class="col-md-4">
-                <div class="card mb-3">
-                  <h4 class="card-header text-primary">{{ a.grade }}</h4>
-                  <div class="card-body">
-                    <h5 class="card-title">{{ a.title }}</h5>
-                      <h6 class="card-subtitle mb-2 text-muted">By {{ a.teacher }}</h6>
-                    <p class="card-text">Subject: {{ a.subject.name }}</p>
-                    <a href="{% url 'find_student' a.id %}" class="btn btn-success">Take Assessment</a>
-                  </div>
-                </div>
+    {% for a in assessments %}
+        <div class="col-md-4">
+            <div class="card mb-3">
+              <h4 class="card-header text-primary">{{ a.grade }}</h4>
+              <div class="card-body">
+                <h5 class="card-title">{{ a.title }}.</h5>
+                  <h6 class="card-subtitle mb-2 text-muted"><strong>By {{ a.teacher }}</strong></h6>
+                  <p class="card-text text-primary"><strong>Subject:</strong>{{ a.subject.name }}</p>
+                  <a href="{% url 'find_student' a.id %}" class="btn btn-success"><strong>Take Assessment</strong></a>
+              </div>
             </div>
-        {% empty %}
-            <h3 class="text-warning">No upcoming assessments.</li>
-        {% endfor %}
+        </div>
+    {% empty %}
+        <h3 class="text-warning">No upcoming assessments.</h3>
+    {% endfor %}
 </div>
 {% endblock %}

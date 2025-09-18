@@ -55,3 +55,8 @@ class StudentsList(TemplateView, View):
     model = Student
     template_name = 'student_list.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        grades = list(Grade.objects.values("id", "name"))
+        context['grades_json'] = json.dumps(grades)   # make it valid JSON
+        return context

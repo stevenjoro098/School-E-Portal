@@ -1,13 +1,27 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %} {{ student_name }} Performance {% endblock %}
 {% block content %}
 <div class="container mt-5">
-
-    <!-- Learner Greeting -->
-    <div class="text-center mb-4">
-        <h2 class="fw-bold">Hello, {{ student_name }} 👋</h2>
-        <h4 class="text-muted">Here's your result for <strong>{{ assessment.title }}</strong></h4>
+    <div class="d-flex align-items-center mb-4">
+            {% if object.image %}
+              <img src="{{ object.image.url }}" alt="Profile photo"
+                   class="rounded-circle shadow-sm me-4"
+                   style="width: 180px; height: 180px; object-fit: cover;">
+            {% else %}
+              <img src="{% static 'images/default_profile_image.png' %}" alt="Profile photo"
+                   class="rounded-circle shadow-sm me-4"
+                   style="width: 120px; height: 120px; object-fit: cover;">
+            {% endif %}
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">Hello, {{ student_name }} 👋</h2>
+                <h4 class="text-muted">Here's your result for <strong>{{ assessment.title }}</strong></h4>
+            </div>
+        <div>
+        </div>
     </div>
+    <!-- Learner Greeting -->
+
 
     <!-- Summary Card -->
     <div class="card shadow-sm mb-4 border-0 bg-light">

@@ -234,6 +234,8 @@ class SubmitAssessmentView(View):
             student=student,
             assessment=assessment,
             total_score=correct,
+            percentage=percentage,
+            total_questions=total,
             answers=answer_map  # Save answers
         )
 

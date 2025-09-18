@@ -66,6 +66,7 @@
               <th scope="col">#</th>
               <th scope="col">Assessment</th>
               <th scope="col">Total Score</th>
+              <th scope="col">Percentage</th>
               <th scope="col">Duration</th>
               <th scope="col">Action</th>
             </tr>
@@ -74,8 +75,9 @@
           {% for item in students_assessments %}
             <tr>
               <th scope="row"></th>
-              <td>{{ item.assessment }}</td>
-              <td>{{ item.total_score }}</td>
+              <td class="text-primary">{{ item.assessment }}</td>
+              <td>{{ item.total_score }}/{{ item.total_questions }}</td>
+              <td>{{ item.percentage }} %</td>
               <td>{{ item.assessment.duration_minutes }}</td>
               <td><a href="{% url 'assessment_result' item.pk %}" class="btn btn-info">View</a></td>
             </tr>

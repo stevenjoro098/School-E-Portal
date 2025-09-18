@@ -60,8 +60,9 @@ class AssessmentResult(models.Model):
     student = models.ForeignKey(Student, related_name='student_assessments',on_delete=models.CASCADE)
     assessment = models.ForeignKey(Assessment,  on_delete=models.CASCADE)
     total_score = models.PositiveIntegerField()
+    percentage = models.IntegerField(blank=True, null=True)
     answers = models.JSONField(null=True, blank=True)
-    #max_score = models.PositiveIntegerField(blank=True)
+    total_questions = models.PositiveIntegerField(blank=True, null=True)
     completed_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:

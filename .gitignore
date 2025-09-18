@@ -3977,3 +3977,4 @@ db.sqlite3
 /venv/lib/python3.8/site-packages/typing_extensions.py
 /venv/lib/python3.8/site-packages/wheel-0.34.2.virtualenv
 /venv/pyvenv.cfg
+/Assessments/migrations/

@@ -72,10 +72,11 @@
                     <div class="card mb-3 border-0">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
-                                <h6 class="card-title fw-bold">{{ question.text }}</h6>
+                                <h6 class="card-title fw-bold">{{ forloop.revcounter }}. {{ question.text }}</h6>
                                 <a href="{% url 'update_question' assessment.pk question.pk  %}" class="btn btn-sm btn-outline">
                                     ✏️ Edit
                                 </a>
+                                <a href="{% url 'question_delete' assessment.pk question.pk %}" class="btn btn-sm btn-secondary">Delete</a>
                             </div>
                             <ul class="list-unstyled">
                                 {% for choice in question.choices.all %}

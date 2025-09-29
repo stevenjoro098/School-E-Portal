@@ -464,3 +464,10 @@ class QuestionsListView(ListView):
         context = super().get_context_data(**kwargs)
         context['assessment'] = self.assessment
         return context
+
+class QuestionDeleteView(DeleteView):
+    template_name = 'question_delete_page.html'
+    model = Question
+
+    def get_success_url(self):
+        return reverse('create_questions', kwargs={'assessment_id': self.kwargs['assessment_id']})

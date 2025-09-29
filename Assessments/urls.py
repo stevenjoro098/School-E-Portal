@@ -13,6 +13,7 @@ urlpatterns = [
     path('create/questions/form/<int:assessment_id>/', views.QuestionCreateView.as_view(), name='create_questions'),
     path('questions/<int:assessment_id>/edit/<int:pk>/', views.QuestionUpdateView.as_view(), name='update_question'),
     path('questions/list/<int:assessment_id>/', views.QuestionsListView.as_view(), name='questions_list'),
+    path('questions/delete/<int:assessment_id>/<int:pk>/', views.QuestionDeleteView.as_view(), name='question_delete'),
     path('take/<int:assessment_id>/<int:student_id>/', views.take_assessment, name='take_assessment'),
     path('assessment/<int:assessment_id>/submit/', views.SubmitAssessmentView.as_view(), name='submit_assessment'),
     path('assessment/analysis/<int:assessment_id>', views.AssessmentAnalysis.as_view(), name='assessment_analysis'),

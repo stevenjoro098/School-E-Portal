@@ -35,15 +35,16 @@
                 <div class="card-header">Question [[ currentIndex + 1 ]] of [[ questions.length ]]</div>
                 <div class="card-body">
                     <h3><p class="card-text">[[ currentQuestion.text ]]</p></h3>
-                    <ul class="list-group">
-                        <li v-for="choice in currentQuestion.choices"
-                            :key="choice.id"
-                            class="list-group-item"
-                            :class="{ active: selectedAnswers[currentIndex] === choice.id }"
-                            @click="selectAnswer(choice.id)">
-                            [[ choice.text ]]
-                        </li>
-                    </ul>
+                        <ol class="list-group alpha-list">
+                          <li v-for="choice in currentQuestion.choices"
+                              :key="choice.id"
+                              class="list-group-item"
+                              :class="{ active: selectedAnswers[currentIndex] === choice.id }"
+                              @click="selectAnswer(choice.id)">
+                              [[ choice.text ]]
+                          </li>
+                        </ol>
+
                 </div>
             </div>
 
@@ -57,6 +58,8 @@
                     Submit Assessment
                 </button>
             </div>
+            <br>
+            <br>
         </div>
     </div>
 </div>

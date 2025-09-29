@@ -41,6 +41,7 @@
                             {% else %}
                                 <a href="{% url 'create_questions' i.pk %}" class="btn btn-primary">➕ Add Questions</a>
                                 <a href="{% url 'assessment_edit' i.pk %}" class="btn btn-warning">Edit</a>
+                                <a href="{% url 'questions_list' i.pk %}" class="btn btn-warning">View Questions</a>
                             {% endif %}
 
                           <a href="{% url 'delete_assessment' i.pk %}" class="btn btn-danger">🗑️ Delete</a>

@@ -13,6 +13,17 @@ class AssessmentAdmin(admin.ModelAdmin):
                     'is_published',
                     'done']
 
+@admin.register(AssessmentResult)
+class AssessmentResultsAdmin(admin.ModelAdmin):
+    list_display = ['student',
+                    'assessment',
+                    'total_score',
+                    'percentage',
+                    'total_questions',
+                    'completed_on'
+                    ]
+    list_filter = ['assessment']
+
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
@@ -27,6 +38,3 @@ class ChoicesAdmin(admin.ModelAdmin):
 class AnswerAdmin(admin.ModelAdmin):
     list_display = ['student','question','selected_choice']
 
-@admin.register(AssessmentResult)
-class AssessmentResult(admin.ModelAdmin):
-    list_display = ['student','assessment','total_score','completed_on']

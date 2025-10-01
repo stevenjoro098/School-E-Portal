@@ -7,7 +7,7 @@ from .models import Assessment
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        fields = ['text']
+        fields = ['text', 'image']
 
 ChoiceFormSet = inlineformset_factory(
     Question,

@@ -34,18 +34,26 @@
             <div class="card mb-3">
                 <div class="card-header">Question [[ currentIndex + 1 ]] of [[ questions.length ]]</div>
                 <div class="card-body">
-                    <h3><p class="card-text">[[ currentQuestion.text ]]</p></h3>
-                        <ol class="list-group alpha-list">
-                          <li v-for="choice in currentQuestion.choices"
-                              :key="choice.id"
-                              class="list-group-item"
-                              :class="{ active: selectedAnswers[currentIndex] === choice.id }"
-                              @click="selectAnswer(choice.id)">
-                              [[ choice.text ]]
-                          </li>
-                        </ol>
+                    <h3>
+                        <p class="card-text">[[ currentQuestion.text ]]</p>
+                    </h3>
 
+                    <!-- Show image if available -->
+                    <div v-if="currentQuestion.image">
+                        <img :src="currentQuestion.image" alt="Question Image" style="max-width: 200px; max-height: 200px;" class="img-fluid rounded mb-3">
+                    </div>
+
+                    <ol class="list-group alpha-list">
+                        <li v-for="choice in currentQuestion.choices"
+                            :key="choice.id"
+                            class="list-group-item"
+                            :class="{ active: selectedAnswers[currentIndex] === choice.id }"
+                            @click="selectAnswer(choice.id)">
+                            [[ choice.text ]]
+                        </li>
+                    </ol>
                 </div>
+
             </div>
 
             <div class="d-flex justify-content-between">

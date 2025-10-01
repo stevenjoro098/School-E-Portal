@@ -33,6 +33,7 @@ class Assessment(models.Model):
 class Question(models.Model):
     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE, related_name='questions')
     text = models.TextField()
+    image = models.ImageField(upload_to='assessments',blank=True)
     marks = models.PositiveIntegerField(default=1)
 
 

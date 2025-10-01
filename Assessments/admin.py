@@ -32,6 +32,7 @@ class QuestionAdmin(admin.ModelAdmin):
 @admin.register(Choice)
 class ChoicesAdmin(admin.ModelAdmin):
     list_display = ['question','text','is_correct']
+    list_filter = ['question']
 
 
 @admin.register(StudentAnswer)

@@ -12,7 +12,7 @@ class QuestionForm(forms.ModelForm):
 ChoiceFormSet = inlineformset_factory(
     Question,
     Choice,
-    fields=['text', 'is_correct'],
+    fields=['text','image','is_correct'],
     extra=4,  # Number of choice inputs shown
     can_delete=True
 )

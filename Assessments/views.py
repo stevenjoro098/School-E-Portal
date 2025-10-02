@@ -181,7 +181,7 @@ def take_assessment(request, assessment_id, student_id):
     question_data = []
     for q in questions:
         choices = [{'id': c.id, 'text': c.text} for c in q.choices.all()]
-        question_data.append({'id': q.id,'image':q.image.url, 'text': q.text, 'choices': choices})
+        question_data.append({'id': q.id,'image': q.image.url if q.image else None, 'text': q.text, 'choices': choices})
 
     return render(request, 'take_assessment.html', {
         "taken": taken,

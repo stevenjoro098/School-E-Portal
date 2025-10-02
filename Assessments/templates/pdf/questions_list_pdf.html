@@ -103,6 +103,9 @@
     {% for item in questions %}
         <div class="question-block">
             <p><strong>Q{{ forloop.counter }}:</strong> {{ item }}</p>
+            {% if item.image %}
+                <p><img src="{{ item.image.url }}" style="width:250px;height:250px"></p>
+            {% endif %}
             {% for choice in item.choices.all %}
                 {% if choice.is_correct %}
                      <p>🟢<strong>{{ choice }} - Correct Answer</strong></p>
@@ -110,7 +113,7 @@
                     <p>🟢{{ choice }}</p>
                 {% endif %}
             {% empty %}
-                <h2>No Questions Available</h2>
+                <h4>No Choices Available</h4>
             {% endfor %}
 
         </div>

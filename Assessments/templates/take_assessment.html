@@ -40,8 +40,12 @@
 
                     <!-- Show image if available -->
                     <div v-if="currentQuestion.image">
-                        <img :src="currentQuestion.image" alt="Question Image" style="max-width: 200px; max-height: 200px;" class="img-fluid rounded mb-3">
+                        <img :src="currentQuestion.image"
+                             alt="Question Image"
+                             style="width: 250px;height: 250px;"
+                             class="img-fluid rounded mb-3">
                     </div>
+
 
                     <ol class="list-group alpha-list">
                         <li v-for="choice in currentQuestion.choices"

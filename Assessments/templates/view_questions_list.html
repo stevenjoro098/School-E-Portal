@@ -18,7 +18,9 @@
 
             <!-- Question text -->
             <p class="card-text">{{ item.text }}</p>
-
+            {% if item.image %}
+              <img src="{{ item.image.url }}" style="width:250px;height:250px">
+            {% endif %}
             <!-- Choices -->
             <div class="container-fluid mt-2">
               <ol>

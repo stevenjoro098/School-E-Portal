@@ -1,6 +1,6 @@
 {% load dict_extras %}
 {% load static %}
-<head>
+<head xmlns="http://www.w3.org/1999/html">
   <meta charset="utf-8">
   <style>
     body { font-family: "Helvetica", sans-serif; margin: 20px; }
@@ -53,9 +53,9 @@
   <hr>
 
   <h2><u>{{ exam.exam_name }} - {{ exam.grade }}</u></h2>
-
+  <p><strong>Averages:</strong></p>
   <!-- Averages Table -->
-  <table class="table avg-table">
+  <table class="table table-bordered">
     <thead>
       <tr>
         {% for subject in subjects %}
@@ -72,6 +72,8 @@
     </tbody>
   </table>
 
+  <p><strong><h2>Student(s) Performance</h2></strong></p>
+  <hr>
   <!-- Student Ranking Table -->
   <table>
     <thead>
@@ -87,12 +89,12 @@
     <tbody>
       {% for item in ranked_students %}
       <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ item.student.first_name }} {{ item.student.second_name }}</td>
+        <td><strong>{{ forloop.counter }}</strong></td>
+        <td><h3>{{ item.student.first_name }} {{ item.student.second_name }}</h3></td>
         {% for subject in subjects %}
           <td>{{ item.scores|get_item:subject.id|default:"-" }}</td>
         {% endfor %}
-        <td><strong>{{ item.total }}</strong></td>
+        <td><h3><strong>{{ item.total }}</strong></h3></td>
       </tr>
       {% endfor %}
     </tbody>

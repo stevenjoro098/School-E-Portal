@@ -1,5 +1,5 @@
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, CreateView
 from django.shortcuts import render, get_object_or_404, redirect
 
 import io
@@ -9,10 +9,18 @@ from openpyxl import Workbook
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.http import HttpResponse
+from rest_framework.reverse import reverse_lazy
 from weasyprint import HTML
 
 from .models import Exam, ExamSubject, StudentPerformance
 from Students.models import Student
+
+class CreateExam(CreateView):
+    template_name = 'create_exam.html'
+    model = Exam
+    fields = ['exam_name','grade']
+    success_url = reverse_lazy('exams')
+
 
 class ExamsList(ListView):
     template_name = 'exams_list.html'

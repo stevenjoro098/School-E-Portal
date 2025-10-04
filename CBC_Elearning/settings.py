@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'Subjects.apps.SubjectsConfig',
     'Assessments.apps.AssessmentsConfig',
     'ELearning.apps.ElearningConfig',
-    'Students.apps.StudentsConfig'
+    'Students.apps.StudentsConfig',
+    'Exams.apps.ExamsConfig'
 # 'widget_tweaks'
 ]
 MIDDLEWARE = [

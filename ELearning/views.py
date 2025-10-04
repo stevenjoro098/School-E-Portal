@@ -9,7 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView, View, ListView, UpdateView, DeleteView, CreateView
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, render
-from fontTools.misc.bezierTools import segmentSegmentIntersections
 from rest_framework.reverse import reverse_lazy
 
 from Subjects.models import Grade

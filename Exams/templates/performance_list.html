@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load dict_extras %}
+
+{% block content %}
+<div class="mb-3 d-flex gap-2">
+  <a href="{% url 'export_exam_excel' exam.pk %}" class="btn btn-outline-success">
+    📊 Download Excel
+  </a>
+  <a href="{% url 'export_exam_pdf' exam.pk %}" class="btn btn-outline-danger">
+    📄 Download PDF
+  </a>
+</div>
+
+<div class="mb-3">
+  <a href="{% url 'enter_exam_performance' exam.pk %}" class="btn btn-primary">
+    ➕ Add / Edit Performances
+  </a>
+</div>
+
+<!-- ✅ Independent Average Row -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-info text-white">
+    <h5 class="mb-0">Class Subject Averages</h5>
+  </div>
+  <div class="card-body table-responsive">
+    <table class="table table-bordered table-striped text-center">
+      <thead class="table-light">
+        <tr>
+          {% for subject in subjects %}
+            <th>{{ subject.exam_subject }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="fw-bold">
+          {% for subject in subjects %}
+            <td>{{ subject_averages|get_item:subject.id|default:"-" }}</td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ✅ Student Ranking Table -->
+<div class="card shadow-sm">
+  <div class="card-header bg-success text-white">
+    <h5 class="mb-0">{{ exam.exam_name }} - {{ exam.grade }} Results</h5>
+  </div>
+
+  <div class="card-body table-responsive">
+    <table class="table table-bordered table-hover align-middle text-center">
+      <thead class="table-dark">
+        <tr>
+          <th>Rank</th>
+          <th>Student</th>
+          {% for subject in subjects %}
+            <th>{{ subject.exam_subject }}</th>
+          {% endfor %}
+          <th>Total</th>
+          <th>Average</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in performance_data %}
+          <tr>
+            <td>{{ forloop.counter }}</td> <!-- rank -->
+            <td class="text-start">{{ row.student.first_name }} {{ row.student.second_name }}</td>
+            {% for subject in subjects %}
+              <td>{{ row.scores|get_item:subject.id|default:"-" }}</td>
+            {% endfor %}
+            <td class="fw-bold">{{ row.total }}</td>
+            <td>{{ row.average }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

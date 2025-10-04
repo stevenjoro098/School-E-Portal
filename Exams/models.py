@@ -1,7 +1,7 @@
 from django.db import models
 
 from Students.models import Student
-from Subjects.models import Grade
+from Subjects.models import Grade, Subject
 
 grades = (
     ('PP1','PP1',),
@@ -28,6 +28,7 @@ class Exam(models.Model):
 
 class ExamSubject(models.Model):
     exam = models.ForeignKey(Exam, related_name='exam_subjects', on_delete=models.CASCADE)
+    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, related_name='exam_grade_subjects', blank=True, null=True)
     exam_subject = models.CharField(max_length=200)
 
     def __str__(self):
@@ -35,11 +36,13 @@ class ExamSubject(models.Model):
 
 class StudentPerformance(models.Model):
     student = models.ForeignKey(Student, related_name='student_performance', on_delete=models.CASCADE)
-    exam_subject = models.ForeignKey(ExamSubject, on_delete=models.CASCADE)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='exam_performance')
-    created = models.DateField(auto_now_add=True)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     performance = models.PositiveIntegerField()
+    created = models.DateField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('student', 'exam_subject', 'exam')
+        unique_together = ('student', 'subject', 'exam')
 
+    def __str__(self):
+        return f"{self.student} - {self.exam.exam_name} - {self.subject}: {self.performance}"

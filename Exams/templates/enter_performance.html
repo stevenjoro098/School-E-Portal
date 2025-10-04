@@ -21,7 +21,7 @@
             <tr>
               <th>Student</th>
               {% for subject in subjects %}
-                <th>{{ subject.exam_subject }}</th>
+                <th>{{ subject }}</th>
               {% endfor %}
             </tr>
           </thead>
@@ -36,7 +36,7 @@
                            class="form-control text-center"
                            min="0" max="100"
                            value="{% for p in student.student_performance.all %}
-                                    {% if p.exam_subject.id == subject.id and p.exam.id == exam.id %}
+                                    {% if p.subject.id == subject.id and p.exam.id == exam.id %}
                                       {{ p.performance }}
                                     {% endif %}
                                   {% endfor %}">

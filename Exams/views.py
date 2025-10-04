@@ -1,24 +1,22 @@
 from django.views import View
 from django.views.generic import ListView, CreateView
 from django.shortcuts import render, get_object_or_404, redirect
-
-import io
-from django.http import HttpResponse
 from django.db.models import Sum, Avg
-from openpyxl import Workbook
-from django.shortcuts import get_object_or_404
-from django.template.loader import render_to_string
 from django.http import HttpResponse
+from django.template.loader import render_to_string
 from rest_framework.reverse import reverse_lazy
+from openpyxl import Workbook
 from weasyprint import HTML
 
-from .models import Exam, ExamSubject, StudentPerformance
+from Subjects.models import Subject
+from .models import Exam, StudentPerformance
 from Students.models import Student
+
 
 class CreateExam(CreateView):
     template_name = 'create_exam.html'
     model = Exam
-    fields = ['exam_name','grade']
+    fields = ['exam_name', 'grade']
     success_url = reverse_lazy('exams')
 
 
@@ -27,13 +25,14 @@ class ExamsList(ListView):
     model = Exam
     context_object_name = 'exams_list'
 
+
 class EnterExamPerformanceView(View):
     template_name = "enter_performance.html"
 
     def get(self, request, pk):
         exam = get_object_or_404(Exam, id=pk)
         students = Student.objects.filter(grade=exam.grade)
-        subjects = exam.exam_subjects.all()
+        subjects = Subject.objects.filter(grade=exam.grade)
 
         context = {
             "exam": exam,
@@ -45,7 +44,7 @@ class EnterExamPerformanceView(View):
     def post(self, request, pk):
         exam = get_object_or_404(Exam, id=pk)
         students = Student.objects.filter(grade=exam.grade)
-        subjects = exam.exam_subjects.all()
+        subjects = Subject.objects.filter(grade=exam.grade)
 
         for student in students:
             for subject in subjects:
@@ -55,12 +54,13 @@ class EnterExamPerformanceView(View):
                 if score and score.isdigit():
                     StudentPerformance.objects.update_or_create(
                         student=student,
-                        exam_subject=subject,
                         exam=exam,
+                        subject=subject,
                         defaults={"performance": int(score)},
                     )
 
         return redirect("enter_exam_performance", pk=exam.id)
+
 
 class ExamPerformanceListView(View):
     template_name = "performance_list.html"
@@ -68,7 +68,7 @@ class ExamPerformanceListView(View):
     def get(self, request, pk):
         exam = get_object_or_404(Exam, id=pk)
         students = Student.objects.filter(grade=exam.grade)
-        subjects = exam.exam_subjects.all()
+        subjects = Subject.objects.filter(grade=exam.grade)
 
         performance_data = []
 
@@ -77,7 +77,7 @@ class ExamPerformanceListView(View):
             scores = {}
             for subject in subjects:
                 perf = StudentPerformance.objects.filter(
-                    exam=exam, student=student, exam_subject=subject
+                    exam=exam, student=student, subject=subject
                 ).first()
                 scores[subject.id] = perf.performance if perf else None
 
@@ -110,11 +110,10 @@ class ExamPerformanceListView(View):
 
 
 class ExportExamExcelView(View):
-
     def get(self, request, pk):
         exam = get_object_or_404(Exam, id=pk)
         students = Student.objects.filter(grade=exam.grade)
-        subjects = exam.exam_subjects.all()
+        subjects = Subject.objects.filter(grade=exam.grade)
 
         # same logic to prepare performance_data
         performance_data = []
@@ -122,7 +121,7 @@ class ExportExamExcelView(View):
             scores = {}
             for subject in subjects:
                 perf = StudentPerformance.objects.filter(
-                    exam=exam, student=student, exam_subject=subject
+                    exam=exam, student=student, subject=subject
                 ).first()
                 scores[subject.id] = perf.performance if perf else None
             total = sum([s for s in scores.values() if s is not None])
@@ -141,7 +140,7 @@ class ExportExamExcelView(View):
         ws.title = f"{exam.exam_name}"
 
         # Header row
-        header = ["Rank", "Student"] + [s.exam_subject for s in subjects] + ["Total", "Average"]
+        header = ["Rank", "Student"] + [s.name for s in subjects] + ["Total", "Average"]
         ws.append(header)
 
         # Student rows
@@ -162,7 +161,7 @@ class ExportExamExcelView(View):
 class ExportExamPDFView(View):
     def get(self, request, pk):
         exam = get_object_or_404(Exam, pk=pk)
-        subjects = exam.exam_subjects.all()
+        subjects = Subject.objects.filter(grade=exam.grade)
         students = Student.objects.filter(grade=exam.grade)
 
         # Compute performances
@@ -170,7 +169,7 @@ class ExportExamPDFView(View):
         for student in students:
             performances = StudentPerformance.objects.filter(exam=exam, student=student)
             total_score = performances.aggregate(total=Sum("performance"))["total"] or 0
-            subj_scores = {p.exam_subject.id: p.performance for p in performances}
+            subj_scores = {p.subject.id: p.performance for p in performances}
             student_data.append({
                 "student": student,
                 "total": total_score,
@@ -182,7 +181,7 @@ class ExportExamPDFView(View):
 
         # Compute averages per subject
         subject_averages = {
-            subj.id: StudentPerformance.objects.filter(exam=exam, exam_subject=subj).aggregate(avg=Avg("performance"))["avg"] or 0
+            subj.id: StudentPerformance.objects.filter(exam=exam, subject=subj).aggregate(avg=Avg("performance"))["avg"] or 0
             for subj in subjects
         }
 

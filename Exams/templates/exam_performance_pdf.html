@@ -9,45 +9,40 @@
     th, td { border: 1px solid #000; padding: 6px; text-align: center; }
     th { background: #f2f2f2; }
     .avg-table { margin-bottom: 20px; }
+
     @page {
-  size: A4 landscape;
-  margin: 20mm;
-}
-    @page {
-  size: A4 landscape;
-  margin: 20mm;
-}
+      size: A4 landscape;
+      margin: 20mm;
+    }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  margin-bottom: 10px;
-}
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin-bottom: 10px;
+    }
 
-.logo {
-  width: 60px;
-  height: auto;
-  margin-right: 20px;
-}
+    .logo {
+      width: 60px;
+      height: auto;
+      margin-right: 20px;
+    }
 
-.school-info h1 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: bold;
-}
+    .school-info h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: bold;
+    }
 
-.school-info p {
-  margin: 0;
-  font-size: 12px;
-}
-
-
+    .school-info p {
+      margin: 0;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
-    <div class="header">
+  <div class="header">
     <img src="{% static 'school_logo.png' %}" class="logo">
     <div class="school-info">
       <h1>UNITED MATUNDA ACADEMY</h1>
@@ -56,14 +51,15 @@
     </div>
   </div>
   <hr>
-    <h2><u>{{ exam.exam_name }} - {{ exam.grade }}</u></h2>
+
+  <h2><u>{{ exam.exam_name }} - {{ exam.grade }}</u></h2>
 
   <!-- Averages Table -->
-  <table class="table">
+  <table class="table avg-table">
     <thead>
       <tr>
         {% for subject in subjects %}
-          <th>{{ subject.exam_subject }}</th>
+          <th>{{ subject.name }}</th>
         {% endfor %}
       </tr>
     </thead>
@@ -83,7 +79,7 @@
         <th>Rank</th>
         <th>Student</th>
         {% for subject in subjects %}
-          <th>{{ subject.exam_subject }}</th>
+          <th>{{ subject.name }}</th>
         {% endfor %}
         <th>Total</th>
       </tr>
@@ -102,4 +98,3 @@
     </tbody>
   </table>
 </body>
-

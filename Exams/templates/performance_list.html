@@ -27,7 +27,7 @@
       <thead class="table-light">
         <tr>
           {% for subject in subjects %}
-            <th>{{ subject.exam_subject }}</th>
+            <th>{{ subject }}</th>
           {% endfor %}
         </tr>
       </thead>
@@ -55,7 +55,7 @@
           <th>Rank</th>
           <th>Student</th>
           {% for subject in subjects %}
-            <th>{{ subject.exam_subject }}</th>
+            <th>{{ subject }}</th>
           {% endfor %}
           <th>Total</th>
           <th>Average</th>

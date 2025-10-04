@@ -8,10 +8,14 @@ from rest_framework.reverse import reverse_lazy
 from openpyxl import Workbook
 from weasyprint import HTML
 
-from Subjects.models import Subject
+from Subjects.models import Subject, Grade
 from .models import Exam, StudentPerformance
 from Students.models import Student
 
+class GradesList(ListView):
+    template_name = 'grade_list.html'
+    model = Grade
+    context_object_name = 'grades_list'
 
 class CreateExam(CreateView):
     template_name = 'create_exam.html'
@@ -24,6 +28,10 @@ class ExamsList(ListView):
     template_name = 'exams_list.html'
     model = Exam
     context_object_name = 'exams_list'
+
+    def get_queryset(self):
+        grade = get_object_or_404(Grade, pk=self.kwargs['pk'])
+        return Exam.objects.filter(grade=grade)
 
 
 class EnterExamPerformanceView(View):

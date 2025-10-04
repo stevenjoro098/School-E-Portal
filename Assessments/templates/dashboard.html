@@ -7,7 +7,7 @@
     <div class="container-fluid">
             <div class="d-flex justify-content-between">
                 <h2>Welcome, {{ request.user.username | capfirst }}.</h2>
-                <a href="#" class="btn btn-outline-info">Go to Exam Records >></a>
+                <a href="{% url 'exams' %}" class="btn btn-outline-info">Go to Exam Records >></a>
             </div>
 
             <h4>List of your Assessments</h4>

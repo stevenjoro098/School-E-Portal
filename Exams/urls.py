@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.ExamsList.as_view(), name='exams'),
+    path('create/exam/', views.CreateExam.as_view(), name='create_exam'),
     path("exam/<int:pk>/performance/", views.EnterExamPerformanceView.as_view(), name="enter_exam_performance"),
     path("exam/<int:pk>/performances/", views.ExamPerformanceListView.as_view(), name="exam_performance_list"),
     path("<int:pk>/performance/", views.ExamPerformanceListView.as_view(), name="exam_performance_list"),

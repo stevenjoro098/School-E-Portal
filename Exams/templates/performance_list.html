@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load dict_extras %}
-
+{% block title %} {{ exam }} {% endblock %}
 {% block content %}
 <div class="mb-3 d-flex gap-2">
   <a href="{% url 'export_exam_excel' exam.pk %}" class="btn btn-outline-success">

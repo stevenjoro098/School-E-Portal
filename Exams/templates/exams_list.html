@@ -1,23 +1,26 @@
 {% extends 'base.html' %}
 {% block title %}Exams{%endblock%}
+{% block nav %}
+    <a href="{% url 'create_exam' %}" class="btn btn-success btn-sm">+ Add Exam</a>
+{% endblock %}
 {% block content %}
-    <h3>Exams</h3>
-    <div class="container">
+    <h2>Exams</h2>
+    <hr>
+    <div class="container-fluid">
         <div class="row">
             {% for exam in exams_list %}
-                <div class="col">
+                <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title">
-                                <strong>{{ exam }}</strong>
-
+                                <h4><strong>{{ exam }}</strong></h4>
                             </div>
+                            <hr>
                             <a href="{% url 'exam_performance_list' exam.pk %}" class="btn btn-primary btn-sm">View Performances</a>
                             <a href="{% url 'enter_exam_performance' exam.pk %}" class="btn btn-outline-success btn-sm">Add Performances</a>
                         </div>
                     </div>
                 </div>
-
             {% empty %}
                 <h4>No Exams Available</h4>
             {% endfor %}

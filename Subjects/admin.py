@@ -8,4 +8,5 @@ class GradeAdmin(admin.ModelAdmin):
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['name','grade']
+    list_filter = ['grade']

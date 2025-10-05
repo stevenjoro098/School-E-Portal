@@ -75,7 +75,7 @@
             <td>
               <a href="{% url 'student_details_performance' exam.id row.student.pk %}" class="btn btn-info btn-sm">View</a>
               <br>
-              <a href="#" class="btn btn-primary btn-sm">Print</a>
+              <a href="{% url 'student_performance_pdf' exam.id row.student.pk %}" class="btn btn-primary btn-sm">Print</a>
             </td>
           </tr>
         {% endfor %}

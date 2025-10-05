@@ -5,48 +5,55 @@
 {% block content %}
 <div id="quizApp">
     <h3>[[ assessment.title ]]</h3>
-    <h5 class="text-primary"><strong>
-        [[ assessment.subject.name ]] | Duration: [[ assessment.duration_minutes ]] minutes
-    </strong>
-
+    <h5 class="text-primary">
+        <strong>
+            [[ assessment.subject.name ]] | Duration: [[ assessment.duration_minutes ]] minutes
+        </strong>
     </h5>
+
     {% if taken %}
         <div class="alert alert-danger">
             You have already taken this assessment.
             <a href="{% url 'assessment_result' result.pk %}">View Results</a>
         </div>
     {% else %}
-    <!-- WELCOME MESSAGE & START BUTTON -->
+        <!-- Welcome screen -->
         <div v-if="!quizStarted" class="text-center my-4">
-            <h4 class="mb-3">Welcome,{{ student.first_name }} {{ student.second_name }} from {{ student.grade }}!</h4>
+            <h4 class="mb-3">
+                Welcome, {{ student.first_name }} {{ student.second_name }} from {{ student.grade }}!
+            </h4>
             <p class="lead">Wishing you all the best in your assessment.</p>
-            <button class="btn btn-lg btn-success" @click="startAssessment">Click to Start Assessment</button>
+            <button class="btn btn-lg btn-success" @click="startAssessment">
+                Click to Start Assessment
+            </button>
         </div>
     {% endif %}
 
-    <!-- TIMER & QUESTIONS -->
+    <!-- Quiz Section -->
     <div v-if="quizStarted">
+        <!-- Timer -->
         <div class="alert alert-warning">
             ⏰ Time Remaining: <strong>[[ timer.minutes ]]m [[ timer.seconds ]]s</strong>
         </div>
 
+        <!-- Current Question -->
         <div v-if="currentQuestion">
             <div class="card mb-3">
-                <div class="card-header">Question [[ currentIndex + 1 ]] of [[ questions.length ]]</div>
+                <div class="card-header">
+                    Question [[ currentIndex + 1 ]] of [[ questions.length ]]
+                </div>
                 <div class="card-body">
-                    <h3>
-                        <p class="card-text">[[ currentQuestion.text ]]</p>
-                    </h3>
+                    <h3><p class="card-text">[[ currentQuestion.text ]]</p></h3>
 
-                    <!-- Show image if available -->
+                    <!-- Question image -->
                     <div v-if="currentQuestion.image">
                         <img :src="currentQuestion.image"
                              alt="Question Image"
-                             style="width: 250px;height: 250px;"
+                             style="width: 250px; height: 250px;"
                              class="img-fluid rounded mb-3">
                     </div>
 
-
+                    <!-- Choices -->
                     <ol class="list-group alpha-list">
                         <li v-for="choice in currentQuestion.choices"
                             :key="choice.id"
@@ -57,21 +64,33 @@
                         </li>
                     </ol>
                 </div>
-
             </div>
 
+            <!-- Navigation -->
             <div class="d-flex justify-content-between">
-                <button class="btn btn-secondary" @click="prev" :disabled="currentIndex === 0">Previous</button>
-                <button class="btn btn-secondary" @click="next" :disabled="currentIndex === questions.length - 1">Next</button>
-            </div>
+                <!-- Previous button -->
+                <button class="btn btn-secondary"
+                        @click="prev"
+                        :disabled="currentIndex === 0 || currentIndex === questions.length - 1">
+                    Previous
+                </button>
 
-            <div class="mt-3" v-if="currentIndex === questions.length - 1">
-                <button class="btn btn-primary" @click="submitQuiz" :disabled="!selectedAnswers[currentIndex]">
+                <!-- Next button until last question -->
+                <button v-if="currentIndex < questions.length - 1"
+                        class="btn btn-secondary"
+                        @click="next"
+                        :disabled="!selectedAnswers[currentIndex]">
+                    Next
+                </button>
+
+                <!-- Submit button replaces Next on last question -->
+                <button v-else
+                        class="btn btn-primary"
+                        @click="submitQuiz"
+                        :disabled="!selectedAnswers[currentIndex]">
                     Submit Assessment
                 </button>
             </div>
-            <br>
-            <br>
         </div>
     </div>
 </div>
@@ -85,9 +104,6 @@ createApp({
     delimiters: ['[[', ']]'],
     data() {
         return {
-            studentName: '',
-            nameSubmitted: false,
-            alreadyTaken: false,
             quizStarted: false,
             questions: {{ questions_json|safe }},
             currentIndex: 0,
@@ -101,12 +117,9 @@ createApp({
             assessment: {
                 id: {{ assessment.id }},
                 title: "{{ assessment.title }}",
-                subject: {
-                    name: "{{ assessment.subject.name }}"
-                },
+                subject: { name: "{{ assessment.subject.name }}" },
                 duration_minutes: {{ assessment.duration_minutes }}
             },
-
         };
     },
     computed: {
@@ -115,20 +128,6 @@ createApp({
         }
     },
     methods: {
-        checkIfTaken() {
-            const name = this.studentName.trim();
-            if (!name) return;
-
-            fetch(`/assessment/check/assessment/${this.assessment.id}/?name=${encodeURIComponent(name)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.taken) {
-                        this.alreadyTaken = true;
-                    } else {
-                        this.nameSubmitted = true;
-                    }
-                });
-        },
         startAssessment() {
             this.quizStarted = true;
             this.updateTimerDisplay();
@@ -154,12 +153,14 @@ createApp({
             this.selectedAnswers[this.currentIndex] = choiceId;
         },
         next() {
-            if (this.currentIndex < this.questions.length - 1)
+            if (this.currentIndex < this.questions.length - 1) {
                 this.currentIndex++;
+            }
         },
         prev() {
-            if (this.currentIndex > 0)
+            if (this.currentIndex > 0) {
                 this.currentIndex--;
+            }
         },
         submitQuiz(auto = false) {
             const unanswered = this.questions.findIndex((q, index) => !this.selectedAnswers[index]);

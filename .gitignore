@@ -6080,3 +6080,10 @@ db.sqlite3
 /Exams/migrations/0005_alter_exam_grade.py
 /Exams/migrations/0006_alter_exam_grade.py
 /Exams/migrations/0007_alter_exam_grade.py
+/Subjects/migrations/0004_alter_subject_grade.py
+/ELearning/migrations/0007_alter_strand_subject_delete_subject.py
+/Students/tests.py
+/media/students/splash_RX1Dy3K.png
+/Exams/migrations/0008_examsubject_grade.py
+/Exams/migrations/0009_alter_examsubject_grade_and_more.py
+/Exams/migrations/0010_rename_exam_subject_studentperformance_subject_and_more.py

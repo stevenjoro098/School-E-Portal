@@ -206,3 +206,30 @@ class ExportExamPDFView(View):
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="{exam.exam_name}_{exam.grade}_performances.pdf"'
         return response
+
+class StudentPerformanceDetailView(View):
+    template_name = "student_performance_details.html"
+
+    def get(self, request, id, pk):
+        exam = get_object_or_404(Exam, id=id)
+        student = get_object_or_404(Student, id=pk)
+
+        # Get subjects for the grade
+        subjects = Subject.objects.filter(grade=exam.grade)
+
+        # Fetch performances for this student
+        performances = StudentPerformance.objects.filter(exam=exam, student=student)
+
+        scores = {p.subject.id: p.performance for p in performances}
+        total = sum(scores.values())
+        average = round(total / subjects.count(), 2) if subjects else 0
+
+        context = {
+            "exam": exam,
+            "student": student,
+            "subjects": subjects,
+            "scores": scores,
+            "total": total,
+            "average": average,
+        }
+        return render(request, self.template_name, context)

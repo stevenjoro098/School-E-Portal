@@ -1,18 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from Subjects.models import Grade
+from Subjects.models import Grade, Subject
 
-
-class Subject(models.Model):
-    name = models.CharField(max_length=100)
-    grade = models.ForeignKey(Grade, related_name='grade_subject', on_delete=models.CASCADE, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.name}"
 
 class Strand(models.Model):
-    subject = models.ForeignKey(Subject, related_name='strands', on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, related_name='subject_strands', on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
 
     def __str__(self):

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load dict_extras %}
+{% block title %} {{ student.first_name }} {{ student.second_name }} {% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">
+        {{ student.first_name }} {{ student.second_name }} - {{ exam.exam_name }}
+      </h4>
+      <small>{{ exam.grade }}</small>
+    </div>
+
+    <div class="card-body table-responsive">
+      <table class="table table-bordered text-center">
+        <thead class="table-light">
+          <tr>
+            <th>Subject</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for subject in subjects %}
+            <tr>
+              <td class="fw-bold text-start">{{ subject.name }}</td>
+              <td>{{ scores|get_item:subject.id|default:"-" }}</td>
+            </tr>
+          {% endfor %}
+          <tr class="table-info fw-bold">
+            <td>Total</td>
+            <td>{{ total }}</td>
+          </tr>
+          <tr class="table-success fw-bold">
+            <td>Average</td>
+            <td>{{ average }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card-footer text-end">
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% load dict_extras %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: "Helvetica", sans-serif; margin: 20px; font-size: 12px; }
+    h2, h3 { text-align: center; margin: 5px 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #000; padding: 6px; text-align: center; }
+    th { background: #f2f2f2; }
+    .header { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .logo { width: 60px; height: auto; margin-right: 20px; }
+    .school-info h1 { margin: 0; font-size: 18px; font-weight: bold; }
+    .school-info p { margin: 0; font-size: 11px; }
+    .summary { margin-top: 20px; font-size: 13px; }
+    .signature { margin-top: 50px; display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="{% static 'school_logo.png' %}" class="logo">
+    <div class="school-info">
+      <h1>UNITED MATUNDA ACADEMY</h1>
+      <p>Faith + Effort makes a mighty pair</p>
+      <p>P.O Box 311, Moi’s Bridge</p>
+    </div>
+  </div>
+  <hr>
+
+  <h2>{{ exam.exam_name }} Report Card</h2>
+  <h3>{{ student.first_name }} {{ student.second_name }} - {{ exam.grade }}</h3>
+    <hr>
+  <table>
+    <thead>
+      <tr>
+        <th>Subject</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for subject in subjects %}
+      <tr>
+        <td class="fw-bold text-start">{{ subject.name }}</td>
+        <td>{{ scores|get_item:subject.id|default:"-" }}</td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td><strong>Total</strong></td>
+        <td><strong>{{ total }}</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Average</strong></td>
+        <td><strong>{{ average }}</strong></td>
+      </tr>
+    </tbody>
+  </table>
+    <br>
+    <hr>
+  <div class="summary">
+    <p><strong>Class Teacher's Comment:</strong> _____________________________</p>
+    <p><strong>Principal's Remark:</strong> _________________________________</p>
+  </div>
+
+  <div class="signature">
+    <p>___________________<br>Class Teacher</p>
+    <p>___________________<br>Principal</p>
+  </div>
+</body>
+</html>

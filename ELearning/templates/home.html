@@ -3,36 +3,74 @@
 {% block title %} Home {% endblock %}
 
 {% block content %}
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-      <div class="col">
-        <div class="card">
-          <img src="{% static 'images/elearning_home.png' %}" class="card-img-top" alt="...">
-          <div class="card-body">
-            <h5 class="card-title">E-Learning</h5>
-            <p class="card-text">Access to Notes and Resources for all Strands and their Substrands</p>
-            <p><a href="{% url 'learners_grades_list' %}" class="btn btn-info">View</a></p>
-          </div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="card">
-          <img src="{% static 'images/assessment_platform.jpg' %}" class="card-img-top" alt="...">
-          <div class="card-body">
-            <h5 class="card-title">Assessment Portal</h5>
-            <p class="card-text">Access Exams and Assessment for various Subjects</p>
-              <p><a href="{% url 'assessment_home' %}" class="btn btn-info">View</a></p>
-          </div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="card">
-          <img src="{% static 'images/students.jpg' %}" class="card-img-top" alt="...">
-          <div class="card-body">
-            <h5 class="card-title">Student Profile</h5>
-            <p class="card-text"></p>
-              <p><a href="{% url 'students_list' %}" class="btn btn-info">View</a></p>
-          </div>
+<div class="container py-3">
+  <h3 class="text-center fw-bold mb-4">Welcome to UMA Digital Learning</h3>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+
+    <!-- E-Learning -->
+    <div class="col">
+      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column">
+        <img src="{% static 'images/elearning_home.png' %}" class="card-img-top fixed-img" alt="E-Learning">
+        <div class="card-body text-center d-flex flex-column">
+          <h5 class="card-title text-primary fw-bold">📘 E-Learning</h5>
+          <p class="card-text text-muted flex-grow-1">Access notes and resources for all strands and substrands.</p>
+          <a href="{% url 'learners_grades_list' %}" class="btn btn-lg btn-primary w-100 mt-auto">View</a>
         </div>
       </div>
     </div>
+
+    <!-- Assessment Portal -->
+    <div class="col">
+      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column">
+        <img src="{% static 'images/assessment_platform.jpg' %}" class="card-img-top fixed-img" alt="Assessment">
+        <div class="card-body text-center d-flex flex-column">
+          <h5 class="card-title text-success fw-bold">📝 Assessment Portal</h5>
+          <p class="card-text text-muted flex-grow-1">Take exams and assessments in various subjects.</p>
+          <a href="{% url 'assessment_home' %}" class="btn btn-lg btn-success w-100 mt-auto">View</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student Profile -->
+    <div class="col">
+      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column">
+        <img src="{% static 'images/students.jpg' %}" class="card-img-top fixed-img" alt="Students">
+        <div class="card-body text-center d-flex flex-column">
+          <h5 class="card-title text-info fw-bold">👩‍🎓 Student Profile</h5>
+          <p class="card-text text-muted flex-grow-1">Manage and view student information easily.</p>
+          <a href="{% url 'students_list' %}" class="btn btn-lg btn-info w-100 mt-auto">View</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .hover-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  .hover-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  }
+
+  .fixed-img {
+    height: 200px;          /* 🔹 Equal height */
+    object-fit: cover;      /* 🔹 Crop/scale nicely */
+    width: 100%;
+  }
+
+  body {
+    font-size: 1.1rem;
+  }
+  .card-title {
+    font-size: 1.2rem;
+  }
+  .btn-lg {
+    padding: 0.8rem;
+    font-size: 1.1rem;
+  }
+</style>
 {% endblock %}

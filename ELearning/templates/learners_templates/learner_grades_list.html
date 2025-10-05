@@ -1,26 +1,37 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
 {% block title %} E-Learning Portal {% endblock %}
 
 {% block content %}
-  <div class="row row-cols-1 row-cols-md-4 g-4">
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">E-Learning Portal</h2>
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     {% for item in grade_list %}
       <div class="col">
-        <div class="card">
-          <img src="{% static 'images/class-size.jpg' %}" class="card-img-top" alt="...">
-          <div class="card-body">
+        <div class="card h-100 shadow-sm text-center">
+          <!-- Fixed height for images -->
+          <img src="{% static 'images/class-size.jpg' %}"
+               class="card-img-top img-fluid"
+               style="height: 180px; object-fit: cover; border-bottom: 2px solid #f0f0f0;"
+               alt="Grade Image">
+
+          <div class="card-body d-flex flex-column justify-content-between">
             <h5 class="card-title">{{ item }}</h5>
             <hr>
-            <p class="card-text"></p>
-            <a href="{% url 'grade_subject_list' item.pk %}" class="btn btn-warning">View</a>
+            <p class="card-text text-muted">Explore notes, resources, and subjects for {{ item }}.</p>
+            <a href="{% url 'grade_subject_list' item.pk %}"
+               class="btn btn-warning w-100 mt-2"
+               style="border-radius: 12px; font-size: 1.1rem; padding: 10px;">
+              View
+            </a>
           </div>
         </div>
       </div>
     {% empty %}
-      <h2>No Grades Available</h2>
+      <h2 class="text-center mt-5">No Grades Available</h2>
     {% endfor %}
   </div>
-
+</div>
 {% endblock %}

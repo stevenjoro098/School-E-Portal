@@ -1,43 +1,87 @@
 {% extends 'base.html' %}
-{% block title %} {{ assessment }} Analysis {% endblock %}
-{% block content %}
-    <div class="row">
-        <div class=" d-flex justify-content-between">
-            <h2>{{ assessment }}</h2>
-             <a href="{% url 'assessment_analysis_pdf' assessment_id %}" class="btn btn-info">Print</a>
-        </div>
-    </div>
-    <div class="row">
-        <h5>{{ assessment.teacher }}, {{ assessment.grade }}</h5>
-    </div>
+{% load grade_tags %}  {# load our custom filter #}
 
-    <hr>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Name</th>
-      <th scope="col">Grade</th>
-      <th scope="col">Score(s)</th>
-      <th scope="col">Percentage</th>
-      <th scope="col">Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for item in assessment_result_list %}
+{% block title %} {{ assessment }} Analysis {% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+
+  <!-- Header Row -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="text-primary">{{ assessment }}</h2>
+    <a href="{% url 'assessment_analysis_pdf' assessment_id %}" class="btn btn-info btn-sm">
+      <i class="bi bi-printer"></i> Print
+    </a>
+  </div>
+
+  <!-- Teacher & Grade -->
+  <div class="row mb-2">
+    <div class="col">
+      <h5 class="text-muted">
+        Teacher: <strong>{{ assessment.teacher }}</strong> |
+        Grade: <span class="badge bg-{{ assessment.grade|grade_color }} rounded-pill">
+          {{ assessment.grade }}
+        </span>
+      </h5>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Results Table -->
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
         <tr>
-            <th scope="row">{{ forloop.counter }}</th>
-            <td><strong>{{ item.student.first_name }} {{ item.student.second_name }} {{ item.student.third_name }}</strong></td>
-            <td><span class="badge text-bg-info rounded-pill">{{ item.student.grade }}</span></td>
-            <td><span class="badge text-bg-warning rounded-pill">Score: {{ item.total_score }}</span></td>
-            <td><span class="badge text-bg-primary rounded-pill">{{ item.percentage }} %</span></td>
-            <td>
-                <a href="{% url 'assessment_result' item.pk %}" class="btn btn-light btn-sm">View</a>
-                <a href="#" class="btn btn-primary btn-sm">Print</a>
-            </td>
+          <th>#</th>
+          <th>Student Name</th>
+          <th>Grade</th>
+          <th>Score(s)</th>
+          <th>Percentage</th>
+          <th class="text-center">Action</th>
         </tr>
-    {% empty %}
-    {% endfor %}
-  </tbody>
-</table>
+      </thead>
+      <tbody>
+        {% for item in assessment_result_list %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+              <strong>{{ item.student.first_name }} {{ item.student.second_name }} {{ item.student.third_name }}</strong>
+            </td>
+            <td>
+              <span class="badge bg-{{ item.student.grade|grade_color }} rounded-pill">
+                {{ item.student.grade }}
+              </span>
+            </td>
+            <td>
+              <span class="badge bg-warning text-dark rounded-pill">
+                {{ item.total_score }}
+              </span>
+            </td>
+            <td>
+              <span class="badge bg-primary rounded-pill">
+                {{ item.percentage }} %
+              </span>
+            </td>
+            <td class="text-center">
+              <a href="{% url 'assessment_result' item.pk %}" class="btn btn-outline-secondary btn-sm">
+                View
+              </a>
+              <a href="#" class="btn btn-outline-primary btn-sm">
+                Print
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted">
+              No results available for this assessment.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
 {% endblock %}

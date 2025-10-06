@@ -235,16 +235,36 @@ class StudentPerformanceDetailView(View):
         }
         return render(request, self.template_name, context)
 
+from django.db.models import Sum
+
 class ExportStudentPDFView(View):
     def get(self, request, exam_id, student_id):
         exam = get_object_or_404(Exam, pk=exam_id)
         student = get_object_or_404(Student, pk=student_id)
         subjects = Subject.objects.filter(grade=exam.grade)
-        performances = StudentPerformance.objects.filter(exam=exam, student=student)
 
+        # ✅ Get performances for this student
+        performances = StudentPerformance.objects.filter(exam=exam, student=student)
         scores = {p.subject.id: p.performance for p in performances}
         total = sum(scores.values())
         average = round(total / subjects.count(), 2) if subjects else 0
+
+        # ✅ Calculate ranking
+        all_totals = (
+            StudentPerformance.objects.filter(exam=exam)
+            .values("student")
+            .annotate(total_score=Sum("performance"))
+            .order_by("-total_score")
+        )
+
+        # Map student_id → rank
+        rank = None
+        for idx, record in enumerate(all_totals, start=1):
+            if record["student"] == student.id:
+                rank = idx
+                break
+
+        total_students = all_totals.count()
 
         context = {
             "exam": exam,
@@ -253,11 +273,67 @@ class ExportStudentPDFView(View):
             "scores": scores,
             "total": total,
             "average": average,
+            "rank": rank,
+            "total_students": total_students,
         }
 
         html_string = render_to_string("student_report_pdf.html", context)
         pdf_file = HTML(string=html_string).write_pdf()
 
         response = HttpResponse(pdf_file, content_type="application/pdf")
-        response["Content-Disposition"] = f'attachment; filename="{student.first_name}_{student.second_name}_{exam.exam_name}_Report.pdf"'
+        response["Content-Disposition"] = (
+            f'attachment; filename="{student.first_name}_{student.second_name}_{exam.exam_name}_Report.pdf"'
+        )
+        return response
+
+class ExportClassPDFView(View):
+    def get(self, request, exam_id):
+        exam = get_object_or_404(Exam, pk=exam_id)
+        subjects = Subject.objects.filter(grade=exam.grade)
+        students = Student.objects.filter(grade=exam.grade).order_by("first_name")
+
+        # ✅ Precompute totals for all students
+        all_totals = (
+            StudentPerformance.objects.filter(exam=exam)
+            .values("student")
+            .annotate(total_score=Sum("performance"))
+            .order_by("-total_score")
+        )
+
+        # Make student_id → rank lookup
+        rank_lookup = {}
+        for idx, record in enumerate(all_totals, start=1):
+            rank_lookup[record["student"]] = idx
+
+        total_students = students.count()
+
+        # ✅ Build pages for each student
+        all_html = ""
+        for student in students:
+            performances = StudentPerformance.objects.filter(exam=exam, student=student)
+            scores = {p.subject.id: p.performance for p in performances}
+            total = sum(scores.values())
+            average = round(total / subjects.count(), 2) if subjects else 0
+            rank = rank_lookup.get(student.id, None)
+
+            context = {
+                "exam": exam,
+                "student": student,
+                "subjects": subjects,
+                "scores": scores,
+                "total": total,
+                "average": average,
+                "rank": rank,
+                "total_students": total_students,
+            }
+
+            # Add page break after each student (except last)
+            html_string = render_to_string("student_report_pdf.html", context)
+            all_html += html_string + '<p style="page-break-after: always;"></p>'
+
+        # ✅ Generate one combined PDF
+        pdf_file = HTML(string=all_html).write_pdf()
+
+        response = HttpResponse(pdf_file, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{exam.exam_name}_Class_Report.pdf"'
         return response

@@ -3,23 +3,15 @@ from django.db import models
 from Students.models import Student
 from Subjects.models import Grade, Subject
 
-grades = (
-    ('PP1','PP1',),
-    ('PP2','PP2'),
-    ('Grade 1', 'Grade 1'),
-    ('Grade 2', 'Grade 2'),
-    ('Grade 3', 'Grade 3'),
-    ('Grade 4', 'Grade 4'),
-    ('Grade 5', 'Grade 5'),
-    ('Grade 6', 'Grade 6'),
-    ('Grade 7', 'Grade 7'),
-    ('Grade 8', 'Grade 8'),
-    ('Grade 9', 'Grade 9'),
+terms = (
+    ('Term 1','Term 1'),
+    ('Term 2','Term 2'),
+    ('Term 3','Term 3'),
 )
-
 # Create your models here.
 class Exam(models.Model):
     exam_name = models.CharField(max_length=250)
+    term = models.CharField(max_length=250, choices=terms)
     created = models.DateField(auto_now_add=True)
     grade = models.ForeignKey(Grade, on_delete=models.CASCADE, related_name='grade_exam')
 

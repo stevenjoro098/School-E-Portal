@@ -6,6 +6,7 @@ urlpatterns = [
     path('grade/<int:pk>/exam/list', views.ExamsList.as_view(), name='exam_list'),
     path('performance/student/<int:id>/<int:pk>/', views.StudentPerformanceDetailView.as_view(), name='student_details_performance'),
     path('pdf/student/performance/<int:exam_id>/<int:student_id>/', views.ExportStudentPDFView.as_view(), name='student_performance_pdf'),
+    path('pdf/students/performance/<int:exam_id>/', views.ExportClassPDFView.as_view(), name='generate_class_report'),
     path('create/exam/', views.CreateExam.as_view(), name='create_exam'),
     path("exam/<int:pk>/performance/", views.EnterExamPerformanceView.as_view(), name="enter_exam_performance"),
     path("exam/<int:pk>/performances/", views.ExamPerformanceListView.as_view(), name="exam_performance_list"),

@@ -10,20 +10,20 @@
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { border: 1px solid #000; padding: 6px; text-align: center; }
     th { background: #f2f2f2; }
-    th:first-child, td:first-child { width: 65%; text-align: left; } /* Subject column */
-    th:last-child, td:last-child { width: 35%; } /* Score column */
     .header { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
-    .logo { width: 70px; height: auto; margin-right: 15px; }
-    .school-info h1 { margin: 0; font-size: 22px; font-weight: bold; }
-    .school-info p { margin: 0; font-size: 13px; }
+    .logo { width: 60px; height: auto; margin-right: 20px; }
+    .school-info h1 { margin: 0; font-size: 20px; font-weight: bold; }
+    .school-info p { margin: 0; font-size: 14px; }
     .summary { margin-top: 20px; font-size: 14px; }
     .signature { margin-top: 50px; display: flex; justify-content: space-between; }
+    .footer-dates { margin-top: 15px; font-size: 14px; }
+    .rank { margin-top: 15px; font-size: 17px; font-weight: bold; text-align: center; }
   </style>
 </head>
 <body>
+  <!-- Header -->
   <div class="header">
-    <!-- ✅ Correct static path -->
-    <img src="{% static 'school_logo.png' %}" class="logo" alt="School Logo">
+    <img src="{% static 'media/school_logo.png' %}" class="logo">
     <div class="school-info">
       <h1>UNITED MATUNDA ACADEMY</h1>
       <p>Faith + Effort makes a mighty pair</p>
@@ -32,10 +32,12 @@
   </div>
   <hr>
 
-  <h2>{{ exam.exam_name }} Report Card</h2>
-  <h3><u>{{ student.first_name }} {{ student.second_name }} - {{ exam.grade }}</u></h3>
+  <!-- Title -->
+  <h2>{{ student.first_name }} {{ student.second_name }} -  {{ exam.grade }}</h2>
+  <h3>{{ exam.term }} Report Card {{ exam.created.year }}</h3>
   <hr>
 
+  <!-- Performance Table -->
   <table>
     <thead>
       <tr>
@@ -46,7 +48,7 @@
     <tbody>
       {% for subject in subjects %}
       <tr>
-        <td>{{ subject.name }}</td>
+        <td class="fw-bold text-start">{{ subject.name }}</td>
         <td>{{ scores|get_item:subject.id|default:"-" }}</td>
       </tr>
       {% endfor %}
@@ -61,13 +63,24 @@
     </tbody>
   </table>
 
-  <div class="summary">
-    <p><strong>Class Teacher's Comment:</strong> ____________________________________________</p>
-    <p>___________________________________________________________________________________________</p>
-    <p>___________________________________________________________________________________________</p>
-    <p><strong>Principal's Remark:</strong> ______________________________________________________</p>
+  <!-- Rank -->
+  <div class="rank">
+    Learner's Rank: {{ rank }} out of {{ total_students }}
   </div>
 
+  <!-- Dates -->
+  <div class="footer-dates">
+    <p><strong>Opening Date:</strong> {{ exam.opening_date|date:"d M Y" }} |
+       <strong>Closing Date:</strong> {{ exam.closing_date|date:"d M Y" }}</p>
+  </div>
+
+  <!-- Comments -->
+  <div class="summary">
+    <p><strong>Class Teacher's Comment:</strong> _____________________________</p>
+    <p><strong>Principal's Remark:</strong> _________________________________</p>
+  </div>
+
+  <!-- Signatures -->
   <div class="signature">
     <p>___________________<br>Class Teacher</p>
     <p>___________________<br>Principal</p>

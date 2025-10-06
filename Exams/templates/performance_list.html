@@ -2,7 +2,7 @@
 {% load dict_extras %}
 {% block title %} {{ exam }} {% endblock %}
 {% block content %}
-<div class="mb-3 d-flex gap-2">
+<div class="mb-3 d-flex gap-2 justify-content-end">
   <a href="{% url 'export_exam_excel' exam.pk %}" class="btn btn-outline-success">
     📊 Download Excel
   </a>
@@ -12,9 +12,12 @@
 </div>
 
 <div class="mb-3">
-  <a href="{% url 'enter_exam_performance' exam.pk %}" class="btn btn-primary">
-    ➕ Add / Edit Performances
-  </a>
+   <a href="{% url 'exam_list' grade.id %}" class="btn btn-outline-secondary">
+    << Go back to Exam List
+    </a>
+    <a href="{% url 'enter_exam_performance' exam.pk %}" class="btn btn-primary">
+      ➕ Add / Edit Performances
+    </a>
 </div>
 
 <!-- ✅ Independent Average Row -->

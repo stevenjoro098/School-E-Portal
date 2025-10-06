@@ -110,6 +110,7 @@ class ExamPerformanceListView(View):
 
         context = {
             "exam": exam,
+            "grade": exam.grade,
             "subjects": subjects,
             "performance_data": performance_data,
             "subject_averages": subject_averages,

@@ -72,7 +72,7 @@
                 <button class="btn btn-secondary"
                         @click="prev"
                         :disabled="currentIndex === 0 || currentIndex === questions.length - 1">
-                    Previous
+                    Previous Question
                 </button>
 
                 <!-- Next button until last question -->
@@ -80,7 +80,7 @@
                         class="btn btn-secondary"
                         @click="next"
                         :disabled="!selectedAnswers[currentIndex]">
-                    Next
+                    Next Question
                 </button>
 
                 <!-- Submit button replaces Next on last question -->

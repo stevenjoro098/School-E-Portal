@@ -12,6 +12,7 @@ class AssessmentAdmin(admin.ModelAdmin):
                     'duration_minutes',
                     'is_published',
                     'done']
+    list_filter = ['grade','is_published','done']
 
 @admin.register(AssessmentResult)
 class AssessmentResultsAdmin(admin.ModelAdmin):

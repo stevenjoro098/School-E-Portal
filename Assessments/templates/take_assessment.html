@@ -69,7 +69,7 @@
             <!-- Navigation -->
             <div class="d-flex justify-content-between">
                 <!-- Previous button -->
-                <button class="btn btn-secondary"
+                <button class="btn btn-warning"
                         @click="prev"
                         :disabled="currentIndex === 0 || currentIndex === questions.length - 1">
                     Previous Question
@@ -77,10 +77,10 @@
 
                 <!-- Next button until last question -->
                 <button v-if="currentIndex < questions.length - 1"
-                        class="btn btn-secondary"
+                        class="btn btn-info"
                         @click="next"
                         :disabled="!selectedAnswers[currentIndex]">
-                    Next Question
+                    Next Question >>
                 </button>
 
                 <!-- Submit button replaces Next on last question -->

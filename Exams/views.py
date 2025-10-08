@@ -20,7 +20,7 @@ class GradesList(ListView):
 class CreateExam(CreateView):
     template_name = 'create_exam.html'
     model = Exam
-    fields = ['*']
+    fields = "__all__"
     success_url = reverse_lazy('exams')
 
 

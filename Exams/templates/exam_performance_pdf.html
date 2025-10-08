@@ -84,6 +84,7 @@
           <th>{{ subject.name }}</th>
         {% endfor %}
         <th>Total</th>
+        <th>Student Average</th>
       </tr>
     </thead>
     <tbody>
@@ -95,6 +96,7 @@
           <td>{{ item.scores|get_item:subject.id|default:"-" }}</td>
         {% endfor %}
         <td><h3><strong>{{ item.total }}</strong></h3></td>
+        <td>{{ item.mean|floatformat:2 }}</td>
       </tr>
       {% endfor %}
     </tbody>

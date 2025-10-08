@@ -172,6 +172,7 @@ class ExportExamPDFView(View):
         exam = get_object_or_404(Exam, pk=pk)
         subjects = Subject.objects.filter(grade=exam.grade)
         students = Student.objects.filter(grade=exam.grade)
+        num_subjects = subjects.count()
 
         # Compute performances
         student_data = []
@@ -179,9 +180,14 @@ class ExportExamPDFView(View):
             performances = StudentPerformance.objects.filter(exam=exam, student=student)
             total_score = performances.aggregate(total=Sum("performance"))["total"] or 0
             subj_scores = {p.subject.id: p.performance for p in performances}
+
+            # 🔹 Learner mean = total ÷ number of subjects
+            mean_score = total_score / num_subjects if num_subjects > 0 else 0
+
             student_data.append({
                 "student": student,
                 "total": total_score,
+                "mean": mean_score,
                 "scores": subj_scores,
             })
 
@@ -194,12 +200,18 @@ class ExportExamPDFView(View):
             for subj in subjects
         }
 
+        # 🔹 Compute class mean score
+        class_total = sum(s["total"] for s in student_data)
+        num_students = len(student_data)
+        class_mean_score = class_total / num_students if num_students > 0 else 0
+
         # Render to HTML
         html_string = render_to_string("exam_performance_pdf.html", {
             "exam": exam,
             "subjects": subjects,
             "ranked_students": ranked_students,
             "subject_averages": subject_averages,
+            "class_mean_score": class_mean_score,  # overall class mean
         })
 
         pdf_file = HTML(string=html_string).write_pdf()
@@ -207,6 +219,7 @@ class ExportExamPDFView(View):
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="{exam.exam_name}_{exam.grade}_performances.pdf"'
         return response
+
 
 class StudentPerformanceDetailView(View):
     template_name = "student_performance_details.html"

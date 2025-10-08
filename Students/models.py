@@ -14,7 +14,7 @@ class Student(models.Model):
     grade = models.ForeignKey(Grade, on_delete=models.CASCADE, blank=True, null=True)
     gender = models.CharField(choices=gender, max_length=200)
     image = models.ImageField(upload_to='students', default='default_profile_image.png', blank=True)
-    residence = models.CharField(max_length=200)
+    residence = models.CharField(max_length=200, blank=True)
     favorite_sport = models.CharField(max_length=200, blank=True)
     hobbies = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)

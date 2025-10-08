@@ -335,5 +335,5 @@ class ExportClassPDFView(View):
         pdf_file = HTML(string=all_html).write_pdf()
 
         response = HttpResponse(pdf_file, content_type="application/pdf")
-        response["Content-Disposition"] = f'attachment; filename="{exam.exam_name}_Class_Report.pdf"'
+        response["Content-Disposition"] = f'attachment; filename="{exam.exam_name}_{ exam.term }_Class_Report.pdf"'
         return response

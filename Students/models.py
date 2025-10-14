@@ -21,3 +21,7 @@ class Student(models.Model):
     
     def __str__(self):
         return f"{self.first_name} {self.second_name} - {self.grade}"
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.second_name} {self.third_name}".strip()

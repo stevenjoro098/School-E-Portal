@@ -546,14 +546,15 @@ class TermExamAnalysis(TemplateView):
         context['grade'] = grade
         context['term'] = term
 
-        # Exams in the term
+        # Exams in this grade and term
         exams = Exam.objects.filter(grade=grade, term=term).order_by('created')
-        context['exams'] = exams
-
         students = Student.objects.filter(grade=grade)
         subjects = Subject.objects.filter(grade=grade)
 
-        # Subject averages per exam
+        context['exams'] = exams
+        context['subjects'] = subjects
+
+        # ===== SUBJECT AVERAGES =====
         subject_averages = {}
         overall_subject_avg = {}
         for subject in subjects:
@@ -563,52 +564,54 @@ class TermExamAnalysis(TemplateView):
                     exam=exam, subject=subject
                 ).aggregate(avg=Avg('performance'))['avg'] or 0
                 subject_averages[subject.name].append(round(avg_score, 2))
-            overall_subject_avg[subject.name] = round(sum(subject_averages[subject.name])/len(exams), 2)
+            overall_subject_avg[subject.name] = round(sum(subject_averages[subject.name]) / len(exams), 2) if exams else 0
 
         context['subject_averages'] = subject_averages
 
-        # Top and bottom subjects
+        # ===== TOP/BOTTOM SUBJECTS =====
         sorted_subjects = sorted(overall_subject_avg.items(), key=lambda x: x[1], reverse=True)
         context['top_subjects'] = sorted_subjects[:3]
         context['subjects_needing_improvement'] = sorted_subjects[-3:]
 
-        # Learner performance & improvement
-        student_improvement = []
-        consistently_improving = []
-        declining_students = []
-
+        # ===== LEARNER PERFORMANCE =====
+        student_performance_data = []
         for student in students:
-            performances = StudentPerformance.objects.filter(
-                exam__in=exams, student=student
-            ).order_by('exam__created')
+            exam_scores = []
+            for exam in exams:
+                avg_score = StudentPerformance.objects.filter(
+                    exam=exam, student=student
+                ).aggregate(avg=Avg('performance'))['avg'] or 0
+                exam_scores.append(round(avg_score, 2))
 
-            total_scores = [p.performance for p in performances]
-            improvement = 0
-            average_score = round(sum(total_scores)/len(total_scores), 2) if total_scores else 0
+            average_score = round(sum(exam_scores) / len(exams), 2) if exams else 0
+            improvement = exam_scores[-1] - exam_scores[0] if len(exam_scores) > 1 else 0
 
-            if len(total_scores) > 1:
-                improvement = total_scores[-1] - total_scores[0]
-
-            # Consistent improvement check
-            is_consistent = all(x < y for x, y in zip(total_scores, total_scores[1:]))
-            if is_consistent:
-                consistently_improving.append(student)
-            elif improvement < 0:
-                declining_students.append(student)
-
-            student_improvement.append({
+            student_performance_data.append({
                 'student': student,
+                'exam_scores': exam_scores,
+                'average_score': average_score,
                 'improvement': improvement,
-                'total_scores': total_scores,
-                'average_score': average_score
             })
 
-        student_improvement.sort(key=lambda x: x['improvement'], reverse=True)
-        context['student_improvement'] = student_improvement
+        # Sort by improvement (descending)
+        student_performance_data.sort(key=lambda x: x['improvement'], reverse=True)
+        context['student_performance_data'] = student_performance_data
+
+        # ===== CONSISTENT IMPROVEMENT / DECLINE =====
+        consistently_improving = []
+        declining_students = []
+        for data in student_performance_data:
+            scores = data['exam_scores']
+            if len(scores) > 1:
+                if all(x < y for x, y in zip(scores, scores[1:])):
+                    consistently_improving.append(data['student'])
+                elif all(x > y for x, y in zip(scores, scores[1:])):
+                    declining_students.append(data['student'])
+
         context['consistently_improving'] = consistently_improving
         context['declining_students'] = declining_students
 
-        # Grade-level trend (average per exam)
+        # ===== GRADE-LEVEL TRENDS =====
         grade_trends = []
         for exam in exams:
             avg_score = StudentPerformance.objects.filter(exam=exam).aggregate(avg=Avg('performance'))['avg'] or 0

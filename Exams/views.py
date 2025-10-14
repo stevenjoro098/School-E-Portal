@@ -1,6 +1,6 @@
 from collections import defaultdict
 from django.views import View
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, TemplateView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Sum, Avg
 from django.http import HttpResponse
@@ -533,3 +533,61 @@ class PrintTermReportCardsView(View):
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="{grade}_Term_{term}_Report_Cards.pdf"'
         return response
+
+class TermExamAnalysis(TemplateView):
+    template_name = 'term_analysis.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        grade_id = self.kwargs.get('grade_id')
+        term = self.kwargs.get('term')
+
+        grade = get_object_or_404(Grade, id=grade_id)
+        context['grade'] = grade
+        context['term'] = term
+
+        # Get all exams for this grade and term, ordered by creation
+        exams = Exam.objects.filter(grade=grade, term=term).order_by('created')
+        context['exams'] = exams
+
+        # Get all students in the grade
+        students = Student.objects.filter(grade=grade)
+
+        # Subject averages per exam
+        subject_averages = {}
+        subjects = Subject.objects.filter(grade=grade)
+        for subject in subjects:
+            subject_averages[subject.name] = []
+            for exam in exams:
+                avg_score = StudentPerformance.objects.filter(
+                    exam=exam, subject=subject
+                ).aggregate(avg=Avg('performance'))['avg'] or 0
+                subject_averages[subject.name].append(round(avg_score, 2))
+        context['subject_averages'] = subject_averages
+
+        # Learner improvements
+        student_improvement = []
+        for student in students:
+            performances = StudentPerformance.objects.filter(
+                exam__in=exams, student=student
+            ).order_by('exam__created')
+
+            total_scores = [p.performance for p in performances]
+            improvement = 0
+            if len(total_scores) > 1:
+                improvement = total_scores[-1] - total_scores[0]
+
+            average_score = round(sum(total_scores) / len(total_scores), 2) if total_scores else 0
+
+            student_improvement.append({
+                'student': student,
+                'improvement': improvement,
+                'total_scores': total_scores,
+                'average_score': average_score
+            })
+
+        # Sort by improvement
+        student_improvement.sort(key=lambda x: x['improvement'], reverse=True)
+        context['student_improvement'] = student_improvement
+
+        return context

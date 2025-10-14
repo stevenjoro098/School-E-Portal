@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-4">
+  <h3 class="text-primary mb-3">Term Exam Analysis: {{ term }} - {{ grade.name }}</h3>
+
+  <!-- Subject Averages Comparison -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-light fw-bold">Subject Averages per Exam</div>
+    <div class="card-body">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            {% for exam in exams %}
+              <th>{{ exam.exam_name }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for subject, averages in subject_averages.items %}
+          <tr>
+            <td>{{ subject }}</td>
+            {% for avg in averages %}
+              <td>{{ avg }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Learner Improvements -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-light fw-bold">Learner Performance & Improvements</div>
+    <div class="card-body">
+      <table class="table table-hover table-bordered">
+        <thead>
+          <tr>
+            <th>Student</th>
+            {% for exam in exams %}
+              <th>{{ exam.exam_name }}</th>
+            {% endfor %}
+            <th>Average Score</th>
+            <th>Total Improvement</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for data in student_improvement %}
+          <tr>
+            <td>{{ data.student.first_name }} {{ data.student.second_name }}</td>
+            {% for score in data.total_scores %}
+              <td>{{ score }}</td>
+            {% endfor %}
+            <td>{{ data.average_score }}</td>
+            <td>
+              {% if data.improvement > 0 %}
+                <span class="text-success">+{{ data.improvement }}</span>
+              {% elif data.improvement < 0 %}
+                <span class="text-danger">{{ data.improvement }}</span>
+              {% else %}
+                0
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Optional: Charts using Chart.js -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-light fw-bold">Visual Comparison (Optional)</div>
+    <div class="card-body">
+      <canvas id="subjectChart" height="100"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('subjectChart').getContext('2d');
+const data = {
+    labels: [{% for exam in exams %}'{{ exam.name }}',{% endfor %}],
+    datasets: [
+        {% for subject, averages in subject_averages.items %}
+        {
+            label: '{{ subject }}',
+            data: [{{ averages|join:',' }}],
+            borderColor: 'rgba({{ forloop.counter0|add:"50" }}, 99, 132, 0.7)',
+            backgroundColor: 'rgba({{ forloop.counter0|add:"50" }}, 99, 132, 0.3)',
+            tension: 0.3
+        },
+        {% endfor %}
+    ]
+};
+
+new Chart(ctx, {
+    type: 'line',
+    data: data,
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: 'Subject Average Trends Across Exams' }
+        },
+        scales: { y: { beginAtZero: true, max: 100 } }
+    }
+});
+</script>
+{% endblock %}

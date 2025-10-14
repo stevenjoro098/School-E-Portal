@@ -5,97 +5,172 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body { font-family: "Helvetica", sans-serif; font-size: 12px; margin: 25px; }
-    .header { text-align: center; margin-bottom: 10px; }
-    .header img { width: 70px; height: auto; }
-    .school-info h1 { margin: 5px 0 0 0; font-size: 18px; font-weight: bold; }
-    .school-info p { margin: 0; font-size: 12px; }
-    h2, h3 { text-align: center; margin: 5px 0; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #000; padding: 6px; text-align: center; }
-    th { background-color: #f2f2f2; }
-    .comment-box { border: 1px solid #000; padding: 10px; margin-top: 15px; }
-    .page-break { page-break-after: always; }
-    hr { border: none; border-top: 1px solid #999; margin: 10px 0; }
+    @page { size: A4; margin: 1.2cm; }
+    body {
+      font-family: "Century Gothic", sans-serif;
+      font-size: 12px;
+      color: #000;
+    }
+    h1, h2, h3 {
+      text-align: center;
+      margin: 4px 0;
+    }
+    h1 {
+      font-size: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    h2 {
+      font-size: 15px;
+      color: #222;
+      margin-bottom: 10px;
+    }
+    h3 {
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 2px solid #000;
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+    }
+    .logo {
+      width: 70px;
+      height: 70px;
+      margin-right: 15px;
+    }
+    .school-info {
+      text-align: center;
+    }
+    .school-info h1 {
+      margin: 0;
+    }
+    .school-info p {
+      margin: 2px 0;
+      font-size: 12px;
+    }
+
+    .student-info {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      padding: 8px;
+      border: 1px solid #aaa;
+      background-color: #f8f8f8;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .student-info strong {
+      color: #111;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 12px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      background-color: #efefef;
+      font-weight: bold;
+    }
+    td {
+      background-color: #fff;
+    }
+
+    .comment-box {
+      border: 1px solid #444;
+      padding: 10px;
+      margin-top: 15px;
+      font-size: 12px;
+    }
+
+    .page-break {
+      page-break-after: always;
+    }
   </style>
 </head>
 <body>
 
-  {% if reports %}
-    {% for report in reports %}
-      <!-- SCHOOL HEADER -->
-      <div class="header">
-        <img src="{% static 'media/school_logo.png' %}" alt="School Logo">
-        <div class="school-info">
-          <h1>UNITED MATUNDA ACADEMY</h1>
-          <p><em>Faith + Effort makes a mighty pair</em></p>
-          <p>P.O Box 311, Moi’s Bridge</p>
-        </div>
+  {% for report in reports %}
+    <!-- School Header -->
+    <div class="header">
+      <img src="{% static 'media/school_logo.png' %}" class="logo" alt="School Logo">
+      <div class="school-info">
+        <h1>{{ school_name }}</h1>
+        <p><em>Faith + Effort makes a mighty pair</em></p>
+        <p>P.O. Box 311, Moi’s Bridge</p>
       </div>
-      <hr>
+    </div>
 
-      <!-- STUDENT INFO -->
-      <h2>Term {{ term }} Report Card</h2>
-      <h3>{{ report.student.full_name }} — Grade {{ grade.name }}</h3>
-      <p style="text-align:center;">Academic Year: {{ exams.first.created.year }}</p>
+    <!-- Report Title -->
+    <h2>End of Term Report Card — {{ term }}, {{ exams.first.created.year }}</h2>
 
-      <!-- PERFORMANCE TABLE -->
-      <table>
-        <thead>
-          <tr>
-            <th>Subject</th>
-            {% for exam in exams %}
-              <th>{{ exam.exam_name }}</th>
-            {% endfor %}
-          </tr>
-        </thead>
+    <!-- Student Info -->
+    <div class="student-info">
+      <strong>Student Name:</strong> {{ report.student.first_name }} {{ report.student.second_name }} &nbsp;&nbsp;&nbsp;
+      <strong>Grade:</strong> {{ grade }} &nbsp;&nbsp;&nbsp;
+    </div>
 
-        <tbody>
-          {% for subject in subjects %}
-            <tr>
-              <td>{{ subject.name }}</td>
-              {% for exam in exams %}
-                <td>
-                  {{ report.exam_scores|get_item:exam.id|get_item:subject.id|default:"-" }}
-                </td>
-              {% endfor %}
-            </tr>
+    <!-- Results Table -->
+    <table>
+      <tr>
+        <th>Subject</th>
+        {% for exam in exams %}
+          <th>{{ exam.exam_name }}</th>
+        {% endfor %}
+      </tr>
+
+      {% for subject in subjects %}
+        <tr>
+          <td>{{ subject.name }}</td>
+          {% for exam in exams %}
+            <td>{{ report.exam_scores|get_item:exam.id|get_item:subject.id|default:"-" }}</td>
           {% endfor %}
+        </tr>
+      {% endfor %}
 
-          <tr>
-            <td><strong>Total</strong></td>
-            {% for exam in exams %}
-              <td><strong>{{ report.totals|get_item:exam.id|default:"-" }}</strong></td>
-            {% endfor %}
-          </tr>
+      <!-- Totals, Averages, and Ranks -->
+      <tr>
+        <th>Total per Exam</th>
+        {% for exam in exams %}
+          <td><strong>{{ report.exam_totals|get_item:exam.id|default:"-" }}</strong></td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <th>Average per Exam</th>
+        {% for exam in exams %}
+          <td>{{ report.exam_averages|get_item:exam.id|default:"-" }}</td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <th>Rank per Exam</th>
+        {% for exam in exams %}
+          <td>{{ report.exam_ranks|get_item:exam.id|default:"-" }}</td>
+        {% endfor %}
+      </tr>
+    </table>
 
-          <tr>
-            <td><strong>Average</strong></td>
-            <td colspan="{{ exams|length }}"><strong>{{ report.average }}</strong></td>
-          </tr>
+    <!-- Comments Section -->
+    <div class="comment-box">
+      <p><strong>Teacher's Comment:</strong> ____________________________________________</p>
+      <p><strong>Head Teacher's Comment:</strong> ________________________________________</p>
+      <p><strong>Opening Date:</strong> ____________________ &nbsp;&nbsp;&nbsp;
+         <strong>Closing Date:</strong> ____________________</p>
+    </div>
 
-          <tr>
-            <td><strong>Rank</strong></td>
-            <td colspan="{{ exams|length }}"><strong>{{ report.rank }}</strong></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- COMMENTS SECTION -->
-      <div class="comment-box">
-        <p><strong>Teacher’s Comment:</strong> ____________________________________________</p>
-        <p><strong>Head Teacher’s Comment:</strong> ________________________________________</p>
-        <p><strong>Opening Date:</strong> {{ opening_date }} &nbsp;&nbsp;&nbsp;
-           <strong>Closing Date:</strong> {{ closing_date }}</p>
-      </div>
-
-      {% if not forloop.last %}
-        <div class="page-break"></div>
-      {% endif %}
-    {% endfor %}
-  {% else %}
-    <p style="text-align:center; color:red;">No report data available for this grade and term.</p>
-  {% endif %}
-
+    {% if not forloop.last %}
+      <div class="page-break"></div>
+    {% endif %}
+  {% endfor %}
 </body>
 </html>

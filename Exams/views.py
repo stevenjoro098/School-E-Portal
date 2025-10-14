@@ -428,40 +428,66 @@ class PrintTermReportCardsView(View):
         subjects = Subject.objects.filter(grade=grade).order_by("name")
         exams = Exam.objects.filter(grade=grade, term=term).order_by("created")
 
-        # Get optional term dates from query string
-        opening_date = request.GET.get("opening_date", "")
-        closing_date = request.GET.get("closing_date", "")
-
-        # Collect performance data
         reports = []
+
+        # Preload all performances
+        all_performances = StudentPerformance.objects.filter(
+            exam__in=exams, student__in=students
+        )
+
+        # Build quick lookup for scores
+        perf_map = {
+            (p.student_id, p.exam_id, p.subject_id): p.performance
+            for p in all_performances
+        }
+
+        # Compute student-wise performance
         for student in students:
             exam_scores = {}
-            total_score = 0
-            total_possible = 0
+            exam_totals = {}
+            exam_averages = {}
 
             for exam in exams:
-                performances = StudentPerformance.objects.filter(exam=exam, student=student)
-                subject_scores = {p.subject.id: p.performance for p in performances}
+                subject_scores = {}
+                total = 0
+                count = 0
+
+                for subject in subjects:
+                    score = perf_map.get((student.id, exam.id, subject.id))
+                    if score is not None:
+                        subject_scores[subject.id] = score
+                        total += score
+                        count += 1
+
                 exam_scores[exam.id] = subject_scores
-
-                total_score += sum(subject_scores.values())
-                total_possible += len(subjects)
-
-            average = round(total_score / total_possible, 2) if total_possible > 0 else 0
+                exam_totals[exam.id] = total
+                exam_averages[exam.id] = round(total / count, 2) if count > 0 else 0
 
             reports.append({
                 "student": student,
                 "exam_scores": exam_scores,
-                "total": total_score,
-                "average": average,
+                "exam_totals": exam_totals,
+                "exam_averages": exam_averages,
             })
 
-        # Calculate ranking based on total score
-        reports.sort(key=lambda r: r["total"], reverse=True)
-        for i, report in enumerate(reports, start=1):
-            report["rank"] = i
+        # Calculate rank per exam
+        for exam in exams:
+            sorted_reports = sorted(
+                reports,
+                key=lambda r: r["exam_totals"].get(exam.id, 0),
+                reverse=True,
+            )
+            for rank, report in enumerate(sorted_reports, start=1):
+                if "exam_ranks" not in report:
+                    report["exam_ranks"] = {}
+                report["exam_ranks"][exam.id] = rank
+
+        # Example fixed dates
+        opening_date = "10th January 2025"
+        closing_date = "5th April 2025"
 
         context = {
+            "school_name": "UNITED MATUNDA ACADEMY",
             "grade": grade,
             "term": term,
             "subjects": subjects,
@@ -475,5 +501,7 @@ class PrintTermReportCardsView(View):
         pdf_file = HTML(string=html_string).write_pdf()
 
         response = HttpResponse(pdf_file, content_type="application/pdf")
-        response["Content-Disposition"] = f'attachment; filename="{grade}_Term_{term}_Report_Cards.pdf"'
+        response["Content-Disposition"] = (
+            f'attachment; filename="{grade}_Term_{term}_Report_Cards.pdf"'
+        )
         return response

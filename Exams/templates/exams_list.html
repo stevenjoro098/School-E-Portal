@@ -12,19 +12,21 @@
   <div class="container-fluid">
     {% for term, exams in grouped_exams.items %}
       <div class="card mb-4 shadow-sm">
-        <div class="card-title">
-          <div class="d-flex justify-content-between align-items-center p-3 bg-light">
-            <h4 class="mt-2 text-primary"><strong>{{ term }}</strong></h4>
+        <div class="card-title py-2 px-3 border-bottom d-flex justify-content-between align-items-center">
+          <h4 class="m-0 text-primary fw-bold">
+            {{ term }}
+          </h4>
 
-            <!-- Link to term summary (class-level view) -->
-            <a href="{% url 'print_term_report_cards' grade.id term %}"
-               class="btn btn-outline-primary btn-sm">
-               🖨️ Print Learners Term Report Cards
+          <div class="btn-group" role="group">
+            <a href="#" class="btn btn-warning btn-sm shadow-sm">
+              <i class="bi bi-graph-up"></i> Analyse Exams
             </a>
-
+            <a href="{% url 'print_term_report_cards' grade.id term %}"
+               class="btn btn-outline-primary btn-sm shadow-sm">
+               🖨️ Print Term Report Cards
+            </a>
           </div>
         </div>
-
         <div class="card-body">
           <div class="row">
             {% for exam in exams %}

@@ -489,7 +489,7 @@ class PrintTermReportCardsView(View):
                 if "exam_ranks" not in report:
                     report["exam_ranks"] = {}
                 # Store as "X / N" format
-                report["exam_ranks"][exam.id] = f"{rank} out of {num_students} students"
+                report["exam_ranks"][exam.id] = f"{rank} out of {num_students}"
 
         # Fixed or dynamic term dates
         opening_date = "10th January 2025"

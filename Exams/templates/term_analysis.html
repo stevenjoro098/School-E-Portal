@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
-{% load static %}
-
+{% block title %} Term Exam Analysis: {{ term }} - {{ grade.name }} {% endblock %}
 {% block content %}
 <div class="container my-4">
   <h3 class="text-primary mb-3">Term Exam Analysis: {{ term }} - {{ grade.name }}</h3>
 
-  <!-- Subject Averages Comparison -->
+  <!-- Subject Averages -->
   <div class="card mb-4 shadow-sm">
     <div class="card-header bg-light fw-bold">Subject Averages per Exam</div>
     <div class="card-body">
@@ -32,7 +31,35 @@
     </div>
   </div>
 
-  <!-- Learner Improvements -->
+  <!-- Top & Bottom Subjects -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white fw-bold">Top Performing Subjects</div>
+        <div class="card-body">
+          <ul>
+            {% for subject, avg in top_subjects %}
+              <li>{{ subject }} - Avg: {{ avg }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white fw-bold">Subjects Needing Improvement</div>
+        <div class="card-body">
+          <ul>
+            {% for subject, avg in subjects_needing_improvement %}
+              <li>{{ subject }} - Avg: {{ avg }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Learner Performance -->
   <div class="card mb-4 shadow-sm">
     <div class="card-header bg-light fw-bold">Learner Performance & Improvements</div>
     <div class="card-body">
@@ -44,13 +71,13 @@
               <th>{{ exam.exam_name }}</th>
             {% endfor %}
             <th>Average Score</th>
-            <th>Total Improvement</th>
+            <th>Improvement</th>
           </tr>
         </thead>
         <tbody>
           {% for data in student_improvement %}
           <tr>
-            <td>{{ data.student.first_name }} {{ data.student.second_name }}</td>
+            <td>{{ data.student.first_name }}  {{ data.student.second_name }}</td>
             {% for score in data.total_scores %}
               <td>{{ score }}</td>
             {% endfor %}
@@ -71,21 +98,77 @@
     </div>
   </div>
 
-  <!-- Optional: Charts using Chart.js -->
+  <!-- Consistently Improving & Declining Students -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-info text-white fw-bold">Consistently Improving Learners</div>
+        <div class="card-body">
+          <ul>
+            {% for student in consistently_improving %}
+              <li>{{ student.first_name }} {{ student.second_name }}</li>
+            {% empty %}
+              <li>No learners consistently improving.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark fw-bold">Declining Learners</div>
+        <div class="card-body">
+          <ul>
+            {% for student in declining_students %}
+              <li>{{ student.first_name }} {{ student.second_name }}</li>
+            {% empty %}
+              <li>No learners with declining performance.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grade-level Trend Chart -->
   <div class="card shadow-sm mb-4">
-    <div class="card-header bg-light fw-bold">Visual Comparison (Optional)</div>
+    <div class="card-header bg-light fw-bold">Grade-level Average Trend</div>
     <div class="card-body">
-      <canvas id="subjectChart" height="100"></canvas>
+      <canvas id="gradeTrendChart" height="100"></canvas>
+    </div>
+  </div>
+
+  <!-- Subject Improvement Trends Chart -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-light fw-bold">Subject Improvement Trends</div>
+    <div class="card-body">
+      <canvas id="subjectTrendChart" height="120"></canvas>
     </div>
   </div>
 </div>
 
-<!-- Chart.js -->
+<!-- Charts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-const ctx = document.getElementById('subjectChart').getContext('2d');
-const data = {
-    labels: [{% for exam in exams %}'{{ exam.name }}',{% endfor %}],
+const gradeCtx = document.getElementById('gradeTrendChart').getContext('2d');
+new Chart(gradeCtx, {
+    type: 'line',
+    data: {
+        labels: [{% for exam in exams %}'{{ exam.exam_name }}',{% endfor %}],
+        datasets: [{
+            label: 'Grade Average',
+            data: [{{ grade_trends|join:',' }}],
+            borderColor: 'rgba(54, 162, 235, 0.8)',
+            backgroundColor: 'rgba(54, 162, 235, 0.3)',
+            tension: 0.3
+        }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Grade Average Across Exams' } }, scales: { y: { beginAtZero: true, max: 100 } } }
+});
+
+const subjectCtx = document.getElementById('subjectTrendChart').getContext('2d');
+const subjectData = {
+    labels: [{% for exam in exams %}'{{ exam.exam_name }}',{% endfor %}],
     datasets: [
         {% for subject, averages in subject_averages.items %}
         {
@@ -93,23 +176,17 @@ const data = {
             data: [{{ averages|join:',' }}],
             borderColor: 'rgba({{ forloop.counter0|add:"50" }}, 99, 132, 0.7)',
             backgroundColor: 'rgba({{ forloop.counter0|add:"50" }}, 99, 132, 0.3)',
+            fill: false,
             tension: 0.3
         },
         {% endfor %}
     ]
 };
 
-new Chart(ctx, {
+new Chart(subjectCtx, {
     type: 'line',
-    data: data,
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { position: 'top' },
-            title: { display: true, text: 'Subject Average Trends Across Exams' }
-        },
-        scales: { y: { beginAtZero: true, max: 100 } }
-    }
+    data: subjectData,
+    options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Subject Average Performance Across Exams' } }, scales: { y: { beginAtZero: true, max: 100 } } }
 });
 </script>
 {% endblock %}

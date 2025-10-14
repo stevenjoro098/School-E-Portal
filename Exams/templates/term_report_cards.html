@@ -173,7 +173,7 @@
       <tr>
         <th>Rank per Exam</th>
         {% for exam in exams %}
-          <td>{{ report.exam_ranks|get_item:exam.id|default:"-" }}</td>
+        <td><i>{{ report.exam_ranks|get_item:exam.id|default:"-" }}</i></td>
         {% endfor %}
       </tr>
     </table>

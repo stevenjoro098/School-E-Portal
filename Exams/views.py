@@ -431,6 +431,9 @@ class PrintTermReportCardsView(View):
         subjects = Subject.objects.filter(grade=grade).order_by("numbering")
         exams = Exam.objects.filter(grade=grade, term=term).order_by("created")
 
+        # Total number of learners in this grade
+        num_students = students.count()
+
         # Preload all performances to reduce DB hits
         all_performances = StudentPerformance.objects.filter(
             exam__in=exams, student__in=students
@@ -474,17 +477,19 @@ class PrintTermReportCardsView(View):
                 "exam_averages": exam_averages,
             })
 
-        # Calculate rank per exam
+        # Calculate rank per exam (and include "out of" text)
         for exam in exams:
             ranked = sorted(
                 [(r, r["exam_totals"].get(exam.id, 0)) for r in reports],
                 key=lambda x: x[1],
                 reverse=True,
             )
+
             for rank, (report, score) in enumerate(ranked, start=1):
                 if "exam_ranks" not in report:
                     report["exam_ranks"] = {}
-                report["exam_ranks"][exam.id] = rank
+                # Store as "X / N" format
+                report["exam_ranks"][exam.id] = f"{rank} out of {num_students} students"
 
         # Fixed or dynamic term dates
         opening_date = "10th January 2025"

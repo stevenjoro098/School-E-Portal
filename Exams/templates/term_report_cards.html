@@ -56,13 +56,13 @@
     }
 
     .student-info {
-      margin-top: 10px;
+      margin-top: 8px;
       margin-bottom: 10px;
-      padding: 8px;
+      padding: 6px;
       border: 1px solid #aaa;
       background-color: #f8f8f8;
-      font-size: 12px;
-      line-height: 1.5;
+
+      line-height: 1.0;
     }
     .student-info strong {
       color: #111;
@@ -117,8 +117,8 @@
 
     <!-- Student Info -->
     <div class="student-info">
-      <strong>Student Name:</strong> {{ report.student.first_name }} {{ report.student.second_name }} &nbsp;&nbsp;&nbsp;
-      <strong>Grade:</strong> {{ grade }} &nbsp;&nbsp;&nbsp;
+      <h1><strong>{{ report.student.first_name }} {{ report.student.second_name }}</strong> </h1>
+      <h2><strong> {{ grade }} &nbsp;&nbsp;&nbsp;</strong></h2>
     </div>
 
     <!-- Results Table -->
@@ -162,10 +162,10 @@
 
     <!-- Comments Section -->
     <div class="comment-box">
-      <p><strong>Teacher's Comment:</strong> ____________________________________________</p>
-      <p><strong>Head Teacher's Comment:</strong> ________________________________________</p>
-      <p><strong>Opening Date:</strong> ____________________ &nbsp;&nbsp;&nbsp;
-         <strong>Closing Date:</strong> ____________________</p>
+      <p><strong>Teacher's Comment:</strong> ___________________________________________________________________________</p>
+      <p>_______________________________________________________________________________________________________________</p>
+      <p><strong>Head Teacher's Comment:</strong> ______________________________________________________________________</p>
+      <p>_______________________________________________________________________________________________________________</p>
     </div>
 
     {% if not forloop.last %}

@@ -490,14 +490,20 @@ class PrintTermReportCardsView(View):
         opening_date = "10th January 2025"
         closing_date = "5th April 2025"
 
-        # ✅ Absolute logo path for WeasyPrint
-        # Try STATIC_ROOT first (after collectstatic), otherwise use STATICFILES_DIRS
-        if getattr(settings, "STATIC_ROOT", None) and os.path.exists(settings.STATIC_ROOT):
-            logo_path = os.path.join(settings.STATIC_ROOT, "media/Logo.png")
-        else:
-            logo_path = os.path.join(settings.STATICFILES_DIRS[0], "media/Logo.png")
+        # ✅ Resolve absolute logo path for WeasyPrint
+        logo_filename = "Logo.png"
+        logo_relative_path = os.path.join("images", logo_filename)
 
-        logo_uri = f"file://{logo_path}"
+        # Prefer STATIC_ROOT if available (after collectstatic), else STATICFILES_DIRS
+        if hasattr(settings, "STATIC_ROOT") and os.path.exists(settings.STATIC_ROOT):
+            logo_path = os.path.join(settings.STATIC_ROOT, logo_relative_path)
+        elif hasattr(settings, "STATICFILES_DIRS") and settings.STATICFILES_DIRS:
+            logo_path = os.path.join(settings.STATICFILES_DIRS[0], logo_relative_path)
+        else:
+            # Fallback to BASE_DIR/static
+            logo_path = os.path.join(settings.BASE_DIR, "static", logo_relative_path)
+
+        logo_uri = f"file://{os.path.abspath(logo_path)}"
 
         # Context for template
         context = {
@@ -515,7 +521,7 @@ class PrintTermReportCardsView(View):
         # Render HTML to string
         html_string = render_to_string("term_report_cards.html", context)
 
-        # Generate PDF (WeasyPrint uses base_url to resolve static URLs)
+        # ✅ Generate PDF with correct static resolution
         pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
 
         # Return downloadable PDF

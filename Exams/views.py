@@ -425,7 +425,7 @@ class PrintTermReportCardsView(View):
     def get(self, request, grade_id, term):
         grade = get_object_or_404(Grade, pk=grade_id)
         students = Student.objects.filter(grade=grade)
-        subjects = Subject.objects.filter(grade=grade).order_by("name")
+        subjects = Subject.objects.filter(grade=grade).order_by("numbering")
         exams = Exam.objects.filter(grade=grade, term=term).order_by("created")
 
         reports = []

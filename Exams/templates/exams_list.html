@@ -26,16 +26,23 @@
         </div>
 
         <div class="card-body">
-          {% for exam in exams %}
-            <h5><strong>{{ exam.exam_name }}</strong></h5>
-            <small class="text-muted">{{ exam.created|date:"M d, Y" }}</small>
-            <hr>
-            <a href="{% url 'exam_performance_list' exam.pk %}" class="btn btn-primary btn-sm">View Performances</a>
-            <a href="{% url 'enter_exam_performance' exam.pk %}" class="btn btn-outline-success btn-sm">Add Performances</a>
-            <hr>
-          {% empty %}
-            <h5 class="text-muted">No exams available for {{ term }}</h5>
-          {% endfor %}
+          <div class="row">
+            {% for exam in exams %}
+              <div class="col-md-4">
+                <div class="card">
+                  <div class="card-body">
+                    <h5><strong>{{ exam.exam_name }}</strong></h5>
+                    <small class="text-muted">{{ exam.created|date:"M d, Y" }}</small>
+                    <hr>
+                    <a href="{% url 'exam_performance_list' exam.pk %}" class="btn btn-primary btn-sm">View Performances</a>
+                    <a href="{% url 'enter_exam_performance' exam.pk %}" class="btn btn-outline-success btn-sm">Add Performances</a>
+                  </div>
+                </div>
+              </div>
+            {% empty %}
+              <h5 class="text-muted">No exams available for {{ term }}</h5>
+            {% endfor %}
+          </div>
         </div>
       </div>
     {% empty %}

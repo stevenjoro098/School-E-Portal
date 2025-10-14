@@ -10,22 +10,22 @@
     body {
       font-family: "Century Gothic", sans-serif;
       font-size: 12px;
-      color: #000;
+      color: #111;
     }
 
     /* ===== HEADER SECTION ===== */
     .header {
       display: flex;
       align-items: center;
-      border-bottom: 2px solid #000;
-      padding-bottom: 5px;
-      margin-bottom: 8px;
-      gap: 15px;
+      border-bottom: 2px solid #333;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+      gap: 18px;
     }
 
     .logo {
-      width: 75px;
-      height: 75px;
+      width: 85px;
+      height: 85px;
       object-fit: contain;
     }
 
@@ -39,11 +39,14 @@
       font-weight: 700;
       margin: 0;
       text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #000;
     }
 
     .school-info p {
       margin: 2px 0;
       font-size: 12px;
+      color: #333;
     }
 
     /* ===== TITLES ===== */
@@ -51,16 +54,18 @@
       text-align: center;
       font-size: 15px;
       font-weight: bold;
-      margin: 8px 0 12px 0;
+      margin: 10px 0 14px 0;
+      color: #000;
     }
 
     h1.student-name {
       text-align: center;
-      background-color: #f5f5f5;
-      border: 1px solid #ccc;
-      padding: 8px;
+      background-color: #f3f3f3;
+      border: 1px solid #bbb;
+      padding: 10px;
       font-size: 16px;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
       margin-bottom: 5px;
     }
 
@@ -68,55 +73,74 @@
       text-align: center;
       font-size: 13px;
       margin-top: 0;
-      color: #333;
-    }
-
-    /* ===== STUDENT INFO BOX ===== */
-    .student-info {
-      margin-top: 8px;
-      margin-bottom: 10px;
-      padding: 6px;
-      border: 1px solid #aaa;
-      background-color: #f8f8f8;
-      line-height: 1.2;
+      color: #555;
     }
 
     /* ===== TABLE STYLES ===== */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 8px;
-      font-size: 12px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      min-height: 75vh;
     }
 
     th, td {
       border: 1px solid #444;
-      padding: 6px;
+      padding: 8px 5px;
       text-align: center;
+      vertical-align: middle;
     }
 
     th {
-      background-color: #efefef;
-      font-weight: bold;
+      background-color: #eaeaea;
+      font-weight: 600;
+      word-wrap: break-word;
+      white-space: normal;
+      max-width: 130px;
+      font-size: 12px;
     }
 
     td {
       background-color: #fff;
+      font-size: 12.5px;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #fafafa;
+    }
+
+    tr:hover td {
+      background-color: #f2f2f2;
     }
 
     /* ===== COMMENTS SECTION ===== */
     .comment-box {
-      border: 1px solid #444;
-      padding: 10px;
+      border: 1px solid #555;
+      padding: 10px 12px;
       margin-top: 15px;
       font-size: 12px;
+      background-color: #f9f9f9;
+      line-height: 1.4;
+    }
+
+    .comment-box p {
+      margin: 5px 0;
+    }
+
+    /* ===== FOOTER INFO ===== */
+    .footer-info {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: #555;
     }
 
     /* ===== PAGE BREAK BETWEEN STUDENTS ===== */
     .page-break {
       page-break-after: always;
     }
-
   </style>
 </head>
 <body>
@@ -144,13 +168,13 @@
       <tr>
         <th>Subject</th>
         {% for exam in exams %}
-          <th>{{ exam.exam_name }}</th>
+          <th title="{{ exam.exam_name }}">{{ exam.exam_name|truncatechars:20 }}</th>
         {% endfor %}
       </tr>
 
       {% for subject in subjects %}
         <tr>
-          <td>{{ subject.name }}</td>
+          <td style="text-align:left; padding-left:8px;">{{ subject.name }}</td>
           {% for exam in exams %}
             <td>{{ report.exam_scores|get_item:exam.id|get_item:subject.id|default:"-" }}</td>
           {% endfor %}
@@ -158,32 +182,32 @@
       {% endfor %}
 
       <!-- Totals, Averages, and Ranks -->
-      <tr>
+      <tr style="background:#f0f0f0; font-weight:bold;">
         <th>Total per Exam</th>
         {% for exam in exams %}
-          <td><strong>{{ report.exam_totals|get_item:exam.id|default:"-" }}</strong></td>
+          <td>{{ report.exam_totals|get_item:exam.id|default:"-" }}</td>
         {% endfor %}
       </tr>
-      <tr>
+      <tr style="background:#f0f0f0;">
         <th>Average per Exam</th>
         {% for exam in exams %}
           <td>{{ report.exam_averages|get_item:exam.id|default:"-" }}</td>
         {% endfor %}
       </tr>
-      <tr>
+      <tr style="background:#f0f0f0;">
         <th>Rank per Exam</th>
         {% for exam in exams %}
-        <td><i>{{ report.exam_ranks|get_item:exam.id|default:"-" }}</i></td>
+          <td><i>{{ report.exam_ranks|get_item:exam.id|default:"-" }}</i></td>
         {% endfor %}
       </tr>
     </table>
 
     <!-- ===== Comments Section ===== -->
     <div class="comment-box">
-      <p><strong>Teacher's Comment:</strong> _______________________________________________________________________________</p>
-      <p>_______________________________________________________________________________________________________________</p>
-      <p><strong>Head Teacher's Comment:</strong> ______________________________________________________________________</p>
-      <p>_______________________________________________________________________________________________________________</p>
+      <p><strong>Teacher’s Comment:</strong> ___________________________________________</p>
+      <p>______________________________________________________________</p>
+      <p><strong>Head Teacher’s Comment:</strong> ________________________________________</p>
+      <p>______________________________________________________________</p>
     </div>
 
     {% if not forloop.last %}

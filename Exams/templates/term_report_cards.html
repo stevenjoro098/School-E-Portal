@@ -104,7 +104,8 @@
   {% for report in reports %}
     <!-- School Header -->
     <div class="header">
-      <img src="{% static 'media/school_logo.png' %}" class="logo" alt="School Logo">
+      <img src="{{ logo_path }}" class="logo">
+      <h6>{{ logo_path }}</h6>
       <div class="school-info">
         <h1>{{ school_name }}</h1>
         <p><em>Faith + Effort makes a mighty pair</em></p>

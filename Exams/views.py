@@ -8,6 +8,8 @@ from django.template.loader import render_to_string
 from rest_framework.reverse import reverse_lazy
 from openpyxl import Workbook
 from weasyprint import HTML
+from django.conf import settings
+import os
 
 from Subjects.models import Subject, Grade
 from .models import Exam, StudentPerformance
@@ -423,25 +425,26 @@ class StudentTermExamSummaryView(View):
 
 class PrintTermReportCardsView(View):
     def get(self, request, grade_id, term):
+        # Get grade, students, subjects (ordered by numbering), and exams
         grade = get_object_or_404(Grade, pk=grade_id)
         students = Student.objects.filter(grade=grade)
         subjects = Subject.objects.filter(grade=grade).order_by("numbering")
         exams = Exam.objects.filter(grade=grade, term=term).order_by("created")
 
-        reports = []
-
-        # Preload all performances
+        # Preload all performances to reduce DB hits
         all_performances = StudentPerformance.objects.filter(
             exam__in=exams, student__in=students
         )
 
-        # Build quick lookup for scores
+        # Build a map of (student, exam, subject) → score
         perf_map = {
             (p.student_id, p.exam_id, p.subject_id): p.performance
             for p in all_performances
         }
 
-        # Compute student-wise performance
+        reports = []
+
+        # Compute per-student, per-exam totals and averages
         for student in students:
             exam_scores = {}
             exam_totals = {}
@@ -453,7 +456,8 @@ class PrintTermReportCardsView(View):
                 count = 0
 
                 for subject in subjects:
-                    score = perf_map.get((student.id, exam.id, subject.id))
+                    key = (student.id, exam.id, subject.id)
+                    score = perf_map.get(key)
                     if score is not None:
                         subject_scores[subject.id] = score
                         total += score
@@ -472,20 +476,30 @@ class PrintTermReportCardsView(View):
 
         # Calculate rank per exam
         for exam in exams:
-            sorted_reports = sorted(
-                reports,
-                key=lambda r: r["exam_totals"].get(exam.id, 0),
+            ranked = sorted(
+                [(r, r["exam_totals"].get(exam.id, 0)) for r in reports],
+                key=lambda x: x[1],
                 reverse=True,
             )
-            for rank, report in enumerate(sorted_reports, start=1):
+            for rank, (report, score) in enumerate(ranked, start=1):
                 if "exam_ranks" not in report:
                     report["exam_ranks"] = {}
                 report["exam_ranks"][exam.id] = rank
 
-        # Example fixed dates
+        # Fixed or dynamic term dates
         opening_date = "10th January 2025"
         closing_date = "5th April 2025"
 
+        # ✅ Absolute logo path for WeasyPrint
+        # Try STATIC_ROOT first (after collectstatic), otherwise use STATICFILES_DIRS
+        if getattr(settings, "STATIC_ROOT", None) and os.path.exists(settings.STATIC_ROOT):
+            logo_path = os.path.join(settings.STATIC_ROOT, "media/Logo.png")
+        else:
+            logo_path = os.path.join(settings.STATICFILES_DIRS[0], "media/Logo.png")
+
+        logo_uri = f"file://{logo_path}"
+
+        # Context for template
         context = {
             "school_name": "UNITED MATUNDA ACADEMY",
             "grade": grade,
@@ -495,13 +509,16 @@ class PrintTermReportCardsView(View):
             "reports": reports,
             "opening_date": opening_date,
             "closing_date": closing_date,
+            "logo_path": logo_uri,
         }
 
+        # Render HTML to string
         html_string = render_to_string("term_report_cards.html", context)
-        pdf_file = HTML(string=html_string).write_pdf()
 
+        # Generate PDF (WeasyPrint uses base_url to resolve static URLs)
+        pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+
+        # Return downloadable PDF
         response = HttpResponse(pdf_file, content_type="application/pdf")
-        response["Content-Disposition"] = (
-            f'attachment; filename="{grade}_Term_{term}_Report_Cards.pdf"'
-        )
+        response["Content-Disposition"] = f'attachment; filename="{grade}_Term_{term}_Report_Cards.pdf"'
         return response

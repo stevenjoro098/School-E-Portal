@@ -4,6 +4,15 @@ from . import views
 urlpatterns = [
     path('', views.GradesList.as_view(), name='exams'),
     path('grade/<int:pk>/exam/list', views.ExamsList.as_view(), name='exam_list'),
+    path('student/<int:student_id>/exam/<int:exam_id>/term-summary/', views.StudentTermExamSummaryView.as_view(),
+
+         name='student_term_exam_summary'),
+    path(
+        'grade/<int:grade_id>/term/<str:term>/print-report-cards/',
+        views.PrintTermReportCardsView.as_view(),
+        name='print_term_report_cards'
+    ),
+
     path('performance/student/<int:id>/<int:pk>/', views.StudentPerformanceDetailView.as_view(), name='student_details_performance'),
     path('pdf/student/performance/<int:exam_id>/<int:student_id>/', views.ExportStudentPDFView.as_view(), name='student_performance_pdf'),
     path('pdf/students/performance/<int:exam_id>/', views.ExportClassPDFView.as_view(), name='generate_class_report'),

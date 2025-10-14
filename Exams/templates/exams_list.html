@@ -1,30 +1,45 @@
 {% extends 'base.html' %}
-{% block title %}Exams{%endblock%}
-{% block nav %}
-    <a href="{% url 'create_exam' %}" class="btn btn-success btn-sm">+ Add Exam</a>
-{% endblock %}
-{% block content %}
-    <h2>Exams</h2>
-    <hr>
-    <div class="container-fluid">
-        <div class="row">
-            {% for exam in exams_list %}
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="card-title">
-                                <h5><strong>{{ exam }}</strong></h5>
-                            </div>
-                            <hr>
-                            <a href="{% url 'exam_performance_list' exam.pk %}" class="btn btn-primary btn-sm">View Performances</a>
-                            <a href="{% url 'enter_exam_performance' exam.pk %}" class="btn btn-outline-success btn-sm">Add Performances</a>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <h4>No Exams Available</h4>
-            {% endfor %}
-        </div>
-    </div>
+{% block title %}Exams{% endblock %}
 
+{% block nav %}
+  <a href="{% url 'create_exam' %}" class="btn btn-success btn-sm">+ Add Exam</a>
+{% endblock %}
+
+{% block content %}
+  <h2>Exams by Term - {{ grade }}</h2>
+  <hr>
+
+  <div class="container-fluid">
+    {% for term, exams in grouped_exams.items %}
+      <div class="card mb-4 shadow-sm">
+        <div class="card-title">
+          <div class="d-flex justify-content-between align-items-center p-3 bg-light">
+            <h4 class="mt-2 text-primary"><strong>{{ term }}</strong></h4>
+
+            <!-- Link to term summary (class-level view) -->
+            <a href="{% url 'print_term_report_cards' grade.id term %}"
+               class="btn btn-outline-primary btn-sm">
+               🖨️ Print Learners Term Report Cards
+            </a>
+
+          </div>
+        </div>
+
+        <div class="card-body">
+          {% for exam in exams %}
+            <h5><strong>{{ exam.exam_name }}</strong></h5>
+            <small class="text-muted">{{ exam.created|date:"M d, Y" }}</small>
+            <hr>
+            <a href="{% url 'exam_performance_list' exam.pk %}" class="btn btn-primary btn-sm">View Performances</a>
+            <a href="{% url 'enter_exam_performance' exam.pk %}" class="btn btn-outline-success btn-sm">Add Performances</a>
+            <hr>
+          {% empty %}
+            <h5 class="text-muted">No exams available for {{ term }}</h5>
+          {% endfor %}
+        </div>
+      </div>
+    {% empty %}
+      <h4>No Exams Available</h4>
+    {% endfor %}
+  </div>
 {% endblock %}

@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.views import View
 from django.views.generic import ListView, CreateView
 from django.shortcuts import render, get_object_or_404, redirect
@@ -30,8 +31,21 @@ class ExamsList(ListView):
     context_object_name = 'exams_list'
 
     def get_queryset(self):
-        grade = get_object_or_404(Grade, pk=self.kwargs['pk'])
-        return Exam.objects.filter(grade=grade)
+        self.grade = get_object_or_404(Grade, pk=self.kwargs['pk'])
+        return Exam.objects.filter(grade=self.grade).order_by('term', 'created')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        exams = context['exams_list']
+
+        # ✅ Group exams by term
+        grouped_exams = defaultdict(list)
+        for exam in exams:
+            grouped_exams[exam.term].append(exam)
+
+        context['grouped_exams'] = dict(grouped_exams)
+        context['grade'] = self.grade
+        return context
 
 
 class EnterExamPerformanceView(View):
@@ -349,4 +363,117 @@ class ExportClassPDFView(View):
 
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="{exam.exam_name}_{ exam.term }_Class_Report.pdf"'
+        return response
+
+class StudentTermExamSummaryView(View):
+    template_name = "student_term_exam_summary.html"
+
+    def get(self, request, exam_id, student_id):
+        # Get reference exam, student and grade
+        exam = get_object_or_404(Exam, pk=exam_id)
+        student = get_object_or_404(Student, pk=student_id)
+        grade = exam.grade
+        subjects = Subject.objects.filter(grade=grade).order_by("name")
+
+        # ✅ Get all exams in the same term and grade
+        term_exams = Exam.objects.filter(term=exam.term, grade=grade).order_by("created")
+
+        # Build scores per exam
+        scores_by_exam = {}
+        totals = {}
+        averages = {}
+        ranks = {}
+
+        for e in term_exams:
+            performances = StudentPerformance.objects.filter(exam=e, student=student)
+            scores_by_exam[e.id] = {p.subject.id: p.performance for p in performances}
+
+            total = sum(scores_by_exam[e.id].values())
+            avg = round(total / subjects.count(), 2) if subjects.exists() else 0
+            totals[e.id] = total
+            averages[e.id] = avg
+
+            # Ranking
+            all_totals = (
+                StudentPerformance.objects.filter(exam=e)
+                .values("student")
+                .annotate(total_score=Sum("performance"))
+                .order_by("-total_score")
+            )
+            rank = next(
+                (idx for idx, record in enumerate(all_totals, start=1)
+                 if record["student"] == student.id),
+                None
+            )
+            ranks[e.id] = rank
+
+        context = {
+            "exam": exam,
+            "student": student,
+            "subjects": subjects,
+            "term_exams": term_exams,
+            "scores_by_exam": scores_by_exam,
+            "totals": totals,
+            "averages": averages,
+            "ranks": ranks,
+        }
+
+        return render(request, self.template_name, context)
+
+
+class PrintTermReportCardsView(View):
+    def get(self, request, grade_id, term):
+        grade = get_object_or_404(Grade, pk=grade_id)
+        students = Student.objects.filter(grade=grade)
+        subjects = Subject.objects.filter(grade=grade).order_by("name")
+        exams = Exam.objects.filter(grade=grade, term=term).order_by("created")
+
+        # Get optional term dates from query string
+        opening_date = request.GET.get("opening_date", "")
+        closing_date = request.GET.get("closing_date", "")
+
+        # Collect performance data
+        reports = []
+        for student in students:
+            exam_scores = {}
+            total_score = 0
+            total_possible = 0
+
+            for exam in exams:
+                performances = StudentPerformance.objects.filter(exam=exam, student=student)
+                subject_scores = {p.subject.id: p.performance for p in performances}
+                exam_scores[exam.id] = subject_scores
+
+                total_score += sum(subject_scores.values())
+                total_possible += len(subjects)
+
+            average = round(total_score / total_possible, 2) if total_possible > 0 else 0
+
+            reports.append({
+                "student": student,
+                "exam_scores": exam_scores,
+                "total": total_score,
+                "average": average,
+            })
+
+        # Calculate ranking based on total score
+        reports.sort(key=lambda r: r["total"], reverse=True)
+        for i, report in enumerate(reports, start=1):
+            report["rank"] = i
+
+        context = {
+            "grade": grade,
+            "term": term,
+            "subjects": subjects,
+            "exams": exams,
+            "reports": reports,
+            "opening_date": opening_date,
+            "closing_date": closing_date,
+        }
+
+        html_string = render_to_string("term_report_cards.html", context)
+        pdf_file = HTML(string=html_string).write_pdf()
+
+        response = HttpResponse(pdf_file, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{grade}_Term_{term}_Report_Cards.pdf"'
         return response

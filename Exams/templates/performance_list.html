@@ -2,24 +2,22 @@
 {% load dict_extras %}
 {% block title %} {{ exam }} {% endblock %}
 {% block content %}
-<div class="mb-3 d-flex gap-2 justify-content-end">
-  <a href="{% url 'export_exam_excel' exam.pk %}" class="btn btn-outline-success">
-    📊 Download Excel
-  </a>
-  <a href="{% url 'export_exam_pdf' exam.pk %}" class="btn btn-outline-danger">
-    📄 Download Marklist PDF
-  </a>
-  <a href="{% url 'generate_class_report' exam.pk %}" class="btn btn-outline-warning">
-    Generate Report Cards PDF
-  </a>
-</div>
-
-<div class="mb-3">
-   <a href="{% url 'exam_list' grade.id %}" class="btn btn-outline-secondary">
+<div class="container-fluid">
+  <div class="mb-3 d-flex gap-2 justify-content-between">
+    <a href="{% url 'exam_list' grade.id %}" class="btn btn-outline-secondary">
     << Go back to Exam List
     </a>
     <a href="{% url 'enter_exam_performance' exam.pk %}" class="btn btn-primary">
       ➕ Add / Edit Performances
+    </a>
+    <a href="{% url 'export_exam_excel' exam.pk %}" class="btn btn-outline-success">
+      📊 Download Excel
+    </a>
+    <a href="{% url 'export_exam_pdf' exam.pk %}" class="btn btn-outline-danger">
+      📄 Download Marklist PDF
+    </a>
+    <a href="{% url 'generate_class_report' exam.pk %}" class="btn btn-outline-warning">
+      Generate Report Cards PDF
     </a>
 </div>
 
@@ -89,4 +87,6 @@
     </table>
   </div>
 </div>
+</div>
+
 {% endblock %}

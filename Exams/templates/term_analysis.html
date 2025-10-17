@@ -191,6 +191,7 @@
 <!-- CHARTS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+<script>
 const gradeCtx = document.getElementById('gradeTrendChart').getContext('2d');
 new Chart(gradeCtx, {
   type: 'line',
@@ -211,14 +212,15 @@ new Chart(gradeCtx, {
   }
 });
 
+// ===== SUBJECT PERFORMANCE TRENDS =====
 const subjectCtx = document.getElementById('subjectTrendChart').getContext('2d');
 const subjectData = {
   labels: [{% for exam in exams %}'{{ exam.exam_name }}',{% endfor %}],
   datasets: [
-    {% for subject, averages in subject_averages.items %}
+    {% for subject, data in subject_averages.items %}
     {
-      label: '{{ subject }}',
-      data: [{{ averages|join:',' }}],
+      label: '{{ subject }} ({{ data.teacher }})',
+      data: [{{ data.averages|join:',' }}],
       borderColor: 'rgba({{ forloop.counter0|add:"50" }}, 99, 132, 0.8)',
       backgroundColor: 'rgba({{ forloop.counter0|add:"50" }}, 99, 132, 0.3)',
       fill: false,
@@ -227,6 +229,7 @@ const subjectData = {
     {% endfor %}
   ]
 };
+
 new Chart(subjectCtx, {
   type: 'line',
   data: subjectData,
@@ -238,3 +241,4 @@ new Chart(subjectCtx, {
 });
 </script>
 {% endblock %}
+

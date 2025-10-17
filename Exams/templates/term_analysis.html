@@ -206,34 +206,46 @@ new Chart(gradeCtx, {
   },
   options: {
     responsive: true,
-    plugins: { title: { display: true, text: 'Grade Average Across Exams' } },
-    scales: { y: { beginAtZero: true, max: 100 } }
+    plugins: {
+      title: { display: true, text: 'Grade Average Across Exams' },
+      legend: { position: 'bottom' }
+    },
+    scales: {
+      y: { beginAtZero: true, max: 100 }
+    }
   }
 });
 
+// ===== SUBJECT TREND CHART =====
 const subjectCtx = document.getElementById('subjectTrendChart').getContext('2d');
 const subjectData = {
   labels: [{% for exam in exams %}'{{ exam.exam_name }}',{% endfor %}],
   datasets: [
-    {% for subject, averages in subject_averages.items %}
+    {% for subject, data in subject_averages.items %}
     {
-      label: '{{ subject }}',
-      data: [{{ averages|join:',' }}],
-      borderColor: 'rgba({{ forloop.counter0|add:"50" }}, 99, 132, 0.8)',
-      backgroundColor: 'rgba({{ forloop.counter0|add:"50" }}, 99, 132, 0.3)',
+      label: '{{ subject }} ({{ data.teacher }})',
+      data: [{% for val in data.averages %}{{ val }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+      borderColor: 'hsl({{ forloop.counter0|add:"50" }}, 70%, 50%)',
+      backgroundColor: 'hsla({{ forloop.counter0|add:"50" }}, 70%, 70%, 0.3)',
       fill: false,
       tension: 0.3
     },
     {% endfor %}
   ]
 };
+
 new Chart(subjectCtx, {
   type: 'line',
   data: subjectData,
   options: {
     responsive: true,
-    plugins: { title: { display: true, text: 'Subject Average Performance Across Exams' } },
-    scales: { y: { beginAtZero: true, max: 100 } }
+    plugins: {
+      title: { display: true, text: 'Subject Average Performance Across Exams' },
+      legend: { position: 'bottom' }
+    },
+    scales: {
+      y: { beginAtZero: true, max: 100 }
+    }
   }
 });
 </script>

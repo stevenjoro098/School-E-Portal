@@ -31,7 +31,7 @@
       <thead class="table-light">
         <tr>
           {% for subject in subjects %}
-            <th>{{ subject }}<span class="badge bg-info text-dark">{{ subject.teacher }}</span></th>
+            <th>{{ subject }} <span class="badge bg-info text-dark"> {{ subject.teacher.first_name }}</span></th>
           {% endfor %}
         </tr>
       </thead>

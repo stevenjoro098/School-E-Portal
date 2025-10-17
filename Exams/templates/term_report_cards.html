@@ -170,7 +170,7 @@
       <tr>
         <th>Subject</th>
         {% for exam in exams %}
-          <th title="{{ exam.exam_name }}">{{ exam.exam_name|truncatechars:20 }}</th>
+          <th title="{{ exam.exam_name }}">Assessment {{ forloop.counter }}</th>
         {% endfor %}
       </tr>
 

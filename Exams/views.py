@@ -554,24 +554,36 @@ class TermExamAnalysis(TemplateView):
         context['exams'] = exams
         context['subjects'] = subjects
 
-        # ===== SUBJECT AVERAGES =====
+        # ===== SUBJECT AVERAGES ====+
         subject_averages = {}
-        overall_subject_avg = {}
-        for subject in subjects:
-            subject_averages[subject.name] = []
+        for subject in subjects.order_by('name'):
+            teacher_name = subject.teacher.full_name if subject.teacher else "N/A"
+
+            exam_avgs = []
             for exam in exams:
                 avg_score = StudentPerformance.objects.filter(
                     exam=exam, subject=subject
                 ).aggregate(avg=Avg('performance'))['avg'] or 0
-                subject_averages[subject.name].append(round(avg_score, 2))
-            overall_subject_avg[subject.name] = round(sum(subject_averages[subject.name]) / len(exams), 2) if exams else 0
+                exam_avgs.append(round(avg_score, 2))
+            overall_avg = round(sum(exam_avgs) / len(exams), 2) if exams else 0
+            exam_avgs.append(overall_avg)
 
-        context['subject_averages'] = subject_averages
+            subject_averages[subject.name] = {
+                "teacher": teacher_name,
+                "averages": exam_avgs
+            }
+        context["subject_averages"] = subject_averages
 
         # ===== TOP/BOTTOM SUBJECTS =====
-        sorted_subjects = sorted(overall_subject_avg.items(), key=lambda x: x[1], reverse=True)
-        context['top_subjects'] = sorted_subjects[:3]
-        context['subjects_needing_improvement'] = sorted_subjects[-3:]
+        # Sort subjects by their overall average (last value in averages list)
+        sorted_subjects = sorted(
+            subject_averages.items(),
+            key=lambda x: x[1]["averages"][-1],  # sort by overall average
+            reverse=True
+        )
+
+        context["top_subjects"] = sorted_subjects[:3]
+        context["subjects_needing_improvement"] = sorted_subjects[-3:]
 
         # ===== LEARNER PERFORMANCE =====
         student_performance_data = []

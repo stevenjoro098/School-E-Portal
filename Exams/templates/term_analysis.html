@@ -18,14 +18,21 @@
           </tr>
         </thead>
         <tbody>
-          {% for subject, averages in subject_averages.items %}
-          <tr>
-            <td>{{ subject }}</td>
-            {% for avg in averages %}
-              <td>{{ avg }}</td>
+          {% for subject, data in subject_averages.items|dictsort:0 %}
+
+            <tr>
+              <td>
+                <strong>{{ subject }}</strong>
+                <span class="badge bg-warning text-dark">
+                  {{ data.teacher }}
+                </span>
+              </td>
+              {% for avg in data.averages %}
+                <td>{{ avg }}</td>
+              {% endfor %}
+            </tr>
             {% endfor %}
-          </tr>
-          {% endfor %}
+
         </tbody>
       </table>
     </div>
@@ -33,36 +40,61 @@
 
   <!-- TOP & BOTTOM SUBJECTS -->
   <div class="row mb-4">
-    <div class="col-md-6">
-      <div class="card shadow-sm">
-        <div class="card-header bg-success text-white fw-bold">Top Performing Subjects</div>
-        <div class="card-body">
-          <ul class="list-group">
-            {% for subject, avg in top_subjects %}
-              <li class="list-group-item d-flex justify-content-between">
-                <span>{{ subject }}</span> <span><strong>{{ avg }}</strong></span>
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
+  <!-- Top Performing Subjects -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white fw-bold">
+        Top Performing Subjects
       </div>
-    </div>
+      <div class="card-body">
+        <ul class="list-group">
+          {% for subject, data in top_subjects %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ subject }}</strong><br>
+                {% if data.teacher %}
+                    <small class="text-muted">
+                      Teacher: {{ data.teacher }}
+                    </small>
+                {% endif %}
 
-    <div class="col-md-6">
-      <div class="card shadow-sm">
-        <div class="card-header bg-danger text-white fw-bold">Subjects Needing Improvement</div>
-        <div class="card-body">
-          <ul class="list-group">
-            {% for subject, avg in subjects_needing_improvement %}
-              <li class="list-group-item d-flex justify-content-between">
-                <span>{{ subject }}</span> <span><strong>{{ avg }}</strong></span>
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
+              </div>
+              <strong>{{ data.averages|last }}</strong>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-center text-muted">No subjects available</li>
+          {% endfor %}
+        </ul>
       </div>
     </div>
   </div>
+
+  <!-- Subjects Needing Improvement -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-danger text-white fw-bold">
+        Subjects Needing Improvement
+      </div>
+      <div class="card-body">
+        <ul class="list-group">
+          {% for subject, data in subjects_needing_improvement %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ subject }}</strong><br>
+                <small class="text-muted">
+                  Teacher: {{ data.teacher }}
+                </small>
+              </div>
+              <strong>{{ data.averages|last }}</strong>
+            </li>
+          {% empty %}
+            <li class="list-group-item text-center text-muted">No subjects available</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- LEARNER PERFORMANCE -->
   <div class="card mb-4 shadow-sm">

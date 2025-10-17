@@ -9,7 +9,7 @@
 
     body {
       font-family: "Century Gothic", sans-serif;
-      font-size: 12px;
+      font-size: 14px;
       color: #111;
     }
 
@@ -81,16 +81,18 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
-      margin-bottom: 12px;
-      font-size: 13px;
-      min-height: 75vh;
+      margin-bottom: 20px;
+      font-size: 14px;       /* Increased from 13px */
+      min-height: 60cm;      /* WeasyPrint understands cm, not vh */
     }
+
 
     th, td {
       border: 1px solid #444;
-      padding: 8px 5px;
+      padding: 8px 6px;
       text-align: center;
       vertical-align: middle;
+      font-size: 14px;
     }
 
     th {
@@ -120,9 +122,9 @@
       border: 1px solid #555;
       padding: 10px 12px;
       margin-top: 15px;
-      font-size: 12px;
+      font-size: 13px;
       background-color: #f9f9f9;
-      line-height: 1.4;
+      line-height: 2.5;
     }
 
     .comment-box p {
@@ -204,10 +206,13 @@
     <hr>
     <!-- ===== Comments Section ===== -->
     <div class="comment-box">
-      <p><strong>Teacher’s Comment:</strong> ___________________________________________</p>
-      <p>______________________________________________________________</p>
-      <p><strong>Head Teacher’s Comment:</strong> ________________________________________</p>
-      <p>______________________________________________________________</p>
+      <p><strong>Teachers Name:</strong>............................................</p>
+      <p><strong>Teacher’s Comment:</strong> ___________________________________________________________________________</p>
+      <p>_______________________________________________________________________________________________________________</p>
+      <br>
+      <p><strong>Head Teacher’s Comment:</strong> ______________________________________________________________________</p>
+      <p>_______________________________________________________________________________________________________________</p>
+      <p></p>
     </div>
 
     {% if not forloop.last %}

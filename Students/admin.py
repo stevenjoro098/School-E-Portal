@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from Students.models import Student
+from Students.models import Student, Teachers
 
 
 # Register your models here.
@@ -18,3 +18,7 @@ class StudentAdmin(admin.ModelAdmin):
         return "No Image"
 
     image_tag.short_description = 'Profile Image'
+
+@admin.register(Teachers)
+class TeachersAdmin(admin.ModelAdmin):
+    list_display = ['first_name','second_name','gender']

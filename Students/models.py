@@ -1,6 +1,6 @@
 from django.db import models
 
-from Subjects.models import Grade
+from Subjects.models import Subject
 
 # Create your models here.
 gender = (
@@ -11,7 +11,7 @@ class Student(models.Model):
     first_name = models.CharField(max_length=200)
     second_name = models.CharField(max_length=200)
     third_name = models.CharField(max_length=200, blank=True)
-    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, blank=True, null=True)
+    grade = models.ForeignKey('Subjects.Grade', on_delete=models.CASCADE, blank=True, null=True)
     gender = models.CharField(choices=gender, max_length=200)
     image = models.ImageField(upload_to='students', default='default_profile_image.png', blank=True)
     residence = models.CharField(max_length=200, blank=True)
@@ -25,3 +25,22 @@ class Student(models.Model):
     @property
     def full_name(self):
         return f"{self.first_name} {self.second_name} {self.third_name}".strip()
+
+GENDER = (
+    ("Female","Female"),
+    ('Male','Male'),
+)
+
+class Teachers(models.Model):
+    first_name = models.CharField(max_length=200)
+    second_name = models.CharField(max_length=200)
+    gender = models.CharField(max_length=200, choices=GENDER)
+    code_number = models.PositiveIntegerField(blank=True, null=True)
+    telephone = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+        return f"{self.first_name}"
+
+    @property
+    def full_name(self):
+        return f'{self.first_name} {self.second_name}'.strip()

@@ -6190,3 +6190,4 @@ db.sqlite3
 /venv/lib/python3.8/site-packages/gunicorn/workers/workertmp.py
 /venv/lib/python3.8/site-packages/gunicorn/http/wsgi.py
 /venv/lib/python3.8/site-packages/gunicorn/app/wsgiapp.py
+/.venv/

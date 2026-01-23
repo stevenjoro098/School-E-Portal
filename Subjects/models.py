@@ -1,7 +1,11 @@
 from django.db import models
 
+from Students.models import Teachers
+
+
 class Grade(models.Model):
     name = models.CharField(max_length=250)
+    class_teacher = models.OneToOneField(Teachers, related_name='class_teacher', null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         ordering = ('-name',)

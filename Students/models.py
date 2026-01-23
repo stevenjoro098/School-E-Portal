@@ -1,6 +1,6 @@
 from django.db import models
 
-from Subjects.models import Subject
+
 
 # Create your models here.
 gender = (

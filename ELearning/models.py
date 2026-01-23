@@ -5,28 +5,28 @@ from Subjects.models import Grade, Subject
 
 
 class Strand(models.Model):
-    subject = models.ForeignKey(Subject, related_name='subject_strands', on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, related_name='subject_strands', on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
 
 class SubStrand(models.Model):
-    strand = models.ForeignKey(Strand, related_name='substrands', on_delete=models.CASCADE)
+    strand = models.ForeignKey(Strand, related_name='substrands', on_delete=models.SET_NULL, null=True, blank=True)
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
 
 class LearningOutcome(models.Model):
-    substrand = models.ForeignKey(SubStrand, related_name='learning_outcomes', on_delete=models.CASCADE)
+    substrand = models.ForeignKey(SubStrand, related_name='learning_outcomes', on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField()
 
     def __str__(self):
         return self.description[:50]
 
 class Activity(models.Model):
-    outcome = models.ForeignKey(LearningOutcome, related_name='activities', on_delete=models.CASCADE)
+    outcome = models.ForeignKey(LearningOutcome, related_name='activities', on_delete=models.SET_NULL, null=True, blank=True)
     activity_type = models.CharField(max_length=50, choices=[
         ('video', 'Video'),
         ('quiz', 'Quiz'),

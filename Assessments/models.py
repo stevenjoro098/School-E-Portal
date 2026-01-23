@@ -58,7 +58,7 @@ class StudentAnswer(models.Model):
         return self.selected_choice.is_correct
 
 class AssessmentResult(models.Model):
-    student = models.ForeignKey(Student, related_name='student_assessments',on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, related_name='student_assessments',on_delete=models.SET_NULL, null=True, blank=True)
     assessment = models.ForeignKey(Assessment,  on_delete=models.CASCADE)
     total_score = models.PositiveIntegerField()
     percentage = models.IntegerField(blank=True, null=True)

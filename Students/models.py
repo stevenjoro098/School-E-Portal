@@ -11,7 +11,7 @@ class Student(models.Model):
     first_name = models.CharField(max_length=200)
     second_name = models.CharField(max_length=200)
     third_name = models.CharField(max_length=200, blank=True)
-    grade = models.ForeignKey('Subjects.Grade', on_delete=models.CASCADE, blank=True, null=True)
+    grade = models.ForeignKey('Subjects.Grade', on_delete=models.SET_NULL, blank=True, null=True)
     gender = models.CharField(choices=gender, max_length=200)
     image = models.ImageField(upload_to='students', default='default_profile_image.png', blank=True)
     residence = models.CharField(max_length=200, blank=True)

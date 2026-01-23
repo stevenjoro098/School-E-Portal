@@ -20,7 +20,7 @@ class Exam(models.Model):
 
 class ExamSubject(models.Model):
     exam = models.ForeignKey(Exam, related_name='exam_subjects', on_delete=models.SET_NULL, null=True, blank=True)
-    grade = models.ForeignKey(Grade, on_delete=models.CASCADE, related_name='exam_grade_subjects', blank=True)
+    grade = models.ForeignKey(Grade, on_delete=models.SET_NULL, related_name='exam_grade_subjects', blank=True, null=True)
     exam_subject = models.CharField(max_length=200)
 
     def __str__(self):

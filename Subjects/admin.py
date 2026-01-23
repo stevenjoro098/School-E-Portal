@@ -4,7 +4,7 @@ from Subjects.models import Subject,Grade
 
 @admin.register(Grade)
 class GradeAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['name','class_teacher']
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):

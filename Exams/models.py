@@ -29,7 +29,7 @@ class ExamSubject(models.Model):
 class StudentPerformance(models.Model):
     student = models.ForeignKey(Student, related_name='student_performance', on_delete=models.SET_NULL, null=True, blank=True)
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='exam_performance')
-    student_name = models.CharField(max_length=200)
+    student_name = models.CharField(max_length=200, blank=True)
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True)
     performance = models.PositiveIntegerField()
     created = models.DateField(auto_now_add=True)

@@ -6191,3 +6191,9 @@ db.sqlite3
 /venv/lib/python3.8/site-packages/gunicorn/http/wsgi.py
 /venv/lib/python3.8/site-packages/gunicorn/app/wsgiapp.py
 /.venv/
+/Exams/migrations/
+/Assessments/migrations/
+/ELearning/migrations/
+/Exams/migrations/
+/Students/migrations/
+/Subjects/migrations/

@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'Assessments.apps.AssessmentsConfig',
     'ELearning.apps.ElearningConfig',
     'Students.apps.StudentsConfig',
-    'Exams.apps.ExamsConfig'
+    'Exams.apps.ExamsConfig',
+    'TimeTable.apps.TimetableConfig'
 # 'widget_tweaks'
 ]
 MIDDLEWARE = [

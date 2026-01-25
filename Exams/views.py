@@ -14,6 +14,8 @@ import os
 from Subjects.models import Subject, Grade
 from .models import Exam, StudentPerformance
 from Students.models import Student
+from .utils.cbc_kjsea_points import score_to_cbc
+
 
 class GradesList(ListView):
     template_name = 'grade_list.html'
@@ -94,35 +96,64 @@ class ExamPerformanceListView(View):
         students = Student.objects.filter(grade=exam.grade)
         subjects = Subject.objects.filter(grade=exam.grade)
 
+        # ✅ One query only (NO N+1)
+        performances = StudentPerformance.objects.filter(
+            exam=exam,
+            student__in=students,
+            subject__in=subjects
+        )
+
+        perf_map = {}
+        for p in performances:
+            perf_map[(p.student_id, p.subject_id)] = p.performance
+
         performance_data = []
 
-        # Collect scores for each student
         for student in students:
             scores = {}
-            for subject in subjects:
-                perf = StudentPerformance.objects.filter(
-                    exam=exam, student=student, subject=subject
-                ).first()
-                scores[subject.id] = perf.performance if perf else None
+            points = []
 
-            total = sum([s for s in scores.values() if s is not None])
-            avg = total / len(subjects) if subjects else 0
+            for subject in subjects:
+                score = perf_map.get((student.id, subject.id))
+                cbc = score_to_cbc(score)
+
+                scores[subject.id] = {
+                    "score": score,
+                    "band": cbc['band'] if cbc else None,
+                    "level": cbc['level'] if cbc else None,
+                    "points": cbc['points'] if cbc else None,
+                }
+
+                if cbc:
+                    points.append(cbc['points'])
+
+            total_points = sum(points)
+            avg_points = round(
+                total_points / len(points), 2
+            ) if points else 0
 
             performance_data.append({
                 "student": student,
                 "scores": scores,
-                "total": total,
-                "average": round(avg, 2),
+                "total": total_points,      # CBC total
+                "average": avg_points,      # CBC mean points
             })
 
-        # ✅ Sort students by total score (highest first)
-        performance_data = sorted(performance_data, key=lambda x: x["total"], reverse=True)
+        # ✅ Rank by CBC total points
+        performance_data.sort(key=lambda x: x["total"], reverse=True)
 
-        # ✅ Calculate average per subject across all students
+        # ✅ Subject mean points (CBC-correct)
         subject_averages = {}
         for subject in subjects:
-            values = [row["scores"][subject.id] for row in performance_data if row["scores"][subject.id] is not None]
-            subject_averages[subject.id] = round(sum(values) / len(values), 2) if values else None
+            subject_points = [
+                row["scores"][subject.id]["points"]
+                for row in performance_data
+                if row["scores"][subject.id]["points"] is not None
+            ]
+            subject_averages[subject.id] = (
+                round(sum(subject_points) / len(subject_points), 2)
+                if subject_points else None
+            )
 
         context = {
             "exam": exam,
@@ -131,8 +162,8 @@ class ExamPerformanceListView(View):
             "performance_data": performance_data,
             "subject_averages": subject_averages,
         }
-        return render(request, self.template_name, context)
 
+        return render(request, self.template_name, context)
 
 class ExportExamExcelView(View):
     def get(self, request, pk):
@@ -510,7 +541,7 @@ class PrintTermReportCardsView(View):
 
         logo_uri = f"file://{os.path.abspath(logo_path)}"
 
-        # Context for template
+        # Context for templates
         context = {
             "school_name": "UNITED MATUNDA ACADEMY",
             "grade": grade,

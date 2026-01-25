@@ -1,0 +1,40 @@
+{% block content %}
+   <form method="post">
+  {% csrf_token %}
+
+  <table class="table table-bordered text-center align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>Time</th>
+        {% for day in days %}
+          <th>{{ day.day }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for row in grid %}
+        <tr>
+          <td class="fw-bold">
+            {{ row.start }} – {{ row.end }}
+          </td>
+
+          {% for slot, form in row.cells %}
+            <td>
+              {% if slot %}
+                {{ form.subject }}
+                <br>
+                {{ form.teacher }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <button class="btn btn-success">Save Timetable</button>
+</form>
+{% endblock %}

@@ -83,7 +83,7 @@ class AssessmentAnalysis(LoginRequiredMixin, ListView):
 
 class AssessmentEditView(LoginRequiredMixin, UpdateView):
     model = Assessment
-    template_name = 'assessment_form.html'  # You can reuse the create template if you like
+    template_name = 'assessment_form.html'  # You can reuse the create templates if you like
     fields = ['title', 'subject', 'grade', 'teacher', 'scheduled_date', 'duration_minutes', 'is_published']
 
 
@@ -332,7 +332,7 @@ def download_result_pdf(request, result_id):
         "now": timezone.now()
     }
 
-    # Load template and render to HTML
+    # Load templates and render to HTML
     template = get_template("pdf/result_pdf.html")
     html_content = template.render(context)
 

@@ -6,7 +6,7 @@
 <div class="container py-2">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold m-0">Welcome to UMA Digital Learning</h3>
-        <a href="#" class="btn btn-primary">TimeTable</a>
+        <a href="{% url 'timetable' %}" class="btn btn-primary">TimeTable</a>
     </div>
 
 
@@ -52,6 +52,21 @@
 </div>
 
 <style>
+    body {
+    background-image: url("{% static 'images/bg.jpg' %}");
+    background-size: cover;        /* Fill screen */
+    background-position: center;   /* Center image */
+    background-repeat: no-repeat;
+    background-attachment: fixed;  /* Nice parallax effect */
+    font-size: 1.1rem;
+  }
+
+  /* Optional: make content readable */
+  .container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
   .hover-card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   }

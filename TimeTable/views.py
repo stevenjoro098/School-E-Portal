@@ -2,9 +2,36 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views import View
+from django.views.generic import TemplateView
+from django.http import JsonResponse
+
+
 from .models import TimetableSlot, Day
 from Subjects.models import Grade
 from .forms import TimetableCellForm
+
+class TimeTable(TemplateView, View):
+    template_name = 'timetable.html'
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response(context={'grades': Grade.objects.all()})
+
+class GradeTimetableAPIView(View):
+    def get(self, request, grade_id):
+        timetable = TimetableSlot.objects.filter(grade_id=grade_id)
+        print(timetable)
+        data = [
+            {
+                "day": t.day,
+                "subject": t.subject,
+                "start": t.start_time.strftime("%H:%M"),
+                "end": t.end_time.strftime("%H:%M"),
+            }
+            for t in timetable
+        ]
+
+        return JsonResponse({"timetable": data})
 
 def timetable_matrix_view(request):
     grade = get_object_or_404(Grade, id=1)

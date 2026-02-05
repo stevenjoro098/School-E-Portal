@@ -29,5 +29,5 @@ class SubjectByGradeFilter(admin.SimpleListFilter):
 
 @admin.register(StudentPerformance)
 class StudentPerformanceAdmin(admin.ModelAdmin):
-    list_display = ['student', 'exam', 'subject', 'performance', 'created']
+    list_display = ['student','exam', 'subject', 'performance', 'created']
     list_filter = ['exam', SubjectByGradeFilter]

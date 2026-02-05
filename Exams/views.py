@@ -88,71 +88,72 @@ class EnterExamPerformanceView(View):
         return redirect("enter_exam_performance", pk=exam.id)
 
 
+from django.shortcuts import render, get_object_or_404
+from django.views import View
+from .models import Exam, Student, Subject, StudentPerformance
+
+
 class ExamPerformanceListView(View):
     template_name = "performance_list.html"
 
     def get(self, request, pk):
         exam = get_object_or_404(Exam, id=pk)
+
         students = Student.objects.filter(grade=exam.grade)
         subjects = Subject.objects.filter(grade=exam.grade)
 
-        # ✅ One query only (NO N+1)
+        # Fetch all performances in ONE query
         performances = StudentPerformance.objects.filter(
             exam=exam,
             student__in=students,
             subject__in=subjects
         )
 
-        perf_map = {}
-        for p in performances:
-            perf_map[(p.student_id, p.subject_id)] = p.performance
+        # Map: (student_id, subject_id) -> raw score
+        perf_map = {
+            (p.student_id, p.subject_id): p.performance
+            for p in performances
+        }
 
         performance_data = []
 
         for student in students:
             scores = {}
-            points = []
+            total = 0
+            count = 0
 
             for subject in subjects:
                 score = perf_map.get((student.id, subject.id))
-                # cbc = score_to_cbc(score)
 
-                scores[subject.id] = {
-                    "score": score,
-                    # "band": cbc['band'] if cbc else None,
-                    # "level": cbc['level'] if cbc else None,
-                    "points": None,
-                }
+                scores[subject.id] = score
 
-                # if cbc:
-                #     points.append(cbc['points'])
+                if score is not None:
+                    total += score
+                    count += 1
 
-            total_points = sum(points)
-            avg_points = round(
-                total_points / len(points), 2
-            ) if points else 0
+            average = round(total / count, 2) if count else 0
 
             performance_data.append({
                 "student": student,
                 "scores": scores,
-                "total": total_points,      # CBC total
-                "average": avg_points,      # CBC mean points
+                "total": total,
+                "average": average,
             })
 
-        # ✅ Rank by CBC total points
+        # Rank by total marks
         performance_data.sort(key=lambda x: x["total"], reverse=True)
 
-        # ✅ Subject mean points (CBC-correct)
+        # Subject averages (raw marks)
         subject_averages = {}
         for subject in subjects:
-            subject_points = [
-                row["scores"][subject.id]["points"]
+            subject_scores = [
+                row["scores"][subject.id]
                 for row in performance_data
-                if row["scores"][subject.id]["points"] is not None
+                if row["scores"][subject.id] is not None
             ]
             subject_averages[subject.id] = (
-                round(sum(subject_points) / len(subject_points), 2)
-                if subject_points else None
+                round(sum(subject_scores) / len(subject_scores), 2)
+                if subject_scores else None
             )
 
         context = {
@@ -164,6 +165,7 @@ class ExamPerformanceListView(View):
         }
 
         return render(request, self.template_name, context)
+
 
 class ExportExamExcelView(View):
     def get(self, request, pk):

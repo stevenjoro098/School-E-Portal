@@ -109,35 +109,35 @@ class ExamPerformanceListView(View):
 
         performance_data = []
 
-        # for student in students:
-        #     scores = {}
-        #     points = []
-        #
-        #     for subject in subjects:
-        #         score = perf_map.get((student.id, subject.id))
-        #         cbc = score_to_cbc(score)
-        #
-        #         scores[subject.id] = {
-        #             "score": score,
-        #             "band": cbc['band'] if cbc else None,
-        #             "level": cbc['level'] if cbc else None,
-        #             "points": cbc['points'] if cbc else None,
-        #         }
-        #
-        #         if cbc:
-        #             points.append(cbc['points'])
-        #
-        #     total_points = sum(points)
-        #     avg_points = round(
-        #         total_points / len(points), 2
-        #     ) if points else 0
-        #
-        #     performance_data.append({
-        #         "student": student,
-        #         "scores": scores,
-        #         "total": total_points,      # CBC total
-        #         "average": avg_points,      # CBC mean points
-        #     })
+        for student in students:
+            scores = {}
+            points = []
+
+            for subject in subjects:
+                score = perf_map.get((student.id, subject.id))
+                # cbc = score_to_cbc(score)
+
+                scores[subject.id] = {
+                    "score": score,
+                    # "band": cbc['band'] if cbc else None,
+                    # "level": cbc['level'] if cbc else None,
+                    "points": None,
+                }
+
+                # if cbc:
+                #     points.append(cbc['points'])
+
+            total_points = sum(points)
+            avg_points = round(
+                total_points / len(points), 2
+            ) if points else 0
+
+            performance_data.append({
+                "student": student,
+                "scores": scores,
+                "total": total_points,      # CBC total
+                "average": avg_points,      # CBC mean points
+            })
 
         # ✅ Rank by CBC total points
         performance_data.sort(key=lambda x: x["total"], reverse=True)

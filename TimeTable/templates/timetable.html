@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %} Timetable {% endblock %}
+
+{% block content %}
+<div id="app" class="row">
+    <h3 class="mb-3">Select Grade Timetable:</h3>
+
+    <!-- Grades list -->
+    <div class="col-md-3">
+        <div class="list-group">
+            {% for item in grades %}
+                <a href="#"
+                   class="list-group-item list-group-item-action"
+                   :class="{ active: selectedGrade === {{ item.id }} }"
+                   @click.prevent="loadTimetable({{ item.id }})">
+                    {{ item.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Timetable display -->
+    <div class="col-md-9">
+        <div v-if="loading" class="text-muted">
+            Loading timetable...
+        </div>
+
+        <table v-if="timetable.length" class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Day</th>
+                    <th>Subject</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in timetable" :key="item.day + item.start">
+                    <td>[[ item.day ]]</td>
+                    <td>[[ item.subject ]]</td>
+                    <td>[[ item.start ]] - [[ item.end ]]</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div v-if="!loading && !timetable.length" class="text-muted">
+            Select a grade to view timetable
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<!-- Vue CDN (REQUIRED) -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+    delimiters: ['[[', ']]'],
+    data() {
+        return {
+            timetable: [],
+            loading: false,
+            selectedGrade: null,
+        }
+    },
+    methods: {
+        loadTimetable(gradeId) {
+            this.selectedGrade = gradeId;
+            this.loading = true;
+
+            fetch(`/timetable/api/timetable/${gradeId}/`)
+                .then(res => res.json())
+                .then(data => {
+                    this.timetable = data.timetable;
+                    this.loading = false;
+                })
+                .catch(error => {
+                    console.error(error);
+                    this.timetable = [];
+                    this.loading = false;
+                });
+        }
+    }
+}).mount("#app");
+</script>
+{% endblock %}

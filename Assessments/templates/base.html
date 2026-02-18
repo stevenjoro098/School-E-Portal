@@ -52,30 +52,98 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark px-3">
-  <div class="d-flex align-items-center">
-    <img src="{% static 'images/Logo.png' %}" style="width:3.5rem; margin-right: 0.5rem;">
-    <a class="navbar-brand text-white mb-0" href="{% url 'home_page'%}">
-      UNITED MATUNDA ACADEMY Portal
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+  <div class="container-fluid">
+
+    <!-- Logo + Brand -->
+    <a class="navbar-brand d-flex align-items-center fw-semibold"
+       href="{% url 'home_page' %}">
+      <img src="{% static 'images/Logo.png' %}"
+           alt="UMA Logo"
+           width="40"
+           height="40"
+           class="me-2 rounded">
+      UNITED MATUNDA ACADEMY
     </a>
+
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Collapsible Menu -->
+    <div class="collapse navbar-collapse" id="mainNavbar">
+
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+
+        {% block nav %}{% endblock %}
+
+        {% if user.is_authenticated %}
+
+          <!-- Dashboard -->
+          <li class="nav-item">
+            <a class="nav-link"
+               href="{% url 'dashboard' %}">
+              Exam Dashboard
+            </a>
+          </li>
+
+          <!-- Elearning -->
+          <li class="nav-item">
+            <a class="nav-link"
+               href="{% url 'elearning_home' %}">
+              E-Learning
+            </a>
+          </li>
+
+          <!-- User Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle"
+               href="#"
+               role="button"
+               data-bs-toggle="dropdown"
+               aria-expanded="false">
+              👤 {{ user.username }}
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+              <li>
+                <a class="dropdown-item"
+                   href="{% url 'dashboard' %}">
+                   Dashboard
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger"
+                   href="{% url 'logout' %}">
+                   Logout
+                </a>
+              </li>
+            </ul>
+          </li>
+
+        {% else %}
+
+          <li class="nav-item">
+            <a class="btn btn-primary btn-sm ms-lg-2"
+               href="{% url 'login' %}">
+              Login
+            </a>
+          </li>
+
+        {% endif %}
+
+      </ul>
+
+    </div>
   </div>
-
-  <ul class="nav justify-content-end">
-    {% block nav %}{% endblock %}
-
-    {% if user.is_authenticated %}
-      <li><a class="nav-link" href="{% url 'dashboard' %}">Exam Dashboard</a></li>
-      <li><a class="nav-link" href="{% url 'elearning_home' %}">Manage Elearning</a></li>
-      <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="#">
-          <span>Hello, {{ user.username }}</span>
-        </a>
-      </li>
-      <li class="nav-item"><a class="nav-link btn btn-danger" href="{% url 'logout' %}">Logout</a></li>
-    {% else %}
-      <li class="nav-item"><a class="nav-link btn btn-primary" href="{% url 'login' %}">Login</a></li>
-    {% endif %}
-  </ul>
 </nav>
 
 

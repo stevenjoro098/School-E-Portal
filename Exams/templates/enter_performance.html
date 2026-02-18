@@ -1,59 +1,139 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="mb-3">
-  <a href="{% url 'exam_performance_list' exam.pk %}" class="btn btn-secondary">
-    ← Go back to Exam
-  </a>
-</div>
 
-<div class="card shadow-sm">
-  <div class="card-header bg-info text-white">
-    <h5 class="mb-0">{{ exam.exam_name }} - {{ exam.grade }} Performance Entry</h5>
+<div class="container-fluid py-3">
+
+  <!-- Back Button -->
+  <div class="mb-3">
+    <a href="{% url 'exam_performance_list' exam.pk %}"
+       class="btn btn-secondary btn-sm">
+      ← Go back to Exam
+    </a>
   </div>
 
-  <form method="post">
-    {% csrf_token %}
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>Student</th>
-              {% for subject in subjects %}
-                <th>{{ subject }}</th>
-              {% endfor %}
-            </tr>
-          </thead>
-          <tbody>
-            {% for student in students %}
-              <tr>
-                <td class="fw-bold">{{ student.first_name }} {{ student.second_name }}</td>
-                {% for subject in subjects %}
-                  <td>
-                    <input type="number"
-                           name="perf_{{ student.id }}_{{ subject.id }}"
-                           class="form-control text-center"
-                           min="0" max="100"
-                           value="{% for p in student.student_performance.all %}
-                                    {% if p.subject.id == subject.id and p.exam.id == exam.id %}
-                                      {{ p.performance }}
-                                    {% endif %}
-                                  {% endfor %}">
-                  </td>
-                {% endfor %}
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+  <!-- Card -->
+  <div class="card shadow-sm border-0">
+
+    <div class="card-header bg-info text-white">
+      <h5 class="mb-0">
+        {{ exam.exam_name }} - {{ exam.grade }} Performance Entry
+      </h5>
     </div>
 
-    <div class="card-footer text-end">
-      <button type="submit" class="btn btn-primary">
-        💾 Save Performances
-      </button>
-    </div>
-  </form>
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="card-body p-0">
+
+        <!-- Scrollable Table Wrapper -->
+        <div class="table-responsive table-wrapper">
+
+          <table class="table table-bordered table-striped align-middle mb-0">
+
+            <thead class="table-light">
+              <tr>
+                <!-- Sticky Student Column Header -->
+                <th class="sticky-header sticky-col bg-light text-start">
+                  Student
+                </th>
+
+                {% for subject in subjects %}
+                  <th class="sticky-header bg-light text-center">
+                    {{ subject }}
+                  </th>
+                {% endfor %}
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for student in students %}
+              <tr>
+
+                <!-- Sticky Student Name Column -->
+                <td class="fw-semibold sticky-col bg-white text-nowrap">
+                  {{ student.first_name }} {{ student.second_name }}
+                </td>
+
+                {% for subject in subjects %}
+                <td>
+                  <input type="number"
+                         name="perf_{{ student.id }}_{{ subject.id }}"
+                         class="form-control form-control-sm text-center"
+                         min="0"
+                         max="100"
+                         value="{% for p in student.student_performance.all %}
+                                  {% if p.subject.id == subject.id and p.exam.id == exam.id %}
+                                    {{ p.performance }}
+                                  {% endif %}
+                                {% endfor %}">
+                </td>
+                {% endfor %}
+
+              </tr>
+              {% endfor %}
+            </tbody>
+
+          </table>
+
+        </div>
+      </div>
+
+      <div class="card-footer text-end">
+        <button type="submit" class="btn btn-primary">
+          💾 Save Performances
+        </button>
+      </div>
+
+    </form>
+  </div>
 </div>
+
+<!-- ===== Custom CSS ===== -->
+<style>
+
+/* Scrollable area */
+.table-wrapper {
+  max-height: 75vh;
+  overflow: auto;
+}
+
+/* Sticky Header */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+/* Sticky First Column */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+}
+
+/* Ensure top-left corner stays above everything */
+thead .sticky-col {
+  z-index: 5;
+}
+
+/* Prevent overlap transparency issues */
+.sticky-col,
+.sticky-header {
+  background-clip: padding-box;
+}
+
+/* Improve mobile readability */
+@media (max-width: 768px) {
+  .table-wrapper {
+    max-height: 65vh;
+  }
+
+  th, td {
+    font-size: 0.85rem;
+  }
+}
+
+</style>
+
 {% endblock %}

@@ -5,7 +5,7 @@
     <a href="{% url 'add_subject' grade.id %}" class="btn btn-success">Add Subject</a>
 {% endblock %}
 {% block content %}
-    <h3>Subjects.</h3>
+    <h3>{{ grade }} Subjects.</h3>
     <hr>
     <div class="row row-cols-1 row-cols-md-4 g-4">
         {% for item in subjects_list %}

@@ -7,14 +7,16 @@ urlpatterns = [
     path('subjects/list/<int:grade_id>/', views.SubjectsList.as_view(), name='subjects_list_page'),
     path('subjects/add/form/page/<int:grade_id>/', views.AddSubjectView.as_view(), name='add_subject'),
     path('subjects/strands/list/<int:subject_id>/', views.StrandsList.as_view(),name='strands_list'),
+
     path('subject/delete/<int:grade_id>/<int:pk>/', views.SubjectDelete.as_view(), name='delete_subject'),
+
     path('substrand/resources/view/<int:substrand_id>/', views.SubstrandResourceView.as_view(), name='resources_view'),
 
     path('substrands/<int:strand_id>/', views.SubStrandListView.as_view(), name='api_substrands'),
 
     path('delete/image/<int:pk>/<int:substrand_id>/', views.ImageDeleteView.as_view(), name='delete_image'),
     path('delete/notes/<int:pk>/<int:substrand_id>/', views.NoteDeleteView.as_view(), name='delete_notes'),
-    path('delete/strand/<int:pk>/<int:subject_id>/', views.StrandDelete.as_view(), name='strand_delete'),
+    path('delete/strand/<int:subject_id>/<int:pk>/', views.StrandDelete.as_view(), name='strand_delete'),
 
     path('api/subjects/<int:subject_id>/add-strand/', views.AddStrandAPI.as_view(), name='api_add_strand'),
     path('api/add-substrand/', views.AddSubStrandView.as_view(), name='add_substrand'),

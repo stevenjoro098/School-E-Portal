@@ -91,7 +91,6 @@ class StrandListView(View):
         strands = list(Strand.objects.filter(subject_id=subject_id).values('id', 'title'))
         return JsonResponse({'strands': strands})
 
-
 class SubStrandListView(ListView):
     model = SubStrand
     template_name = 'curriculum_management/substrand_list_page.html'
@@ -115,13 +114,9 @@ class StrandDelete(DeleteView):
     template_name = 'curriculum_management/delete_strand.html'
     model = Strand
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['strand'] = get_object_or_404(Strand, id=self.kwargs['strand_id'])
-        return context
 
     def get_success_url(self):
-        return reverse('strands_list', kwargs=self.kwargs['subject_id'])
+        pass
 
 class NoteListView(View):
     def get(self, request):

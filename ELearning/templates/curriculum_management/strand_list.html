@@ -1,104 +1,193 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %} {{ subject.name }} {% endblock%}
-{% block extra_head %}
-{% endblock %}
+{% block title %} {{ subject.name }} {% endblock %}
 
 {% block content %}
-<div id="app">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Strands for : {{ subject.name }}</h2>
-        <hr>
-        <a href="#" class="btn btn-warning" @click.prevent="showModal = true">Add Strand</a>
-    </div>
-    <hr>
-    <div class="d-flex flex-wrap gap-3">
-    <div v-for="strand in strands"
-         :key="strand.id"
-         class="card"
-         > <!-- 👈 uniform size -->
+<div id="app" class="container py-4">
 
-        <div class="card-body">
-            <h4 class="card-title">[[ strand.name ]]</h4>
-            <div class="mt-auto d-flex gap-2"> <!-- 👈 pushes buttons to bottom -->
-                <a :href="`{% url 'api_substrands' 0 %}`.replace('0', strand.id)"
-                   class="btn btn-warning btn-sm">View</a>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            Strands — {{ subject.name }}
+        </h3>
+        <button class="btn btn-warning"
+                @click="showModal = true">
+            + Add Strand
+        </button>
+    </div>
+
+    <!-- Grid -->
+    <div class="row g-3">
+
+        <div class="col-md-4"
+             v-for="strand in strands"
+             :key="strand.id">
+
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body d-flex flex-column">
+
+                    <!-- Title -->
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="fw-semibold">
+                            [[ strand.name ]]
+                        </h5>
+
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-danger"
+                                    @click="deleteStrand(strand.id)">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Button -->
+                    <div class="mt-auto pt-3">
+                        <a :href="`/api/substrands/${strand.id}/`"
+                           class="btn btn-outline-warning btn-sm w-100">
+                           View Sub-Strands
+                        </a>
+                    </div>
+
+                </div>
             </div>
-        </div>
-    </div>
-</div>
 
+        </div>
+
+    </div>
+
+    <!-- Empty State -->
+    <div v-if="strands.length === 0"
+         class="text-center text-muted mt-5">
+        No strands created yet.
+    </div>
 
     <!-- Modal -->
-    <div v-if="showModal" class="modal fade show d-block" style="background: rgba(0,0,0,0.5);">
+    <div v-if="showModal"
+         class="modal fade show d-block"
+         style="background: rgba(0,0,0,0.5);">
+
         <div class="modal-dialog">
             <div class="modal-content">
+
                 <div class="modal-header">
-                    <h5 class="modal-title">Add New Strand</h5>
-                    <button type="button" class="btn-close" @click="showModal = false"></button>
+                    <h5 class="modal-title">Add Strand</h5>
+                    <button type="button"
+                            class="btn-close"
+                            @click="closeModal"></button>
                 </div>
+
                 <div class="modal-body">
-                    <input type="text" v-model="newStrand" placeholder="Enter strand name" class="form-control">
+                    <input type="text"
+                           v-model="newStrand"
+                           class="form-control"
+                           placeholder="Enter strand name">
                 </div>
+
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" @click="showModal = false">Cancel</button>
-                    <button class="btn btn-primary" @click="addStrand">Save</button>
+                    <button class="btn btn-secondary"
+                            @click="closeModal">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary"
+                            @click="addStrand">
+                        Save
+                    </button>
                 </div>
+
             </div>
         </div>
     </div>
 
-    <!-- ✅ Success Alert -->
-    <div v-if="successMessage" class="alert alert-success position-fixed bottom-0 end-0 m-3" style="z-index:999;">
+    <!-- Toast -->
+    <div v-if="successMessage"
+         class="alert alert-success position-fixed bottom-0 end-0 m-4 shadow"
+         style="z-index:1055;">
         [[ successMessage ]]
     </div>
-</div>
-{% endblock %}
 
-{% block scripts %}
+</div>
+
+<!-- Vue + Axios -->
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
+
     const { createApp } = Vue;
 
     createApp({
         delimiters: ['[[', ']]'],
+
         data() {
             return {
                 strands: {{ strands_json|safe }},
-                newStrand: '',
+                subjectId: {{ subject.id }},
+                csrfToken: '{{ csrf_token }}',
                 showModal: false,
-                successMessage: '',
-                subjectId: {{ view.kwargs.subject_id }}
+                newStrand: '',
+                successMessage: ''
             }
         },
+
         methods: {
+
+            closeModal() {
+                this.showModal = false;
+                this.newStrand = '';
+            },
+
             async addStrand() {
                 if (!this.newStrand.trim()) {
-                    alert('Please enter a strand name.');
+                    alert("Strand name is required.");
                     return;
                 }
 
                 try {
-                    axios.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}';
+                    axios.defaults.headers.common['X-CSRFToken'] = this.csrfToken;
 
-                    const response = await axios.post(`/api/subjects/${this.subjectId}/add-strand/`, {
-                        name: this.newStrand
-                    });
+                    const response = await axios.post(
+                        `/api/subjects/${this.subjectId}/add-strand/`,
+                        { name: this.newStrand }
+                    );
 
                     this.strands.push(response.data);
-                    this.newStrand = '';
-                    this.showModal = false;
+                    this.closeModal();
+                    this.showToast("Strand added successfully.");
 
-                    // ✅ Show success message
-                    this.successMessage = 'Strand added successfully!';
-                    setTimeout(() => this.successMessage = '', 3000);
                 } catch (error) {
                     console.error(error);
-                    alert('Failed to add strand.');
+                    alert("Failed to add strand.");
                 }
+            },
+
+            async deleteStrand(id) {
+                if (!confirm("Are you sure you want to delete this strand?"))
+                    return;
+
+                try {
+                    axios.defaults.headers.common['X-CSRFToken'] = this.csrfToken;
+
+                    await axios.delete(
+                        `/delete/strand/${this.subjectId}/${id}/`
+                    );
+
+                    this.strands = this.strands.filter(s => s.id !== id);
+                    this.showToast("Strand deleted successfully.");
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Failed to delete strand.");
+                }
+            },
+
+            showToast(message) {
+                this.successMessage = message;
+                setTimeout(() => this.successMessage = '', 3000);
             }
+
         }
+
     }).mount('#app');
+
 });
 </script>
+
 {% endblock %}

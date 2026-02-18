@@ -6204,3 +6204,8 @@ db.sqlite3
 /Students/migrations/
 /Subjects/migrations/
 /TimeTable/migrations/
+/ELearning/migrations/
+/Exams/migrations/
+/Subjects/migrations/
+/Students/migrations/
+/ELearning/migrations/

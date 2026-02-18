@@ -14,11 +14,8 @@
   <!-- Page Header -->
   <div class="mb-4">
     <h2 class="fw-bold mb-1">
-      Exams by Term
+      {{ grade }} Exams.
     </h2>
-    <p class="text-muted mb-0">
-       {{ grade }}
-    </p>
   </div>
 
   {% for term, exams in grouped_exams.items %}

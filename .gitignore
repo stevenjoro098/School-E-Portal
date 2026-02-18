@@ -6209,3 +6209,4 @@ db.sqlite3
 /Subjects/migrations/
 /Students/migrations/
 /ELearning/migrations/
+/Assessments/migrations/

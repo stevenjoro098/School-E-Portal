@@ -664,3 +664,173 @@ class TermExamAnalysis(TemplateView):
         context['grade_trends'] = grade_trends
 
         return context
+
+
+class GenerateClassReportCardsView(View):
+
+    def get(self, request, exam_id):
+
+        exam = get_object_or_404(Exam, pk=exam_id)
+        grade = exam.grade
+
+        students = Student.objects.filter(grade=grade).order_by("first_name")
+        subjects = Subject.objects.filter(grade=grade).order_by("numbering")
+
+        # -------------------------------------------------
+        # Fetch all performances once
+        # -------------------------------------------------
+        performances = StudentPerformance.objects.filter(
+            exam=exam,
+            student__in=students,
+            subject__in=subjects
+        )
+
+        # Map (student_id, subject_id) → score
+        perf_map = {
+            (p.student_id, p.subject_id): p.performance
+            for p in performances
+        }
+
+        # -------------------------------------------------
+        # Compute student totals and build reports
+        # -------------------------------------------------
+        student_totals = {}
+        reports = []
+
+        for student in students:
+
+            subject_scores = {}
+            total = 0
+            count = 0
+
+            for subject in subjects:
+
+                score = perf_map.get((student.id, subject.id))
+
+                if score is not None:
+                    subject_scores[subject.id] = score
+                    total += score
+                    count += 1
+                else:
+                    subject_scores[subject.id] = None
+
+            average = round(total / count, 2) if count else 0
+
+            student_totals[student.id] = total
+
+            reports.append({
+                "student": student,
+                "scores": subject_scores,
+                "total": total,
+                "average": average,
+            })
+
+        # -------------------------------------------------
+        # Dense Ranking Algorithm (Tie-safe ranking)
+        # -------------------------------------------------
+
+        sorted_totals = sorted(
+            student_totals.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )
+
+        rank_lookup = {}
+
+        rank = 1
+        prev_score = None
+        position_counter = 0
+
+        for student_id, total in sorted_totals:
+
+            position_counter += 1
+
+            if prev_score is not None and total < prev_score:
+                rank = position_counter
+
+            rank_lookup[student_id] = rank
+            prev_score = total
+
+        # -------------------------------------------------
+        # Attach metadata to reports
+        # -------------------------------------------------
+
+        total_students = students.count()
+
+        for report in reports:
+
+            sid = report["student"].id
+
+            report["rank"] = rank_lookup.get(sid)
+            report["total_students"] = total_students
+            report["term_total"] = report["total"]
+            report["term_average"] = report["average"]
+
+        # -------------------------------------------------
+        # Subject averages (efficient aggregation)
+        # -------------------------------------------------
+
+        subject_averages = {
+            subject.id: performances.filter(subject=subject)
+            .aggregate(avg=Avg("performance"))["avg"] or 0
+            for subject in subjects
+        }
+
+        # -------------------------------------------------
+        # Class mean score
+        # -------------------------------------------------
+
+        class_mean = performances.aggregate(
+            avg=Avg("performance")
+        )["avg"] or 0
+
+        # -------------------------------------------------
+        # Resolve logo path safely
+        # -------------------------------------------------
+
+        logo_filename = "Logo.png"
+        logo_relative_path = os.path.join("images", logo_filename)
+
+        logo_path = None
+
+        if hasattr(settings, "STATIC_ROOT") and settings.STATIC_ROOT:
+            candidate = os.path.join(settings.STATIC_ROOT, logo_relative_path)
+            if os.path.exists(candidate):
+                logo_path = candidate
+
+        if not logo_path and settings.STATICFILES_DIRS:
+            candidate = os.path.join(settings.STATICFILES_DIRS[0], logo_relative_path)
+            if os.path.exists(candidate):
+                logo_path = candidate
+
+        if not logo_path:
+            logo_path = os.path.join(settings.BASE_DIR, "static", logo_relative_path)
+
+        logo_uri = f"file://{os.path.abspath(logo_path)}"
+
+        # -------------------------------------------------
+        # Render PDF
+        # -------------------------------------------------
+
+        html_string = render_to_string(
+            "single_exam_report_cards.html",
+            {
+                "exam": exam,
+                "grade": grade,
+                "subjects": subjects,
+                "reports": reports,
+                "subject_averages": subject_averages,
+                "class_mean": round(class_mean, 2),
+                "logo_path": logo_uri,
+            }
+        )
+
+        pdf_file = HTML(string=html_string).write_pdf()
+
+        response = HttpResponse(pdf_file, content_type="application/pdf")
+
+        response["Content-Disposition"] = (
+            f'attachment; filename="{exam.exam_name}_{grade}_Class_Report_Cards.pdf"'
+        )
+
+        return response

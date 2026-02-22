@@ -1,0 +1,200 @@
+{% load dict_extras %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 1.2cm; }
+
+  body {
+    font-family: "Century Gothic", sans-serif;
+    font-size: 13px;
+  }
+
+  .header {
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid #333;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+      gap: 18px;
+    }
+
+  .logo {
+      width: 85px;
+      height: 85px;
+      object-fit: contain;
+      margin-right: 25px;
+    }
+
+  .school-info {
+      flex: 1;
+      text-align: left;
+    }
+
+    .school-info h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #000;
+    }
+
+    .school-info p {
+      margin: 2px 0;
+      font-size: 12px;
+      color: #333;
+    }
+
+      /* ===== TITLES ===== */
+    h2 {
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
+      margin: 10px 0 14px 0;
+      color: #000;
+    }
+
+    h1.student-name {
+      text-align: center;
+      background-color: #f3f3f3;
+      border: 1px solid #bbb;
+      padding: 10px;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+
+    h2.grade-name {
+      text-align: center;
+      font-size: 15px;
+      margin-top: 0;
+      color: #555;
+    }
+  table.results {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  table.results th,
+  table.results td {
+    border: 1px solid #444;
+    padding: 7px;
+    text-align: center;
+  }
+
+  table.results th {
+    background: #eaeaea;
+  }
+
+  table.results td:first-child {
+    text-align: left;
+  }
+
+  .summary-row {
+    background: #f2f2f2;
+    font-weight: bold;
+  }
+   /* ===== COMMENTS SECTION ===== */
+    .comment-box {
+      border: 1px solid #555;
+      padding: 10px 12px;
+      margin-top: 15px;
+      font-size: 13px;
+      background-color: #f9f9f9;
+      line-height: 2.5;
+    }
+
+    .comment-box p {
+      margin: 5px 0;
+    }
+    /* ===== FOOTER INFO ===== */
+    .footer-info {
+    position: fixed;
+    bottom: 0.8cm;   /* Distance from page bottom */
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 11px;
+    color: #555;
+}
+
+  .page-break {
+    page-break-after: always;
+  }
+
+</style>
+</head>
+<body>
+
+{% for report in reports %}
+
+<div class="header">
+      <img src="{{ logo_path }}" class="logo" alt="School Logo">
+      <div class="school-info">
+        <h1>UNITED MATUNDA ACADEMY</h1>
+        <p><em>Faith + Effort makes a mighty pair</em></p>
+        <p>P.O. Box 311, Moi’s Bridge</p>
+      </div>
+</div>
+
+<!-- ===== Student Info ===== -->
+    <h1 class="student-name">{{ report.student.first_name }} {{ report.student.second_name }}</h1>
+    <h2 class="grade-name">{{ grade }}</h2>
+
+<table class="results">
+  <tr>
+    <th>Subject</th>
+    <th>Performance</th>
+  </tr>
+
+  {% for subject in subjects %}
+  <tr>
+    <td>{{ subject.name }}</td>
+    <td>{{ report.scores|get_item:subject.id|default:"-" }}</td>
+  </tr>
+  {% endfor %}
+
+  <!-- TOTAL -->
+  <tr class="summary-row">
+    <td>Total Marks</td>
+    <td>{{ report.term_total }}</td>
+  </tr>
+
+  <!-- AVERAGE -->
+  <tr class="summary-row">
+    <td>Average</td>
+    <td>{{ report.term_average }}</td>
+  </tr>
+
+  <!-- RANK -->
+  <tr class="summary-row">
+    <td>Position</td>
+    <td>{{ report.rank }} / {{ report.total_students }}</td>
+  </tr>
+
+</table>
+<!-- ===== Comments Section ===== -->
+<div class="comment-box">
+  <p><strong>Class Teacher's Name:</strong>............................................</p>
+  <p><strong>Class Teacher’s Comment:</strong> ____________________________________________________________</p>
+  <p>_________________________________________________________________________________________________</p>
+  <br>
+  <p><strong>Head Teacher’s Comment:</strong> ______________________________________________________________________</p>
+  <p>________________________________________________________________________________________________</p>
+  <p></p>
+</div>
+<div class="footer-info">
+    <h6>United Matunda Academy|ICT</h6>
+</div>
+{% if not forloop.last %}
+<div class="page-break"></div>
+{% endif %}
+
+{% endfor %}
+
+</body>
+</html>

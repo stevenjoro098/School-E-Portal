@@ -19,6 +19,7 @@ urlpatterns = [
     path('create/exam/', views.CreateExam.as_view(), name='create_exam'),
     path("exam/<int:pk>/performance/", views.EnterExamPerformanceView.as_view(), name="enter_exam_performance"),
     path("exam/<int:pk>/performances/", views.ExamPerformanceListView.as_view(), name="exam_performance_list"),
+    path('exam/pdf/report/card/<int:exam_id>', views.GenerateClassReportCardsView.as_view(), name='exam_report_cards'),
     path("<int:pk>/performance/", views.ExamPerformanceListView.as_view(), name="exam_performance_list"),
     path("<int:pk>/performance/excel/", views.ExportExamExcelView.as_view(), name="export_exam_excel"),
     path("<int:pk>/performance/pdf/", views.ExportExamPDFView.as_view(), name="export_exam_pdf"),

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% block title %} Exam Entry {% endblock %}
 {% block content %}
 
 <div class="container-fluid py-3">
@@ -26,38 +27,45 @@
 
       <div class="card-body p-0">
 
-        <!-- Scrollable Table Wrapper -->
-        <div class="table-responsive table-wrapper">
+        <!-- Vue App Root -->
+        <div id="performanceApp" class="table-responsive table-wrapper">
 
           <table class="table table-bordered table-striped align-middle mb-0">
 
+            <!-- ================= HEADER ================= -->
             <thead class="table-light">
               <tr>
-                <!-- Sticky Student Column Header -->
+                <!-- Student Column -->
                 <th class="sticky-header sticky-col bg-light text-start">
                   Student
                 </th>
 
                 {% for subject in subjects %}
-                  <th class="sticky-header bg-light text-center">
+                  <th
+                    class="sticky-header bg-light text-center"
+                    :class="{ 'active-header': activeCol === {{ forloop.counter0 }} }"
+                  >
                     {{ subject }}
                   </th>
                 {% endfor %}
               </tr>
             </thead>
 
+            <!-- ================= BODY ================= -->
             <tbody>
               {% for student in students %}
-              <tr>
+              <tr :class="{ 'active-row': activeRow === {{ forloop.counter0 }} }">
 
-                <!-- Sticky Student Name Column -->
+                <!-- Student Name -->
                 <td class="fw-semibold sticky-col bg-white text-nowrap">
                   {{ student.first_name }} {{ student.second_name }}
                 </td>
 
                 {% for subject in subjects %}
-                <td>
+                <td :class="{ 'active-col': activeCol === {{ forloop.counter0 }} }">
+
                   <input type="number"
+                         @focus="setActive({{ forloop.parentloop.counter0 }}, {{ forloop.counter0 }})"
                          name="perf_{{ student.id }}_{{ subject.id }}"
                          class="form-control form-control-sm text-center"
                          min="0"
@@ -67,6 +75,7 @@
                                     {{ p.performance }}
                                   {% endif %}
                                 {% endfor %}">
+
                 </td>
                 {% endfor %}
 
@@ -89,7 +98,7 @@
   </div>
 </div>
 
-<!-- ===== Custom CSS ===== -->
+<!-- ================= STYLES ================= -->
 <style>
 
 /* Scrollable area */
@@ -123,7 +132,22 @@ thead .sticky-col {
   background-clip: padding-box;
 }
 
-/* Improve mobile readability */
+/* ================= Highlight Styles ================= */
+
+.active-row td {
+  background-color: #e3f2fd !important;
+}
+
+.active-col {
+  background-color: #fff3cd !important;
+}
+
+.active-header {
+  background-color: #0d6efd !important;
+  color: white !important;
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .table-wrapper {
     max-height: 65vh;
@@ -135,5 +159,27 @@ thead .sticky-col {
 }
 
 </style>
+
+<!-- ================= VUE ================= -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      activeRow: null,
+      activeCol: null
+    }
+  },
+  methods: {
+    setActive(row, col) {
+      this.activeRow = row;
+      this.activeCol = col;
+    }
+  }
+}).mount('#performanceApp');
+</script>
 
 {% endblock %}

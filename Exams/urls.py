@@ -12,6 +12,7 @@ urlpatterns = [
         views.PrintTermReportCardsView.as_view(),
         name='print_term_report_cards'
     ),
+    path('teacher/exam/performance/<int:teacher_id>/<int:exam_id>/', views.TeacherSubjectExamPerformanceView.as_view(), name='teacher_performance'),
     path('term/exam/analysis/<int:grade_id>/<str:term>/', views.TermExamAnalysis.as_view(), name='term_analysis'),
     path('performance/student/<int:id>/<int:pk>/', views.StudentPerformanceDetailView.as_view(), name='student_details_performance'),
     path('pdf/student/performance/<int:exam_id>/<int:student_id>/', views.ExportStudentPDFView.as_view(), name='student_performance_pdf'),

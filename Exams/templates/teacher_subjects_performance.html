@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+    <h2>{{ teacher }}</h2>
+    {% regroup performances by exam__id as exam_list %}
+
+{% for exam in exam_list %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            {{ exam.list.0.exam__exam_name }}
+            ({{ exam.list.0.exam__grade__name }} - {{ exam.list.0.exam__term }})
+        </div>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Average Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in exam.list %}
+                    <tr>
+                        <td>{{ item.subject__name }}</td>
+                        <td>{{ item.average_score|floatformat:2 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endfor %}
+{% endblock %}

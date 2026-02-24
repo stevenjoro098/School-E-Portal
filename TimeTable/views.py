@@ -19,19 +19,40 @@ class TimeTable(TemplateView, View):
 
 class GradeTimetableAPIView(View):
     def get(self, request, grade_id):
-        timetable = TimetableSlot.objects.filter(grade_id=grade_id)
-        print(timetable)
-        data = [
-            {
-                "day": t.day,
-                "subject": t.subject,
-                "start": t.start_time.strftime("%H:%M"),
-                "end": t.end_time.strftime("%H:%M"),
-            }
-            for t in timetable
-        ]
+        slots = (
+            TimetableSlot.objects
+            .filter(grade_id=grade_id)
+            .select_related("day", "subject")
+            .order_by("start_time", "day__order")
+        )
 
-        return JsonResponse({"timetable": data})
+        days = list(
+            Day.objects.filter(day_time_slots__grade_id=grade_id)
+            .distinct()
+            .order_by("order")
+            .values_list("day", flat=True)
+        )
+
+        timetable = {}
+        times = set()
+
+        # Build matrix
+        for slot in slots:
+            time_key = f"{slot.start_time.strftime('%H:%M')} - {slot.end_time.strftime('%H:%M')}"
+            day_name = str(slot.day)
+
+            times.add(time_key)
+
+            if time_key not in timetable:
+                timetable[time_key] = {}
+
+            timetable[time_key][day_name] = str(slot.subject) if slot.subject else ""
+
+        return JsonResponse({
+            "days": days,
+            "times": sorted(times),
+            "grid": timetable
+        })
 
 def timetable_matrix_view(request):
     grade = get_object_or_404(Grade, id=1)

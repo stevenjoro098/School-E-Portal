@@ -13,7 +13,7 @@ import os
 
 from Subjects.models import Subject, Grade
 from .models import Exam, StudentPerformance
-from Students.models import Student
+from Students.models import Student, Teachers
 #from .utils.cbc_kjsea_points import score_to_cbc
 
 
@@ -296,6 +296,38 @@ class StudentPerformanceDetailView(View):
             "average": average,
         }
         return render(request, self.template_name, context)
+
+class TeacherSubjectExamPerformanceView(TemplateView):
+    template_name = 'teacher_subjects_performance.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        teacher = get_object_or_404(Teachers, pk=kwargs['teacher_id'])
+
+        performances = (
+            StudentPerformance.objects
+            .filter(subject__teacher=teacher)
+            .values(
+                'exam__id',
+                'exam__exam_name',
+                'exam__grade__name',
+                'exam__term',
+                'subject__id',
+                'subject__name'
+            )
+            .annotate(average_score=Avg('performance'))
+            .order_by('exam__created', 'subject__name')
+        )
+
+        context.update({
+            'teacher': teacher,
+            'performances': performances
+        })
+
+        return context
+
+
 
 from django.db.models import Sum
 

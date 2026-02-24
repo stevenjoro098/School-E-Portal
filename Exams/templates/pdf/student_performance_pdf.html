@@ -1,0 +1,27 @@
+{% extends 'pdf/pdf_base.html' %}
+{% load dict_extras %}
+{% block content %}
+<h3>{{ student }}</h3>
+<table>
+    <thead>
+        <th>Subject</th>
+        <th></th>
+    </thead>
+    <tbody>
+        {% for subject in subjects %}
+            <tr>
+                <td class="fw-bold text-start">{{ subject.name }}</td>
+                <td>{{ scores|get_item:subject.id|default:"-" }}</td>
+            </tr>
+        {% endfor %}
+        <tr class="table-info fw-bold">
+            <td>Total</td>
+            <td>{{ total }}</td>
+          </tr>
+          <tr class="table-success fw-bold">
+            <td>Average</td>
+            <td>{{ average }}</td>
+          </tr>
+    </tbody>
+</table>
+{% endblock %}

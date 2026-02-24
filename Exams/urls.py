@@ -4,14 +4,9 @@ from . import views
 urlpatterns = [
     path('', views.GradesList.as_view(), name='exams'),
     path('grade/<int:pk>/exam/list', views.ExamsList.as_view(), name='exam_list'),
-    path('student/<int:student_id>/exam/<int:exam_id>/term-summary/', views.StudentTermExamSummaryView.as_view(),
-
-         name='student_term_exam_summary'),
-    path(
-        'grade/<int:grade_id>/term/<str:term>/print-report-cards/',
-        views.PrintTermReportCardsView.as_view(),
-        name='print_term_report_cards'
-    ),
+    path('student/<int:student_id>/exam/<int:exam_id>/term-summary/', views.StudentTermExamSummaryView.as_view(),name='student_term_exam_summary'),
+    path('student/<int:pk>/exam/<int:id>/pdf/view/', views.StudentSingleExamPDF.as_view(), name='student_exam_pdf_view'),
+    path('grade/<int:grade_id>/term/<str:term>/print-report-cards/',views.PrintTermReportCardsView.as_view(), name='print_term_report_cards'),
     path('teacher/exam/performance/<int:teacher_id>/<int:exam_id>/', views.TeacherSubjectExamPerformanceView.as_view(), name='teacher_performance'),
     path('term/exam/analysis/<int:grade_id>/<str:term>/', views.TermExamAnalysis.as_view(), name='term_analysis'),
     path('performance/student/<int:id>/<int:pk>/', views.StudentPerformanceDetailView.as_view(), name='student_details_performance'),

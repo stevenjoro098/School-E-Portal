@@ -9,6 +9,7 @@
       <h4 class="mb-0">
         {{ student.first_name }} {{ student.second_name }} - {{ exam.exam_name }}
       </h4>
+        <a href="{% url 'student_exam_pdf_view' student.pk exam.id %}" class="btn btn-success">Generate PDF</a>
       <small>{{ exam.grade }}</small>
     </div>
 

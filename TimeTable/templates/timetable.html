@@ -8,30 +8,31 @@
     <h3 class="mb-4">Select Grade Timetable</h3>
 
     <!-- Grades list -->
-    <div class="col-md-3">
-        <div class="list-group shadow-sm">
+    <!-- Grades list -->
+    <div class="row mb-4">
+        <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle">
+                <thead class="table-light">
+                    <tr>
+                        {% for item in grades %}
+                            <th>
+                                <a href="#"
+                                   class="d-block py-2 text-decoration-none"
+                                   :class="selectedGrade === {{ item.id }} ? 'fw-bold text-primary' : ''"
+                                   @click.prevent="loadTimetable({{ item.id }})">
 
-            {% for item in grades %}
-                <a href="#"
-                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                   :class="{ active: selectedGrade === {{ item.id }} }"
-                   @click.prevent="loadTimetable({{ item.id }})">
-
-                    <span>{{ item.name }}</span>
-                </a>
-                <td>
-                    <a href="{% url 'edit_timetable' item.id %}"
-                       class="btn btn-sm btn-primary">
-                       Edit Timetable
-                    </a>
-                </td>
-            {% endfor %}
-
+                                    {{ item.name }}
+                                </a>
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
 
     <!-- Timetable Display -->
-    <div class="col-md-9">
+    <div class="row">
 
         <!-- Loading -->
         <div v-if="loading" class="text-center text-muted py-5">
@@ -50,7 +51,7 @@
             <table class="table table-bordered table-hover shadow-sm">
 
                 <!-- Header -->
-                <thead class="table-light">
+                <thead class="table-info">
                 <tr>
                     <th style="width:180px">Time</th>
 
@@ -72,7 +73,12 @@
 
                     <!-- Day Columns -->
                     <td v-for="day in timetable.days"
-                        :key="day + time">
+                        :key="day + time"
+                    @click="selectCell(time, day)"
+                    :class="{
+                        'table-primary': isSelected(time, day),
+                        'cursor-pointer': true
+                    }">
 
                         [[ timetable.grid?.[time]?.[day] || '' ]]
 
@@ -109,38 +115,48 @@ createApp({
             timetable: {},
             loading: false,
             selectedGrade: null,
-            error: null
+            error: null,
+            selectedCell: null
         }
     },
 
     methods: {
 
         loadTimetable(gradeId) {
+        this.selectedGrade = gradeId;
+        this.loading = true;
+        this.error = null;
+        this.selectedCell = null;   // reset selection
 
-            this.selectedGrade = gradeId;
-            this.loading = true;
-            this.error = null;
+        fetch(`/timetable/api/timetable/${gradeId}/`)
+            .then(async res => {
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(text || "Failed to load timetable");
+                }
+                return res.json();
+            })
+            .then(data => {
+                this.timetable = data || {};
+            })
+            .catch(err => {
+                console.error(err);
+                this.error = "Unable to load timetable. Please try again.";
+                this.timetable = {};
+            })
+            .finally(() => {
+                this.loading = false;
+            });
+    },
 
-            fetch(`/timetable/api/timetable/${gradeId}/`)
-                .then(async res => {
-                    if (!res.ok) {
-                        const text = await res.text();
-                        throw new Error(text || "Failed to load timetable");
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    this.timetable = data || {};
-                })
-                .catch(err => {
-                    console.error(err);
-                    this.error = "Unable to load timetable. Please try again.";
-                    this.timetable = {};
-                })
-                .finally(() => {
-                    this.loading = false;
-                });
-        }
+    selectCell(time, day) {
+        const key = `${time}-${day}`;
+        this.selectedCell = this.selectedCell === key ? null : key;
+    },
+
+    isSelected(time, day) {
+        return this.selectedCell === `${time}-${day}`;
+    }
     }
 
 }).mount("#app");

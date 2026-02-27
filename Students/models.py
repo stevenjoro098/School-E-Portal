@@ -39,7 +39,7 @@ class Teachers(models.Model):
     telephone = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
-        return f"{self.first_name}"
+        return f"{self.first_name} {self.second_name}"
 
     @property
     def full_name(self):

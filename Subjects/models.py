@@ -24,4 +24,4 @@ class Subject(models.Model):
         ordering = ('numbering',)
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name} - {self.grade}"

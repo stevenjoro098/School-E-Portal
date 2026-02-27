@@ -24,6 +24,4 @@ class TimetableCellForm(forms.Form):
             )
 
             # 🔹 Optional: Filter teachers teaching this grade
-            self.fields["teacher"].queryset = Teachers.objects.filter(
-                teacher_subjects__grade=grade
-            ).distinct()
+            self.fields["teacher"].queryset = Teachers.objects.all()

@@ -54,8 +54,8 @@ class GradeTimetableAPIView(View):
             "grid": timetable
         })
 
-def timetable_matrix_view(request):
-    grade = get_object_or_404(Grade, id=1)
+def timetable_matrix_view(request, grade_id):
+    grade = get_object_or_404(Grade, id=grade_id)
     days = Day.objects.order_by("order")
 
     slots = (

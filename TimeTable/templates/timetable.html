@@ -12,13 +12,19 @@
         <div class="list-group shadow-sm">
 
             {% for item in grades %}
-            <a href="#"
-               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-               :class="{ active: selectedGrade === {{ item.id }} }"
-               @click.prevent="loadTimetable({{ item.id }})">
+                <a href="#"
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                   :class="{ active: selectedGrade === {{ item.id }} }"
+                   @click.prevent="loadTimetable({{ item.id }})">
 
-                <span>{{ item.name }}</span>
-            </a>
+                    <span>{{ item.name }}</span>
+                </a>
+                <td>
+                    <a href="{% url 'edit_timetable' item.id %}"
+                       class="btn btn-sm btn-primary">
+                       Edit Timetable
+                    </a>
+                </td>
             {% endfor %}
 
         </div>

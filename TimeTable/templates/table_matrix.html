@@ -1,41 +1,106 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
+
 {% block content %}
-   <form method="post">
-  {% csrf_token %}
 
-  <table class="table table-bordered text-center align-middle">
-    <thead class="table-dark">
-      <tr>
-        <th>Time</th>
-        {% for day in days %}
-          <th>{{ day.day }}</th>
-        {% endfor %}
-      </tr>
-    </thead>
+<div class="container-fluid">
 
-    <tbody>
-      {% for row in grid %}
-        <tr>
-          <td class="fw-bold">
-            {{ row.start }} – {{ row.end }}
-          </td>
+    <!-- Header -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-0">
+                    <i class="bi bi-calendar-week"></i>
+                    Edit Timetable – {{ grade.name }}
+                </h4>
+                <small class="text-muted">
+                    Configure subjects and teachers per time slot
+                </small>
+            </div>
 
-          {% for slot, form in row.cells %}
-            <td>
-              {% if slot %}
-                {{ form.subject }}
-                <br>
-                {{ form.teacher }}
-              {% else %}
-                —
-              {% endif %}
-            </td>
-          {% endfor %}
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+            <button type="submit" form="timetableForm"
+                    class="btn btn-success px-4">
+                <i class="bi bi-check-circle"></i>
+                Save Timetable
+            </button>
+        </div>
+    </div>
 
-  <button class="btn btn-success">Save Timetable</button>
-</form>
+    <!-- Timetable Form -->
+    <form method="post" id="timetableForm">
+        {% csrf_token %}
+
+        <div class="card shadow-sm border-0">
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle text-center mb-0 timetable-table">
+
+                    <thead class="table-dark sticky-top">
+                        <tr>
+                            <th style="width: 120px;">Time</th>
+                            {% for day in days %}
+                                <th>{{ day.day }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for row in grid %}
+                        <tr>
+                            <!-- Time Column -->
+                            <td class="fw-bold bg-light">
+                                {{ row.start }} <br>
+                                <small class="text-muted">to</small><br>
+                                {{ row.end }}
+                            </td>
+
+                            <!-- Day Cells -->
+                            {% for slot, form in row.cells %}
+                                <td class="p-2">
+
+                                    {% if slot %}
+                                        <div class="lesson-cell p-2 rounded bg-light-subtle">
+
+                                            <div class="mb-2">
+                                                {{ form.subject|as_crispy_field }}
+                                            </div>
+
+                                            <div>
+                                                {{ form.teacher|as_crispy_field }}
+                                            </div>
+
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+<style>
+.timetable-table th,
+.timetable-table td {
+    vertical-align: middle;
+}
+
+.lesson-cell {
+    min-height: 110px;
+    border: 1px solid #e9ecef;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+</style>
+
 {% endblock %}

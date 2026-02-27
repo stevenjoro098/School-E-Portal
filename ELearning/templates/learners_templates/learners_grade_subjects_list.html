@@ -3,23 +3,92 @@
 {% block title %} Subjects {% endblock %}
 
 {% block content %}
-    <h3>Subjects for {{ grade }}</h3>
-    <hr>
-   <div class="row row-cols-1 row-cols-md-4 g-4">
-      {% for item in subjects_list %}
-        <div class="col">
-          <div class="card">
-            <img src="{% static 'images/subjects.jpg' %}" class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">{{ item }}</h5>
-                <hr>
-              <p class="card-text"></p>
-              <a href="{% url 'subject_strands' item.pk %}" class="btn btn-warning">View</a>
-            </div>
-          </div>
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">Subjects</h3>
+            <p class="text-muted mb-0">Grade: <span class="fw-semibold">{{ grade }}</span></p>
         </div>
-      {% empty %}
-        <h2>No Grades Available</h2>
-      {% endfor %}
-  </div>
+    </div>
+
+    {% if subjects_list %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+
+        {% for item in subjects_list %}
+        <div class="col">
+            <div class="card subject-card h-100 shadow-sm border-0">
+
+                <!-- Image -->
+                <div class="subject-image-wrapper">
+                    <img src="{% static 'images/subjects.jpg' %}"
+                         class="card-img-top subject-image"
+                         alt="Subject image">
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body d-flex flex-column">
+
+                    <h5 class="card-title fw-semibold text-dark">
+                        {{ item }}
+                    </h5>
+
+                    <div class="mt-auto pt-3">
+                        <a href="{% url 'subject_strands' item.pk %}"
+                           class="btn btn-outline-primary w-100">
+                            View Strands
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+    {% else %}
+
+    <!-- Empty State -->
+    <div class="text-center py-5">
+        <img src="{% static 'images/empty.png' %}" width="120" class="mb-3 opacity-75">
+        <h5 class="fw-semibold">No Subjects Available</h5>
+        <p class="text-muted">Subjects will appear here once added to this grade.</p>
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<style>
+.subject-card {
+    border-radius: 14px;
+    transition: all 0.25s ease;
+}
+
+.subject-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}
+
+.subject-image-wrapper {
+    height: 160px;
+    overflow: hidden;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+
+.subject-image {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+.btn-outline-primary {
+    border-radius: 8px;
+}
+</style>
+
 {% endblock %}

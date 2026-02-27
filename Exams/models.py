@@ -14,6 +14,7 @@ class Exam(models.Model):
     term = models.CharField(max_length=250, choices=terms)
     created = models.DateField(auto_now_add=True)
     grade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True, blank=True,related_name='grade_exam')
+    editable = models.BooleanField(default=True, blank=True, null=True)
 
     def __str__(self):
         return f"{self.exam_name} - {self.grade}"

@@ -81,12 +81,12 @@
                    class="btn btn-primary btn-sm">
                    View Performances
                 </a>
-
-                <a href="{% url 'enter_exam_performance' exam.pk %}"
-                   class="btn btn-outline-success btn-sm">
-                   Add Performances
-                </a>
-
+                {% if exam.editable %}
+                    <a href="{% url 'enter_exam_performance' exam.pk %}"
+                       class="btn btn-outline-success btn-sm">
+                       Add/Edit Performances
+                    </a>
+                {% endif %}
               </div>
 
             </div>

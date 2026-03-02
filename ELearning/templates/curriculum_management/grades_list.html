@@ -3,7 +3,7 @@
 {% block title %} Grades {% endblock %}
 
 {% block content %}
-    <h3>Select Grade</h3>
+    <h3 class="text-white">Select Grade</h3>
     <hr>
     <div class="row row-cols-1 row-cols-md-4 g-4">
         {% for item in grades_list %}
@@ -20,7 +20,12 @@
                 </div>
             </div>
         {% empty %}
-            <h3>No Grades Provided </h3>
+            <div class="card">
+                <div class="card-body">
+                    <h3>No Grades Provided </h3>
+                </div>
+            </div>
+
         {% endfor %}
     </div>
 

@@ -40,7 +40,23 @@
         .card {
           border-radius: 1rem; /* adjust value as needed */
         }
+    .main-background {
+            position: relative;
+            min-height: 100vh;
+            background: url("{% static 'images/bg.jpg' %}") center/cover no-repeat;
+        }
 
+        .main-background::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);  /* Dark overlay */
+        }
+
+        .main-background > * {
+            position: relative;
+            z-index: 1;
+        }
   .alpha-list {
     list-style-type: upper-alpha; /* A, B, C... */
   }
@@ -146,9 +162,8 @@
 </nav>
 
 
-    <main class="container-fluid mt-4">
+    <main class="container-fluid mt-4 main-background">
         {% block content %}
-
         {% endblock %}
     </main>
     {% block scripts %}

@@ -339,6 +339,12 @@ class SubStrandsList(ListView):
     context_object_name = 'sub_strands_list'
 
     def get_queryset(self):
-        strand = get_object_or_404(Strand, id=self.kwargs['strand_id'])
-        return SubStrand.objects.filter(strand=strand)
+        self.strand = get_object_or_404(Strand, id=self.kwargs['strand_id'])
+        return SubStrand.objects.filter(strand=self.strand)
 
+    def get_context_data(
+        self, *, object_list = ..., **kwargs
+    ):
+        context = super().get_context_data(**kwargs)
+        context['strand'] = self.strand
+        return context

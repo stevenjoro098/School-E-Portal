@@ -93,9 +93,11 @@
         <!-- Empty State -->
         <div v-if="!loading && !timetable.days && !error"
              class="text-center text-muted py-5">
-
-            Select a grade to view timetable
-
+                <div class="card">
+                    <div class="card-body">
+                        Select a grade to view timetable
+                    </div>
+                </div>
         </div>
 
     </div>

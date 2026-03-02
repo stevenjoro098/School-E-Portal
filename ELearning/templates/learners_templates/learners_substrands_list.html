@@ -15,21 +15,36 @@
 {% endblock %}
 {% block content %}
     <div class="container-fluid">
-        <h2><u>Sub-Strands List</u></h2>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                 <h2>Sub-Strands List for {{ strand }}.</h2>
+            </div>
+        </div>
+
         <ol>
             {% for item in sub_strands_list %}
                  <h3><li>{{ item.name }}</li></h3>
                 {% for out_come in item.learning_outcomes.all %}
                 <p><strong><h5>Learning Outcome: </h5></strong><strong>{{ out_come.description }}</strong></p>
                 {% empty %}
-                    <h5 class="text-warning">No Learning Outcome provided</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="text-warning">No Learning Outcome provided</h5>
+                        </div>
+                    </div>
                 {% endfor %}
                 <div class="row">
                     <div class="col-md-8">
                         {% for note in item.notes.all %}
                             <p>{{ note.content|safe }}</p>
                         {% empty %}
-                            <p>No notes available.</p>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="text-warning">No Learning Notes provided</h5>
+                                </div>
+                            </div>
+
                         {% endfor %}
                     </div>
 
@@ -41,16 +56,21 @@
                                 <p class="card-text">{{ image.image }}</p>
                               </div>
                             </div>
-
-
                         {% empty %}
-                            <p>No images available.</p>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="text-warning">No Images provided</h5>
+                                </div>
+                            </div>
+
                         {% endfor %}
                     </div>
                 </div>
 
             {% empty %}
-                <h3>No Substrands Available.</h3>
+                <div class="card-body">
+                    <h5 class="text-warning">No Learning Outcome provided</h5>
+                </div>
             {% endfor %}
         </ol>
     </div>

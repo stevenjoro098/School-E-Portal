@@ -9,6 +9,7 @@
                 <div class="card">
                     <div class="card-body">
                          <h2>Welcome, {{ request.user.username | capfirst }}.</h2>
+                         <h4 class="text-success">List of your Assessments.</h4>
                     </div>
                 </div>
                 <span>
@@ -17,7 +18,7 @@
 
             </div>
 
-            <h4>List of your Assessments</h4>
+
             <hr>
             <div class="row">
                 {% for i in teacher_assessment_list %}

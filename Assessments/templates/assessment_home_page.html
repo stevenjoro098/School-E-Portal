@@ -2,17 +2,17 @@
 {% block title %} Assessments {% endblock %}
 {% block content %}
 <br>
-<div class="container-fluid my-4">
-    <div class="card">
+<div class="container-fluid">
+    <div class="card glass-card">
         <div class="card-body">
             <h2 class="mb-3 fw-bold text-center">Welcome to <span class="text-primary">UMA Assessment Portal</span></h2>
             <p class="text-muted text-center">Track, manage, and take upcoming assessments with ease.</p>
         </div>
     </div>
     <br>
-      <div class="card">
+      <div class="card glass-card">
           <div class="card-body">
-              <h5><span class="text-success"><i class="bi bi-calendar-check"></i> Upcoming Assessments</span></h5>
+              <h5><span class="text-black"><i class="bi bi-calendar-check"></i> Upcoming Assessments</span></h5>
           </div>
       </div>
 
@@ -58,5 +58,13 @@
     transform: translateY(-5px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
   }
+     .glass-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
 </style>
 {% endblock %}

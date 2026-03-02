@@ -1,13 +1,22 @@
 {% extends 'base.html' %}
 {% block title %} Assessments {% endblock %}
 {% block content %}
+<br>
 <div class="container-fluid my-4">
-  <h2 class="mb-3 fw-bold text-center">Welcome to <span class="text-primary">UMA Assessment Portal</span></h2>
-  <p class="text-muted text-center">Track, manage, and take upcoming assessments with ease.</p>
-  <hr class="mb-3">
-  <h4 class="mb-3">
-    <span class="text-success"><i class="bi bi-calendar-check"></i> Upcoming Assessments</span>
-  </h4>
+    <div class="card">
+        <div class="card-body">
+            <h2 class="mb-3 fw-bold text-center">Welcome to <span class="text-primary">UMA Assessment Portal</span></h2>
+            <p class="text-muted text-center">Track, manage, and take upcoming assessments with ease.</p>
+        </div>
+    </div>
+    <br>
+      <div class="card">
+          <div class="card-body">
+              <span class="text-success"><i class="bi bi-calendar-check"></i> Upcoming Assessments</span>
+          </div>
+      </div>
+
+    <br>
   <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for a in assessments %}
       <div class="col">

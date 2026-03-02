@@ -5,12 +5,7 @@
 
 {% block content %}
 <div class="container mt-4">
-
-    <div class="card">
-        <div class="card-body">
-            <h2 class="mb-4 text-center">E-Learning Portal</h2>
-        </div>
-    </div>
+    <h2 class="mb-4 text-center text-white"><u>E-Learning Portal</u></h2>
     <br>
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     {% for item in grade_list %}
@@ -35,7 +30,11 @@
         </div>
       </div>
     {% empty %}
-      <h2 class="text-center mt-5">No Grades Available</h2>
+      <div class="card">
+          <div class="card-body">
+              <h5>No Grades Available</h5>
+          </div>
+      </div>
     {% endfor %}
   </div>
 </div>

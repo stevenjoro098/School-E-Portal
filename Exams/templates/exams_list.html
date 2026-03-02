@@ -11,16 +11,10 @@
 {% block content %}
 <div class="container-fluid py-3">
 
-  <!-- Page Header -->
-    <div class="card">
-        <div class="card-body">
-            <div class="mb-4">
-                <h2 class="fw-bold mb-1">
-                  {{ grade }} Exams.
-                </h2>
-              </div>
-        </div>
-    </div>
+
+     <h2 class="fw-bold mb-1 text-white">
+      {{ grade }} Exams.
+    </h2>
     <br>
 
   {% for term, exams in grouped_exams.items %}

@@ -72,8 +72,8 @@
 
         /* Make navbar slightly transparent */
         .navbar {
-            background: rgba(0, 0, 0, 0.85) !important;
-            backdrop-filter: blur(4px);
+
+            backdrop-filter: blur(12px);
         }
     </style>
 
@@ -172,6 +172,7 @@
 <main class="container-fluid mt-4">
 
         {% block content %}{% endblock %}
+    </div>
 </main>
 
 {% block scripts %}{% endblock %}

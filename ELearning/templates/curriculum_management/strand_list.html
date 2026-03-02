@@ -8,7 +8,12 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold mb-0">
-            Strands — {{ subject.name }}
+            <div class="card">
+                <div class="card-body">
+                    <h3>Strands — {{ subject.name }}</h3>
+                </div>
+            </div>
+
         </h3>
         <button class="btn btn-warning"
                 @click="showModal = true">
@@ -56,9 +61,12 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="strands.length === 0"
-         class="text-center text-muted mt-5">
-        No strands created yet.
+    <div v-if="strands.length === 0" class="text-center text-muted mt-5">
+       <div class="card">
+           <div class="card-body">
+               <h4>No strands created yet.</h4>
+           </div>
+       </div>
     </div>
 
     <!-- Modal -->

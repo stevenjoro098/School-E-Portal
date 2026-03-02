@@ -9,6 +9,16 @@
 {% endblock %}
 
 {% block content %}
+<style>
+    .glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+</style>
 <div class="container-fluid py-3">
      <h2 class="fw-bold mb-1 text-white">
       {{ grade }} Exams.
@@ -17,7 +27,7 @@
 
   {% for term, exams in grouped_exams.items %}
   <!-- Term Card -->
-  <div class="card shadow-sm border-0 mb-4">
+  <div class="card shadow-sm border-0 mb-4 glass-card">
     <!-- Term Header -->
     <div class="card-header bg-white border-bottom">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">

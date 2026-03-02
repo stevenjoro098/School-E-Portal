@@ -17,16 +17,16 @@
 
             <!-- Grade Name + Exam Count -->
             <div class="text-center mb-3">
-              <h4 class="fw-bold text-primary">{{ grade }}</h4>
+              <h4 class="fw-bold text-black">{{ grade }}</h4>
               <span class="badge bg-info text-dark">
                 {{ grade.grade_exam.count }} Exams
               </span>
-              <p class="text-muted small mt-2 mb-0">Manage exams & performances</p>
+              <p class="text-black small mt-2 mb-0">Manage exams & performances</p>
             </div>
 
             <!-- View Button -->
             <div class="d-flex justify-content-center">
-              <a href="{% url 'exam_list' grade.pk %}" class="btn btn-outline-primary px-4">
+              <a href="{% url 'exam_list' grade.pk %}" class="btn btn-success px-4">
                 View Exams →
               </a>
             </div>
@@ -53,8 +53,8 @@
     transform: translateY(-5px);
     box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   }
-    .glass-card {
-    background: rgba(255, 255, 255, 0.15);
+  .glass-card {
+    background: rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-radius: 16px;

@@ -6,7 +6,7 @@
 {% block content %}
     <div class="container-fluid">
             <div class="d-flex justify-content-between">
-                <div class="card">
+                <div class="card glass-card">
                     <div class="card-body">
                          <h2>Welcome, {{ request.user.username | capfirst }}.</h2>
                          <h4 class="text-success">List of your Assessments.</h4>
@@ -23,7 +23,7 @@
             <div class="row">
                 {% for i in teacher_assessment_list %}
                     <div class="col-md-6">
-                        <div class="card">
+                        <div class="card glass-card">
                       <div class="card-body">
                           <div class="d-flex justify-content-between">
                               <h5 class="card-title">{{ i }}</h5>
@@ -74,5 +74,14 @@
             </div>
 
     </div>
-
+<style>
+     .glass-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+</style>
 {% endblock %}

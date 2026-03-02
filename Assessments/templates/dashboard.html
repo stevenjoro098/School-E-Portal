@@ -6,8 +6,15 @@
 {% block content %}
     <div class="container-fluid">
             <div class="d-flex justify-content-between">
-                <h2>Welcome, {{ request.user.username | capfirst }}.</h2>
-                <a href="{% url 'exams' %}" class="btn btn-outline-info">Go to Exam Records >></a>
+                <div class="card">
+                    <div class="card-body">
+                         <h2>Welcome, {{ request.user.username | capfirst }}.</h2>
+                    </div>
+                </div>
+                <span>
+                    <a href="{% url 'exams' %}" class="btn btn-outline-info">Go to Exam Records >></a>
+                </span>
+
             </div>
 
             <h4>List of your Assessments</h4>
@@ -54,7 +61,12 @@
                     </div>
                     </div>
                 {% empty %}
-                    <h3>No Assessments Available</h3>
+                    <div class="card">
+                        <div class="card-body">
+                            <h3>No Assessments Available</h3>
+                        </div>
+                    </div>
+
                 {% endfor %}
             </div>
 

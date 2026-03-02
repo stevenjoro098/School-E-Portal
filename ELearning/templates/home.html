@@ -3,18 +3,16 @@
 {% block title %} Home {% endblock %}
 
 {% block content %}
-<div class="container py-2">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold m-0">Welcome to UMA Digital Learning</h3>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold m-0 text-danger">Welcome to UMA Digital Learning.</h2>
         <a href="{% url 'timetable' %}" class="btn btn-primary">TimeTable</a>
     </div>
-
-
+<div class="container py-2">
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
 
     <!-- E-Learning -->
     <div class="col">
-      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column">
+      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column glass-card">
         <img src="{% static 'images/elearning_home.png' %}" class="card-img-top fixed-img" alt="E-Learning">
         <div class="card-body text-center d-flex flex-column">
           <h5 class="card-title text-primary fw-bold">📘 E-Learning</h5>
@@ -26,7 +24,7 @@
 
     <!-- Assessment Portal -->
     <div class="col">
-      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column">
+      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column glass-card">
         <img src="{% static 'images/assessment_platform.jpg' %}" class="card-img-top fixed-img" alt="Assessment">
         <div class="card-body text-center d-flex flex-column">
           <h5 class="card-title text-success fw-bold">📝 Assessment Portal</h5>
@@ -38,7 +36,7 @@
 
     <!-- Student Profile -->
     <div class="col">
-      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column">
+      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column glass-card">
         <img src="{% static 'images/students.jpg' %}" class="card-img-top fixed-img" alt="Students">
         <div class="card-body text-center d-flex flex-column">
           <h5 class="card-title text-info fw-bold">👩‍🎓 Student Profile</h5>
@@ -63,7 +61,7 @@
 
   /* Optional: make content readable */
   .container {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     padding: 1.5rem;
   }

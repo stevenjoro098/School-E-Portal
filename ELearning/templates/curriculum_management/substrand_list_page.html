@@ -7,8 +7,18 @@
 {% endblock %}
 
 {% block content %}
+<style>
+     .glass-card {
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+</style>
 <div id="app">
-    <div class="card">
+    <div class="card glass-card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="mb-0">SubStrands for: {{ strand.name }}</h2>

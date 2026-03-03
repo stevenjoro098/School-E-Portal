@@ -21,8 +21,9 @@
                  <h2>Sub-Strands List for {{ strand }}.</h2>
             </div>
         </div>
-
-        <ol>
+        <div class="card">
+            <div class="card-body">
+                <ol>
             {% for item in sub_strands_list %}
                  <h3><li>{{ item.name }}</li></h3>
                 {% for out_come in item.learning_outcomes.all %}
@@ -73,6 +74,9 @@
                 </div>
             {% endfor %}
         </ol>
+            </div>
+        </div>
+
     </div>
 {% endblock %}
 

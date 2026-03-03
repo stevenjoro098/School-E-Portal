@@ -12,7 +12,7 @@ urlpatterns = [
 
     path('substrand/resources/view/<int:substrand_id>/', views.SubstrandResourceView.as_view(), name='resources_view'),
 
-    path('substrands/<int:strand_id>/', views.SubStrandListView.as_view(), name='api_substrands'),
+    path('substrands/<int:strand_id>/', views.SubStrandListView.as_view(), name='substrands'),
 
     path('delete/image/<int:pk>/<int:substrand_id>/', views.ImageDeleteView.as_view(), name='delete_image'),
     path('delete/notes/<int:pk>/<int:substrand_id>/', views.NoteDeleteView.as_view(), name='delete_notes'),

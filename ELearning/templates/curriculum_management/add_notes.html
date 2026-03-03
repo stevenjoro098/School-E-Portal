@@ -11,6 +11,15 @@
         border-radius: 8px;
         padding: 5px;
     }
+
+     .glass-card {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
 </style>
 {% endblock %}
 
@@ -23,23 +32,43 @@
 
             <!-- Notes Section -->
             <div class="mb-4">
-                <h5>Notes</h5>
-                <div id="quill-editor" style="height: 450px;"></div>
-                <button class="btn btn-primary mt-2" @click="saveNotes">Save Notes</button>
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h5>Notes</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="quill-editor" style="height: 450px;"></div>
+                        <button class="btn btn-primary mt-2" @click="saveNotes">Save Notes</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Image Upload -->
             <div class="mb-4">
-                <h5>Upload Image</h5>
-                <input type="file" @change="handleImageUpload" class="form-control">
-                <button class="btn btn-success mt-2" @click="saveImage">Save Image</button>
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h5>Upload Image</h5>
+                    </div>
+                    <div class="card-body">
+                        <input type="file" @change="handleImageUpload" class="form-control">
+                        <button class="btn btn-success mt-2" @click="saveImage">Save Image</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Video Link -->
             <div class="mb-4">
-                <h5>Video Link</h5>
-                <input type="text" v-model="videoLink" placeholder="Enter video URL" class="form-control">
-                <button class="btn btn-warning mt-2" @click="saveVideo">Save Video</button>
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h5>Video Link</h5>
+                    </div>
+                    <div class="card-body">
+                         <input type="text" v-model="videoLink" placeholder="Enter video URL" class="form-control">
+                        <button class="btn btn-warning mt-2" @click="saveVideo">Save Video</button>
+                    </div>
+                </div>
+
+
             </div>
         </div>
 

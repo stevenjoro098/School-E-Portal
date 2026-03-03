@@ -16,11 +16,12 @@
 {% block content %}
     <div class="container-fluid">
         <br>
-        <div class="card">
+        <div class="card glass-card">
             <div class="card-body">
                  <h2>Sub-Strands List for {{ strand }}.</h2>
             </div>
         </div>
+        <br>
         <div class="card">
             <div class="card-body">
                 <ol>
@@ -78,5 +79,15 @@
         </div>
 
     </div>
+<style>
+     .glass-card {
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+</style>
 {% endblock %}
 

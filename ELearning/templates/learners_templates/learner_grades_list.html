@@ -10,7 +10,7 @@
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     {% for item in grade_list %}
       <div class="col">
-        <div class="card h-100 shadow-sm text-center">
+        <div class="card h-100 shadow-sm text-center glass-card">
           <!-- Fixed height for images -->
           <img src="{% static 'images/class-size.jpg' %}"
                class="card-img-top img-fluid"
@@ -30,7 +30,7 @@
         </div>
       </div>
     {% empty %}
-      <div class="card">
+      <div class="card glass-card">
           <div class="card-body">
               <h5>No Grades Available</h5>
           </div>
@@ -38,4 +38,14 @@
     {% endfor %}
   </div>
 </div>
+<style>
+    .glass-card {
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+</style>
 {% endblock %}

@@ -8,7 +8,7 @@
 
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="card">
+        <div class="card glass-card">
             <div class="card-body">
                  <h3 class="fw-bold mb-1">{{ grade }} Subjects.</h3>
             </div>
@@ -21,7 +21,7 @@
 
         {% for item in subjects_list %}
         <div class="col">
-            <div class="card subject-card h-100 shadow-sm border-0">
+            <div class="card subject-card h-100 shadow-sm border-0 glass-card">
 
                 <!-- Image -->
                 <div class="subject-image-wrapper">
@@ -90,6 +90,14 @@
 
 .btn-outline-primary {
     border-radius: 8px;
+}
+.glass-card {
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
 }
 </style>
 

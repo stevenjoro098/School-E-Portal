@@ -26,11 +26,11 @@
             <span class="badge bg-light text-dark">{{ a.subject.name }}</span>
           </div>
           <div class="card-body">
-            <h5 class="card-title text-dark">{{ a.title }}</h5>
+            <h5 class="card-title text-white">{{ a.title }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">
-              <i class="bi bi-person-circle"></i> {{ a.teacher }}
+              <i class="bi bi-person-circle text-white"></i> {{ a.teacher }}
             </h6>
-            <p class="card-text small text-muted">
+            <p class="card-text small text-muted text-white">
               Prepare for this assessment to strengthen your understanding of <strong>{{ a.subject.name }}</strong>.
             </p>
             <a href="{% url 'find_student' a.id %}" class="btn btn-success w-100">
@@ -38,7 +38,7 @@
             </a>
           </div>
           <div class="card-footer text-muted small">
-            <i class="bi bi-clock-history"></i> Scheduled soon
+            <i class="bi bi-clock-history text-white"></i> Scheduled soon
           </div>
         </div>
       </div>

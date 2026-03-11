@@ -28,7 +28,9 @@
           <div class="card-body">
             <h5 class="card-title text-white">{{ a.title }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">
-              <i class="bi bi-person-circle text-white">{{ a.teacher }}</i>
+                <span class="badge bg-warning text-dark">
+                  {{ a.teacher }}
+                </span>
             </h6>
             <p class="card-text text-white">
               Prepare for this assessment to strengthen your understanding of <strong>{{ a.subject.name }}</strong>.

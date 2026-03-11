@@ -40,7 +40,7 @@ def Home(request):
 
 
 class Dashboard(LoginRequiredMixin, ListView):
-    template_name = 'dashboard.html'
+    template_name = 'assessment_dashboard.html'
     #login_url = '/login/'  # optional: where to redirect if not logged in
     #redirect_field_name = 'next'  # optional
     context_object_name = 'teacher_assessment_list'
@@ -248,7 +248,7 @@ class SubmitAssessmentView(View):
 
 class AssessmentResultView(DetailView):
     model = AssessmentResult
-    template_name = "results.html"
+    template_name = "assessment_results.html"
     context_object_name = "result"
 
     def get_context_data(self, **kwargs):

@@ -106,7 +106,7 @@ def timetable_matrix_view(request, grade_id):
 
         grid.append(row)
 
-    return render(request, "table_matrix.html", {
+    return render(request, "edit_table_matrix.html", {
         "grade": grade,
         "days": days,
         "grid": grid,

@@ -15,7 +15,7 @@ from Subjects.models import Grade
 from .models import Subject, Strand, SubStrand, SubStrandNote, Note, ImageResource, VideoResource
 
 class HomePage(TemplateView):
-    template_name = 'home.html'
+    template_name = 'main_home_page.html'
 
 class GradeList(ListView):
     model = Grade

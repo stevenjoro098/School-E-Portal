@@ -4,6 +4,7 @@ from django.views.generic import ListView, CreateView, TemplateView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Sum, Avg
 from django.http import HttpResponse
+from django.contrib import messages
 from django.template.loader import render_to_string
 from rest_framework.reverse import reverse_lazy
 from openpyxl import Workbook
@@ -27,6 +28,7 @@ class CreateExam(CreateView):
     model = Exam
     fields = ['exam_name','term','grade']
     success_url = reverse_lazy('exams')
+
 
 
 class ExamsList(ListView):
@@ -84,7 +86,7 @@ class EnterExamPerformanceView(View):
                         subject=subject,
                         defaults={"performance": int(score)},
                     )
-
+        messages.success(request, "Success")
         return redirect("enter_exam_performance", pk=exam.id)
 
 

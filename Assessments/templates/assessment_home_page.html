@@ -30,7 +30,7 @@
             <h6 class="card-subtitle mb-2 text-muted">
               <i class="bi bi-person-circle text-white"></i> {{ a.teacher }}
             </h6>
-            <p class="card-text small text-muted text-white">
+            <p class="card-text text-white">
               Prepare for this assessment to strengthen your understanding of <strong>{{ a.subject.name }}</strong>.
             </p>
             <a href="{% url 'find_student' a.id %}" class="btn btn-success w-100">
@@ -38,7 +38,7 @@
             </a>
           </div>
           <div class="card-footer text-muted small">
-            <i class="bi bi-clock-history text-white"></i> Scheduled soon
+            <i class="bi bi-clock-history text-white">Scheduled soon</i>
           </div>
         </div>
       </div>

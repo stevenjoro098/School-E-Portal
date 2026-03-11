@@ -8,4 +8,7 @@ urlpatterns = [
     path('find/<int:assessment_id>/', views.SearchStudentPage.as_view(), name='find_student'),
     path('update/<int:pk>/', views.UpdateStudent.as_view(),name='update_student'),
     path('students/by-grade/<int:grade_id>/', views.StudentsByGradeView.as_view(), name='students_by_grade'),
+    #============================ CLASS MNGT ====================================================================
+    path('class/management/<int:grade_id>/', views.ClassManagement.as_view(), name='class_mngt'),
+    path('update/ream/paper/<int:student_id>/', views.EditStudentReam.as_view(), name='student_ream_update')
 ]

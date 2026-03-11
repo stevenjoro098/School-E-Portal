@@ -4,7 +4,31 @@
 
 {% block content %}
 <div id="app" class="row">
-    <h3 class="mb-4 text-white">Select Grade Timetable.</h3>
+    <div class="d-flex justify-content-between">
+        <h3 class="mb-4 text-white">Select Grade Timetable.</h3>
+    {% if user.is_superuser %}
+        <div class="dropdown">
+            <button class="btn btn-warning dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                Edit Timetable
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+                {% for grade in grades %}
+                <li>
+                    <a class="dropdown-item"
+                       href="{% url 'edit_timetable' grade.id %}">
+                        {{ grade.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
     <!-- Grades list -->
     <div class="row mb-4">
         <div class="table-responsive">
@@ -17,7 +41,6 @@
                                    class="d-block py-2 text-decoration-none"
                                    :class="selectedGrade === {{ item.id }} ? 'fw-bold text-primary' : ''"
                                    @click.prevent="loadTimetable({{ item.id }})">
-
                                     {{ item.name }}
                                 </a>
                             </th>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %} Class Management {% endblock %}
+{% block content %}
+    <h1 class="text-white">{{ grade }}</h1>
+    <hr>
+    <div class="card">
+        <table class="table">
+            <thead>
+                <th>#</th>
+                <th>Student</th>
+                <th>First Term</th>
+                <th>Second Term</th>
+                {% if user.is_superuser %}
+                    <th>Action</th>
+                {% endif %}
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr class="table-info">
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ student.first_name }} {{ student.second_name }}</td>
+                    {% for item in student.student_ream_papers.all %}
+                        {% if item.first_term %}
+                            <td><span class="badge bg-success">  ✔  </span></td>
+                        {% else %}
+                            <td><span class="badge bg-danger">✖</span></td>
+                        {% endif %}
+                        {% if item.second_term %}
+                            <td><span class="badge bg-success"> ✔ </span></td>
+                        {% else %}
+                            <td><span class="badge bg-danger">✖</span></td>
+                        {% endif %}
+                    {% endfor %}
+                    {% if user.is_superuser %}
+                        <td><a href="{% url 'student_ream_update' student.id %}" class="btn btn-danger btn-sm">Edit</a></td>
+                    {% endif %}
+                </tr>
+                {% endfor%}
+            </tbody>
+        </table>
+        <li class="text-white">{{ student.student_ream_papers.all }}</li>
+    </div>
+{% endblock %}

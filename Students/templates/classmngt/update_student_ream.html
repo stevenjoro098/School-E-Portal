@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Update Learners Ream Papers{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+{% csrf_token %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>First Term</th>
+            <th>Second Term</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>{{ ream_status.student }}</td>
+            <td>
+                <input type="checkbox"
+                       name="first_term"
+                       {% if ream_status.first_term %}checked{% endif %}>
+            </td>
+            <td>
+                <input type="checkbox" name="second_term"
+                       {% if ream_status.second_term %}checked{% endif %}>
+            </td>
+            <td>
+                <button class="btn btn-primary" type="submit">
+                    Save
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+</form>
+
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from Students.models import Student, Teachers
+from Students.models import Student, Teachers, ReamPaperRecords
 
 
 # Register your models here.
@@ -22,3 +22,9 @@ class StudentAdmin(admin.ModelAdmin):
 @admin.register(Teachers)
 class TeachersAdmin(admin.ModelAdmin):
     list_display = ['first_name','second_name','gender']
+
+
+@admin.register(ReamPaperRecords)
+class ReamPaperMngmtAdmin(admin.ModelAdmin):
+    list_display = ['student','first_term','second_term']
+    list_filter = ['first_term','second_term']

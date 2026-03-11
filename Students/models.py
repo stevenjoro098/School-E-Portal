@@ -44,3 +44,13 @@ class Teachers(models.Model):
     @property
     def full_name(self):
         return f'{self.first_name} {self.second_name}'.strip()
+
+
+class ReamPaperRecords(models.Model):
+    student = models.ForeignKey(Student, related_name='student_ream_papers', on_delete=models.SET_NULL, blank=True, null=True)
+    first_term = models.BooleanField(default=False)
+    second_term = models.BooleanField(default=False)
+    used_up = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{ self.student } - { self.first_term } - { self.second_term }"

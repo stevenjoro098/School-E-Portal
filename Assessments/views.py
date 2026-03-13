@@ -40,7 +40,7 @@ def Home(request):
 
 
 class Dashboard(LoginRequiredMixin, ListView):
-    template_name = 'assessment_dashboard.html'
+    template_name = 'manage_assessment/assessment_dashboard.html'
     #login_url = '/login/'  # optional: where to redirect if not logged in
     #redirect_field_name = 'next'  # optional
     context_object_name = 'teacher_assessment_list'
@@ -83,7 +83,7 @@ class AssessmentAnalysis(LoginRequiredMixin, ListView):
 
 class AssessmentEditView(LoginRequiredMixin, UpdateView):
     model = Assessment
-    template_name = 'assessment_form.html'  # You can reuse the create templates if you like
+    template_name = 'manage_assessment/assessment_form.html'  # You can reuse the create templates if you like
     fields = ['title', 'subject', 'grade', 'teacher', 'scheduled_date', 'duration_minutes', 'is_published']
 
 
@@ -92,7 +92,7 @@ class AssessmentEditView(LoginRequiredMixin, UpdateView):
 
 class AssessmentDelete(LoginRequiredMixin, DeleteView):
     model = Assessment
-    template_name = 'assessment_confirm_delete.html'
+    template_name = 'manage_assessment/assessment_confirm_delete.html'
     success_url = reverse_lazy('dashboard')
 
 class QuestionCreateView(CreateView):
@@ -133,7 +133,7 @@ class QuestionCreateView(CreateView):
 class QuestionUpdateView(UpdateView):
     model = Question
     form_class = QuestionForm
-    template_name = 'edit_questions_form.html'
+    template_name = 'manage_assessment/edit_questions_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -466,7 +466,7 @@ class QuestionsListView(ListView):
         return context
 
 class QuestionDeleteView(DeleteView):
-    template_name = 'question_delete_page.html'
+    template_name = 'manage_assessment/question_delete_page.html'
     model = Question
 
     def get_success_url(self):

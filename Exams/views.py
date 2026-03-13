@@ -86,7 +86,7 @@ class EnterExamPerformanceView(View):
                         subject=subject,
                         defaults={"performance": int(score)},
                     )
-        messages.success(request, "Success")
+        messages.success(request, "Performance Added Success")
         return redirect("enter_exam_performance", pk=exam.id)
 
 

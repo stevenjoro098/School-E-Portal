@@ -8,127 +8,203 @@
 
   <!-- ===== Subject Averages ===== -->
   <div class="card shadow-sm mb-4">
+
     <div class="card-header bg-info text-white">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
 
-        <!-- Title with icon -->
+        <!-- Title -->
         <div class="d-flex align-items-center gap-2">
-            <i class="fas fa-chart-bar"></i>
-            <h5 class="mb-0">Class Subject Averages</h5>
+          <i class="fas fa-chart-bar"></i>
+          <h5 class="mb-0">Class Subject Averages</h5>
         </div>
 
-        <!-- Buttons aligned to right -->
-        <div class="d-flex align-items-center gap-2">
-            <a href="{% url 'exam_report_cards' exam.id %}" class="btn btn-light btn-sm">
-                <i class="fas fa-file-alt me-1"></i>
-                Generate Report Cards
-            </a>
+        <!-- Buttons -->
+        <div class="d-flex flex-column flex-sm-row gap-2">
+          <a href="{% url 'exam_report_cards' exam.id %}" class="btn btn-light btn-sm">
+            <i class="fas fa-file-alt me-1"></i> Generate Report Cards
+          </a>
 
-            <a href="{% url 'export_exam_pdf' exam.pk %}" class="btn btn-primary btn-sm">
-                <i class="fas fa-print me-1"></i>
-                Print Exam Marklist
-            </a>
+          <a href="{% url 'export_exam_pdf' exam.pk %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-print me-1"></i> Print Marklist
+          </a>
         </div>
 
+      </div>
     </div>
-</div>
 
-    <div class="card-body table-responsive">
-      <table class="table table-bordered table-striped text-center align-middle">
-        <thead class="table-light">
-          <tr>
-            {% for subject in subjects %}
+    <div class="card-body p-0">
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center align-middle mb-0">
+
+          <thead class="table-light">
+            <tr>
+              {% for subject in subjects %}
               <th>
                 {{ subject }}
+                <br>
                 <span class="badge bg-warning text-dark">
                   {{ subject.teacher.first_name }}
                 </span>
               </th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="fw-bold">
-            {% for subject in subjects %}
+              {% endfor %}
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr class="fw-bold">
+              {% for subject in subjects %}
               <td>
                 {{ subject_averages|get_item:subject.id|default_if_none:"-" }}
               </td>
-            {% endfor %}
-          </tr>
-        </tbody>
-      </table>
+              {% endfor %}
+            </tr>
+          </tbody>
+
+        </table>
+      </div>
+
     </div>
   </div>
 
   <!-- ===== Student Performance Table ===== -->
   <div class="card shadow-sm">
-    <div class="card-header bg-success text-white">
-        <div class="d-flex justify-content-between">
-            <h5 class="mb-0">
-                {{ exam.exam_name }} – {{ exam.grade }} – {{ exam.term }} Results
-              </h5>
-        </div>
 
+    <div class="card-header bg-success text-white">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+
+        <h5 class="mb-0">
+          {{ exam.exam_name }} – {{ exam.grade }} – {{ exam.term }} Results
+        </h5>
+
+        <span class="badge bg-light text-dark">
+          {{ performance_data|length }} Students
+        </span>
+
+      </div>
     </div>
 
-    <div class="card-body table-responsive">
-      <table class="table table-bordered table-hover align-middle text-center">
-        <thead class="table-dark">
-          <tr>
-            <th>Rank</th>
-            <th class="text-start">Student</th>
+    <div class="card-body p-0">
 
-            {% for subject in subjects %}
-              <th>{{ subject }}</th>
-            {% endfor %}
+      <div class="table-responsive">
 
-            <th>Total</th>
-            <th>Average</th>
-            <th>Action</th>
-          </tr>
-        </thead>
+        <table class="table table-bordered table-hover align-middle text-center mb-0">
 
-        <tbody>
-          {% for row in performance_data %}
+          <thead class="table-dark">
             <tr>
+              <th>Rank</th>
+              <th class="text-start">Student</th>
+
+              {% for subject in subjects %}
+              <th>{{ subject }}</th>
+              {% endfor %}
+
+              <th>Total</th>
+              <th>Average</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {% for row in performance_data %}
+            <tr>
+
               <td>{{ forloop.counter }}</td>
 
               <td class="text-start">
-                  <b>{{ row.student.first_name }} {{ row.student.second_name }}</b>
+                <strong>
+                  {{ row.student.first_name }} {{ row.student.second_name }}
+                </strong>
               </td>
 
               {% for subject in subjects %}
-                <td>
-                  {% with score=row.scores|get_item:subject.id %}
-                    {% if score is not None %}
-                      {{ score }}
-                    {% else %}
-                      -
-                    {% endif %}
-                  {% endwith %}
-                </td>
+              <td>
+                {% with score=row.scores|get_item:subject.id %}
+                  {% if score is not None %}
+                    {{ score }}
+                  {% else %}
+                    -
+                  {% endif %}
+                {% endwith %}
+              </td>
               {% endfor %}
 
               <td class="fw-bold">{{ row.total }}</td>
-              <td>{{ row.average }}</td>
 
               <td>
-                <a href="{% url 'student_details_performance' exam.id row.student.pk %}"
-                   class="btn btn-info btn-sm mb-1">
-                  View
-                </a>
-                <br>
-                <a href="{% url 'student_performance_pdf' exam.id row.student.pk %}"
-                   class="btn btn-primary btn-sm">
-                  Print
-                </a>
+                <span class="badge bg-info">
+                  {{ row.average }}
+                </span>
               </td>
+
+              <td>
+
+                <div class="d-flex flex-column flex-sm-row gap-1 justify-content-center">
+
+                  <a href="{% url 'student_details_performance' exam.id row.student.pk %}"
+                     class="btn btn-info btn-sm">
+                     View
+                  </a>
+
+                  <a href="{% url 'student_performance_pdf' exam.id row.student.pk %}"
+                     class="btn btn-primary btn-sm">
+                     Print
+                  </a>
+
+                </div>
+
+              </td>
+
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
     </div>
   </div>
 
 </div>
+
+
+<style>
+
+/* Better table readability on mobile */
+.table-responsive{
+  overflow-x:auto;
+}
+
+/* Prevent student names wrapping badly */
+td.text-start{
+  white-space:nowrap;
+}
+
+/* Action buttons spacing */
+td .btn{
+  min-width:70px;
+}
+
+/* Smaller fonts on phones */
+@media (max-width:768px){
+
+  table{
+    font-size:0.9rem;
+  }
+
+  th, td{
+    padding:6px;
+  }
+
+  .card-header h5{
+    font-size:1rem;
+  }
+
+}
+
+</style>
+
 {% endblock %}

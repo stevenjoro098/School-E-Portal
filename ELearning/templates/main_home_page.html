@@ -3,115 +3,157 @@
 {% block title %} Home {% endblock %}
 
 {% block content %}
-    <div class="card glass-card">
+
+<div class="container-fluid py-3">
+
+    <!-- Welcome Card -->
+    <div class="card glass-card mb-4">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="fw-bold m-0">Welcome to UMA Digital Learning.</h2>
-                <a href="{% url 'timetable' %}" class="btn btn-primary">School TimeTable</a>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                <h2 class="fw-bold m-0 text-center text-md-start">
+                    Welcome to UMA Digital Learning.
+                </h2>
+
+                <a href="{% url 'timetable' %}" class="btn btn-primary align-self-center align-self-md-auto">
+                    School TimeTable
+                </a>
             </div>
         </div>
     </div>
-<br>
-<div class="container py-2">
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
 
-    <!-- E-Learning -->
-    <div class="col">
-      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column glass-card">
-        <img src="{% static 'images/elearning_home.png' %}" class="card-img-top fixed-img" alt="E-Learning">
-        <div class="card-body text-center d-flex flex-column">
-          <h5 class="card-title text-primary fw-bold">📘 E-Learning</h5>
-          <p class="fw-bold card-text flex-grow-1">Access notes and resources for all strands and substrands.</p>
-          <a href="{% url 'learners_grades_list' %}" class="btn btn-lg btn-primary w-100 mt-auto">View</a>
+    <!-- Dashboard Cards -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+
+        <!-- E-Learning -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 hover-card glass-card">
+                <img src="{% static 'images/elearning_home.png' %}" class="card-img-top fixed-img" alt="E-Learning">
+
+                <div class="card-body text-center d-flex flex-column">
+                    <h5 class="card-title text-primary fw-bold">📘 E-Learning</h5>
+                    <p class="card-text flex-grow-1">
+                        Access notes and resources for all strands and substrands.
+                    </p>
+
+                    <a href="{% url 'learners_grades_list' %}" class="btn btn-primary w-100 mt-auto">
+                        View
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Assessment Portal -->
-    <div class="col">
-      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column glass-card">
-        <img src="{% static 'images/assessment_platform.jpg' %}" class="card-img-top fixed-img" alt="Assessment">
-        <div class="card-body text-center d-flex flex-column">
-          <h5 class="card-title text-info fw-bold">📝 Assessment Portal</h5>
-          <p class="fw-bold card-text flex-grow-1">Take exams and assessments in various subjects.</p>
-          <a href="{% url 'assessment_home' %}" class="btn btn-lg btn-success w-100 mt-auto">View</a>
+        <!-- Assessment Portal -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 hover-card glass-card">
+                <img src="{% static 'images/assessment_platform.jpg' %}" class="card-img-top fixed-img" alt="Assessment">
+
+                <div class="card-body text-center d-flex flex-column">
+                    <h5 class="card-title text-info fw-bold">📝 Assessment Portal</h5>
+                    <p class="card-text flex-grow-1">
+                        Take exams and assessments in various subjects.
+                    </p>
+
+                    <a href="{% url 'assessment_home' %}" class="btn btn-success w-100 mt-auto">
+                        View
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Student Profile -->
-    <div class="col">
-      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column glass-card">
-        <img src="{% static 'images/students.jpg' %}" class="card-img-top fixed-img" alt="Students">
-        <div class="card-body text-center d-flex flex-column">
-          <h5 class="card-title text-info fw-bold">👩‍🎓 Student Profile</h5>
-          <p class="card-text text-muted flex-grow-1">Manage and view student information easily.</p>
-          <a href="{% url 'students_list' %}" class="btn btn-lg btn-info w-100 mt-auto">View</a>
+        <!-- Student Profile -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 hover-card glass-card">
+                <img src="{% static 'images/students.jpg' %}" class="card-img-top fixed-img" alt="Students">
+
+                <div class="card-body text-center d-flex flex-column">
+                    <h5 class="card-title text-info fw-bold">👩‍🎓 Student Profile</h5>
+                    <p class="card-text flex-grow-1">
+                        Manage and view student information easily.
+                    </p>
+
+                    <a href="{% url 'students_list' %}" class="btn btn-info w-100 mt-auto">
+                        View
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-      <div class="col">
-      <div class="card h-100 shadow-sm rounded-3 border-0 hover-card d-flex flex-column glass-card">
-        <img src="#" class="card-img-top fixed-img" alt="Noticeboard">
-        <div class="card-body text-center d-flex flex-column">
-          <h5 class="card-title text-info fw-bold">Notice Board</h5>
-          <p class="card-text text-muted flex-grow-1"></p>
-          <a href="#" class="btn btn-lg btn-info w-100 mt-auto">View</a>
+        <!-- Notice Board -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 hover-card glass-card">
+                <img src="{% static 'images/notice.jpg' %}" class="card-img-top fixed-img" alt="Noticeboard">
+
+                <div class="card-body text-center d-flex flex-column">
+                    <h5 class="card-title fw-bold">📢 Notice Board</h5>
+                    <p class="card-text flex-grow-1">
+                        Stay updated with school announcements.
+                    </p>
+
+                    <a href="#" class="btn btn-warning w-100 mt-auto">
+                        View
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-  </div>
+    </div>
 </div>
 
+
 <style>
-    body {
-    background-image: url("{% static 'images/bg.jpg' %}");
-    background-size: cover;        /* Fill screen */
-    background-position: center;   /* Center image */
-    background-repeat: no-repeat;
-    background-attachment: fixed;  /* Nice parallax effect */
-    font-size: 1.1rem;
-  }
 
-  /* Optional: make content readable */
-  .container {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    padding: 1.5rem;
-  }
-  .hover-card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  }
-  .hover-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-  }
-
-  .fixed-img {
-    height: 200px;          /* 🔹 Equal height */
-    object-fit: cover;      /* 🔹 Crop/scale nicely */
-    width: 100%;
-  }
-
-  body {
-    font-size: 1.1rem;
-  }
-  .card-title {
-    font-size: 1.2rem;
-  }
-  .btn-lg {
-    padding: 0.8rem;
-    font-size: 1.1rem;
-  }
-    .glass-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.2);
-    color: white;
+/* Background */
+body{
+    background-image:url("{% static 'images/bg.jpg' %}");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
 }
+
+/* Glass effect cards */
+.glass-card{
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.2);
+    color:white;
+}
+
+/* Card hover */
+.hover-card{
+    transition:transform .2s ease, box-shadow .2s ease;
+}
+
+.hover-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 10px 20px rgba(0,0,0,.2);
+}
+
+/* Image responsiveness */
+.fixed-img{
+    height:200px;
+    object-fit:cover;
+    width:100%;
+}
+
+/* Mobile adjustments */
+@media (max-width:768px){
+
+    .fixed-img{
+        height:160px;
+    }
+
+    h2{
+        font-size:1.4rem;
+    }
+
+    .card-title{
+        font-size:1.1rem;
+    }
+}
+
 </style>
+
 {% endblock %}

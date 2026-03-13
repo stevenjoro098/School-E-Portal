@@ -112,4 +112,4 @@ class EditStudentReam(TemplateView):
 
         messages.success(request, "Ream paper status updated successfully.")
 
-        return redirect(request.path)
+        return redirect('class_mngt', student.grade.id)

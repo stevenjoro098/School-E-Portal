@@ -6,208 +6,279 @@
 {% block content %}
 <div class="container-fluid px-1">
 
-  <!-- ===== Subject Averages ===== -->
-  <div class="card shadow-sm mb-4">
+<!-- ===== Subject Averages ===== -->
+<div class="card shadow-sm mb-4">
 
-    <div class="card-header bg-info text-white">
-      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+<div class="card-header bg-info text-white">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
 
-        <!-- Title -->
-        <div class="d-flex align-items-center gap-2">
-          <i class="fas fa-chart-bar"></i>
-          <h5 class="mb-0">Class Subject Averages</h5>
-        </div>
+<div class="d-flex align-items-center gap-2">
+<i class="fas fa-chart-bar"></i>
+<h5 class="mb-0">Class Subject Averages</h5>
+</div>
 
-        <!-- Buttons -->
-        <div class="d-flex flex-column flex-sm-row gap-2">
-          <a href="{% url 'exam_report_cards' exam.id %}" class="btn btn-light btn-sm">
-            <i class="fas fa-file-alt me-1"></i> Generate Report Cards
-          </a>
+<div class="d-flex flex-column flex-sm-row gap-2">
+<a href="{% url 'exam_report_cards' exam.id %}" class="btn btn-light btn-sm">
+<i class="fas fa-file-alt me-1"></i> Generate Report Cards
+</a>
 
-          <a href="{% url 'export_exam_pdf' exam.pk %}" class="btn btn-primary btn-sm">
-            <i class="fas fa-print me-1"></i> Print Marklist
-          </a>
-        </div>
+<a href="{% url 'export_exam_pdf' exam.pk %}" class="btn btn-primary btn-sm">
+<i class="fas fa-print me-1"></i> Print Marklist
+</a>
+</div>
 
-      </div>
-    </div>
+</div>
+</div>
 
-    <div class="card-body p-0">
+<div class="card-body p-0">
 
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped text-center align-middle mb-0">
+<div class="table-responsive">
 
-          <thead class="table-light">
-            <tr>
-              {% for subject in subjects %}
-              <th>
-                {{ subject }}
-                <br>
-                <span class="badge bg-warning text-dark">
-                  {{ subject.teacher.first_name }}
-                </span>
-              </th>
-              {% endfor %}
-            </tr>
-          </thead>
+<table class="table table-bordered table-striped text-center align-middle mb-0">
 
-          <tbody>
-            <tr class="fw-bold">
-              {% for subject in subjects %}
-              <td>
-                {{ subject_averages|get_item:subject.id|default_if_none:"-" }}
-              </td>
-              {% endfor %}
-            </tr>
-          </tbody>
+<thead class="table-light">
+<tr>
+{% for subject in subjects %}
+<th>
+{{ subject }} <br>
+<span class="badge bg-warning text-dark">
+{{ subject.teacher.first_name }}
+</span>
+</th>
+{% endfor %}
+</tr>
+</thead>
 
-        </table>
-      </div>
+<tbody>
+<tr class="fw-bold">
+{% for subject in subjects %}
+<td>
+{{ subject_averages|get_item:subject.id|default_if_none:"-" }}
+</td>
+{% endfor %}
+</tr>
+</tbody>
 
-    </div>
-  </div>
+</table>
 
-  <!-- ===== Student Performance Table ===== -->
-  <div class="card shadow-sm">
+</div>
+</div>
+</div>
 
-    <div class="card-header bg-success text-white">
-      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
 
-        <h5 class="mb-0">
-          {{ exam.exam_name }} – {{ exam.grade }} – {{ exam.term }} Results
-        </h5>
+<!-- ===== Student Performance Table ===== -->
+<div class="card shadow-sm">
 
-        <span class="badge bg-light text-dark">
-          {{ performance_data|length }} Students
-        </span>
+<div class="card-header bg-success text-white">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
 
-      </div>
-    </div>
+<h5 class="mb-0">
+{{ exam.exam_name }} – {{ exam.grade }} – {{ exam.term }} Results
+</h5>
 
-    <div class="card-body p-0">
+<span class="badge bg-light text-dark">
+{{ performance_data|length }} Students
+</span>
 
-      <div class="table-responsive">
+</div>
+</div>
 
-        <table class="table table-bordered table-hover align-middle text-center mb-0">
+<div class="card-body p-0">
 
-          <thead class="table-dark">
-            <tr>
-              <th>Rank</th>
-              <th class="text-start">Student</th>
+<div class="table-responsive">
 
-              {% for subject in subjects %}
-              <th>{{ subject }}</th>
-              {% endfor %}
+<table class="table table-bordered table-hover align-middle text-center mb-0 results-table">
 
-              <th>Total</th>
-              <th>Average</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+<thead class="table-dark">
+<tr>
+<th>Rank</th>
+<th class="text-start">Student</th>
 
-          <tbody>
+{% for subject in subjects %}
+<th>{{ subject }}</th>
+{% endfor %}
 
-            {% for row in performance_data %}
-            <tr>
+<th>Total</th>
+<th>Average</th>
+<th>Action</th>
+</tr>
+</thead>
 
-              <td>{{ forloop.counter }}</td>
+<tbody>
 
-              <td class="text-start">
-                <strong>
-                  {{ row.student.first_name }} {{ row.student.second_name }}
-                </strong>
-              </td>
+{% for row in performance_data %}
+<tr>
 
-              {% for subject in subjects %}
-              <td>
-                {% with score=row.scores|get_item:subject.id %}
-                  {% if score is not None %}
-                    {{ score }}
-                  {% else %}
-                    -
-                  {% endif %}
-                {% endwith %}
-              </td>
-              {% endfor %}
+<td>{{ forloop.counter }}</td>
 
-              <td class="fw-bold">{{ row.total }}</td>
+<td class="text-start">
+<strong>
+{{ row.student.first_name }} {{ row.student.second_name }}
+</strong>
+</td>
 
-              <td>
-                <span class="badge bg-info">
-                  {{ row.average }}
-                </span>
-              </td>
+{% for subject in subjects %}
+<td>
+{% with score=row.scores|get_item:subject.id %}
+{% if score is not None %}
+{{ score }}
+{% else %}
+-
+{% endif %}
+{% endwith %}
+</td>
+{% endfor %}
 
-              <td>
+<td class="fw-bold">{{ row.total }}</td>
 
-                <div class="d-flex flex-column flex-sm-row gap-1 justify-content-center">
+<td>
+<span class="badge bg-info">
+{{ row.average }}
+</span>
+</td>
 
-                  <a href="{% url 'student_details_performance' exam.id row.student.pk %}"
-                     class="btn btn-info btn-sm">
-                     View
-                  </a>
+<td>
 
-                  <a href="{% url 'student_performance_pdf' exam.id row.student.pk %}"
-                     class="btn btn-primary btn-sm">
-                     Print
-                  </a>
+<div class="d-flex flex-column flex-sm-row gap-1 justify-content-center">
 
-                </div>
+<a href="{% url 'student_details_performance' exam.id row.student.pk %}"
+class="btn btn-info btn-sm">
+View
+</a>
 
-              </td>
+<a href="{% url 'student_performance_pdf' exam.id row.student.pk %}"
+class="btn btn-primary btn-sm">
+Print
+</a>
 
-            </tr>
-            {% endfor %}
+</div>
 
-          </tbody>
+</td>
 
-        </table>
+</tr>
+{% endfor %}
 
-      </div>
+</tbody>
+</table>
 
-    </div>
-  </div>
+</div>
+</div>
+</div>
 
 </div>
 
 
 <style>
 
-/* Better table readability on mobile */
-.table-responsive{
-  overflow-x:auto;
+/* Prevent compression */
+.results-table{
+min-width:900px;
 }
 
-/* Prevent student names wrapping badly */
+/* Sticky header */
+.results-table thead th{
+position: sticky;
+top:0;
+z-index:5;
+}
+
+/* Sticky Rank column */
+.results-table th:first-child,
+.results-table td:first-child{
+position: sticky;
+left:0;
+background:white;
+z-index:4;
+}
+
+/* Sticky Student column */
+.results-table th:nth-child(2),
+.results-table td:nth-child(2){
+position: sticky;
+left:60px;
+background:white;
+z-index:4;
+}
+
+/* Prevent name wrapping */
 td.text-start{
-  white-space:nowrap;
+white-space:nowrap;
 }
 
-/* Action buttons spacing */
-td .btn{
-  min-width:70px;
+/* Highlight row */
+.row-highlight{
+background:#d1ecf1 !important;
 }
 
-/* Smaller fonts on phones */
+/* Highlight column */
+.col-highlight{
+background:#fff3cd !important;
+}
+
+/* Mobile adjustments */
 @media (max-width:768px){
 
-  table{
-    font-size:0.9rem;
-  }
+table{
+font-size:0.9rem;
+}
 
-  th, td{
-    padding:6px;
-  }
+th, td{
+padding:6px;
+}
 
-  .card-header h5{
-    font-size:1rem;
-  }
+.card-header h5{
+font-size:1rem;
+}
 
 }
 
-.container{
-    max-width:100% !important;
-}
 </style>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+const table = document.querySelector(".results-table");
+
+const cells = table.querySelectorAll("tbody td");
+
+cells.forEach(cell => {
+
+cell.addEventListener("click", function(){
+
+const row = this.parentElement;
+
+const columnIndex = this.cellIndex;
+
+/* remove previous highlights */
+table.querySelectorAll(".row-highlight").forEach(el=>{
+el.classList.remove("row-highlight");
+});
+
+table.querySelectorAll(".col-highlight").forEach(el=>{
+el.classList.remove("col-highlight");
+});
+
+/* highlight row */
+row.querySelectorAll("td").forEach(td=>{
+td.classList.add("row-highlight");
+});
+
+/* highlight column */
+table.querySelectorAll("tr").forEach(tr=>{
+const td = tr.children[columnIndex];
+if(td){
+td.classList.add("col-highlight");
+}
+});
+
+});
+
+});
+
+});
+
+</script>
 
 {% endblock %}

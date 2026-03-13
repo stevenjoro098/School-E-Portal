@@ -110,6 +110,6 @@ class EditStudentReam(TemplateView):
         ream_status.second_term = second_term
         ream_status.save()
 
-        messages.success(request, "Ream paper status updated successfully.")
+        messages.success(request, f"{student.first_name} Ream paper status updated successfully.")
 
         return redirect('class_mngt', student.grade.id)

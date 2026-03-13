@@ -6,66 +6,6 @@
 {% block content %}
 <div class="container-fluid px-1">
 
-<!-- ===== Subject Averages ===== -->
-<div class="card shadow-sm mb-4">
-
-<div class="card-header bg-info text-white">
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
-
-<div class="d-flex align-items-center gap-2">
-<i class="fas fa-chart-bar"></i>
-<h5 class="mb-0">Class Subject Averages</h5>
-</div>
-
-<div class="d-flex flex-column flex-sm-row gap-2">
-<a href="{% url 'exam_report_cards' exam.id %}" class="btn btn-light btn-sm">
-<i class="fas fa-file-alt me-1"></i> Generate Report Cards
-</a>
-
-<a href="{% url 'export_exam_pdf' exam.pk %}" class="btn btn-primary btn-sm">
-<i class="fas fa-print me-1"></i> Print Marklist
-</a>
-</div>
-
-</div>
-</div>
-
-<div class="card-body p-0">
-
-<div class="table-responsive">
-
-<table class="table table-bordered table-striped text-center align-middle mb-0">
-
-<thead class="table-light">
-<tr>
-{% for subject in subjects %}
-<th>
-{{ subject }} <br>
-<span class="badge bg-warning text-dark">
-{{ subject.teacher.first_name }}
-</span>
-</th>
-{% endfor %}
-</tr>
-</thead>
-
-<tbody>
-<tr class="fw-bold">
-{% for subject in subjects %}
-<td>
-{{ subject_averages|get_item:subject.id|default_if_none:"-" }}
-</td>
-{% endfor %}
-</tr>
-</tbody>
-
-</table>
-
-</div>
-</div>
-</div>
-
-
 <!-- ===== Student Performance Table ===== -->
 <div class="card shadow-sm">
 
@@ -91,8 +31,8 @@
 
 <thead class="table-dark">
 <tr>
-<th>Rank</th>
-<th class="text-start">Student</th>
+<th class="rank-col">Rank</th>
+<th class="student-col text-start">Student</th>
 
 {% for subject in subjects %}
 <th>{{ subject }}</th>
@@ -109,9 +49,9 @@
 {% for row in performance_data %}
 <tr>
 
-<td>{{ forloop.counter }}</td>
+<td class="rank-col">{{ forloop.counter }}</td>
 
-<td class="text-start">
+<td class="student-col text-start">
 <strong>
 {{ row.student.first_name }} {{ row.student.second_name }}
 </strong>
@@ -170,66 +110,45 @@ Print
 
 <style>
 
-/* Prevent compression */
+/* allow horizontal scrolling */
 .results-table{
 min-width:900px;
 }
 
-/* Sticky header */
+/* sticky header */
 .results-table thead th{
 position: sticky;
 top:0;
 z-index:5;
 }
 
-/* Sticky Rank column */
-.results-table th:first-child,
-.results-table td:first-child{
+/* Rank column sticky */
+.rank-col{
 position: sticky;
 left:0;
 background:white;
 z-index:4;
+width:60px;
 }
 
-/* Sticky Student column */
-.results-table th:nth-child(2),
-.results-table td:nth-child(2){
+/* Student column sticky */
+.student-col{
 position: sticky;
 left:60px;
 background:white;
 z-index:4;
-}
-
-/* Prevent name wrapping */
-td.text-start{
+min-width:180px;
 white-space:nowrap;
 }
 
-/* Highlight row */
+/* highlight row */
 .row-highlight{
 background:#d1ecf1 !important;
 }
 
-/* Highlight column */
+/* highlight column */
 .col-highlight{
 background:#fff3cd !important;
-}
-
-/* Mobile adjustments */
-@media (max-width:768px){
-
-table{
-font-size:0.9rem;
-}
-
-th, td{
-padding:6px;
-}
-
-.card-header h5{
-font-size:1rem;
-}
-
 }
 
 </style>
@@ -240,7 +159,6 @@ font-size:1rem;
 document.addEventListener("DOMContentLoaded", function(){
 
 const table = document.querySelector(".results-table");
-
 const cells = table.querySelectorAll("tbody td");
 
 cells.forEach(cell => {
@@ -248,10 +166,9 @@ cells.forEach(cell => {
 cell.addEventListener("click", function(){
 
 const row = this.parentElement;
-
 const columnIndex = this.cellIndex;
 
-/* remove previous highlights */
+/* remove old highlights */
 table.querySelectorAll(".row-highlight").forEach(el=>{
 el.classList.remove("row-highlight");
 });

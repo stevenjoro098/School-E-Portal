@@ -68,7 +68,7 @@
         <!-- Scrollable & Reversed Questions Section -->
         <div class="col-md-4">
             <hr>
-            <h5 class="mb-3">Existing Questions</h5>
+            <h4 class="mb-3 text-white">Existing Questions.</h4>
             <div class="border rounded p-2 shadow-sm" style="max-height: 600px; overflow-y: auto;">
                 {% for question in assessment.questions.all|dictsortreversed:"id" %}
                     <div class="card mb-3 border-0">

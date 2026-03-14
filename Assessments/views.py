@@ -49,7 +49,7 @@ class Dashboard(LoginRequiredMixin, ListView):
 
 
 class AssessmentCreate(CreateView):
-    template_name = 'assessment_form.html'
+    template_name = 'manage_assessment/assessment_form.html'
     model = Assessment
     form_class = AssessmentForm
 

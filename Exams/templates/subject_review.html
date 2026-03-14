@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}{{ subject }} Review{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<!-- Subject Header -->
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">{{ subject }} – {{ exam.exam_name }}</h4>
+        <small>{{ subject.teacher }}</small>
+    </div>
+</div>
+
+<div class="row">
+
+<!-- LEFT COLUMN : STATS -->
+
+<div class="col-lg-4 mb-4">
+
+```
+<!-- Statistics -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white">
+        Subject Statistics
+    </div>
+
+    <div class="card-body">
+        <div class="row g-3">
+
+            <div class="col-6">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h6>Average</h6>
+                        <h4 class="text-info">{{ stats.average|floatformat:1 }}</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h6>Highest</h6>
+                        <h4 class="text-success">{{ stats.highest }}</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h6>Lowest</h6>
+                        <h4 class="text-danger">{{ stats.lowest }}</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h6>Pass Rate</h6>
+                        <h4 class="text-warning">{{ stats.pass_rate|floatformat:1 }}%</h4>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Performance Distribution -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-warning">
+        Performance Distribution
+    </div>
+
+    <div class="card-body p-0">
+        <ul class="list-group list-group-flush">
+
+            <li class="list-group-item d-flex justify-content-between">
+                <span>90–100</span>
+                <span class="badge bg-success">{{ distribution.90_100 }}</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+                <span>80–89</span>
+                <span class="badge bg-primary">{{ distribution.80_89 }}</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+                <span>70–79</span>
+                <span class="badge bg-info">{{ distribution.70_79 }}</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+                <span>60–69</span>
+                <span class="badge bg-warning">{{ distribution.60_69 }}</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+                <span>&lt; 60</span>
+                <span class="badge bg-danger">{{ distribution.below_60 }}</span>
+            </li>
+
+        </ul>
+    </div>
+</div>
+
+<!-- Top Students -->
+<div class="card shadow-sm">
+    <div class="card-header bg-success text-white">
+        Top 5 Students
+    </div>
+
+    <div class="card-body p-0">
+        <table class="table table-bordered text-center mb-0">
+
+            <thead class="table-dark">
+            <tr>
+                <th>Rank</th>
+                <th class="text-start">Student</th>
+                <th>Score</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for score in top_students %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td class="text-start">
+                    {{ score.student.first_name }} {{ score.student.second_name }}
+                </td>
+                <td>
+                    <span class="badge bg-success">{{ score.performance }}</span>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+```
+
+</div>
+
+<!-- RIGHT COLUMN : FULL PERFORMANCE TABLE -->
+
+<div class="col-lg-8">
+
+```
+<div class="card shadow-sm">
+
+    <div class="card-header bg-info text-white">
+        All Students
+    </div>
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover text-center mb-0">
+
+                <thead class="table-dark">
+                <tr>
+                    <th>Rank</th>
+                    <th class="text-start">Student</th>
+                    <th>Score</th>
+                    <th>Grade</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                {% for score in scores %}
+                <tr>
+
+                    <td>{{ forloop.counter }}</td>
+
+                    <td class="text-start">
+                        {{ score.student.first_name }} {{ score.student.second_name }}
+                    </td>
+
+                    <td>{{ score.performance }}</td>
+
+                    <td>
+
+                    {% if score.performance >= 85 %}
+                        <span class="badge bg-success">EE1</span>
+
+                    {% elif score.performance >= 80 %}
+                        <span class="badge bg-primary">EE2</span>
+
+                    {% elif score.performance >= 75 %}
+                        <span class="badge bg-info">ME1</span>
+
+                    {% elif score.performance >= 70 %}
+                        <span class="badge bg-warning">ME2</span>
+
+                    {% elif score.performance >= 65 %}
+                        <span class="badge bg-warning">AE1</span>
+
+                    {% elif score.performance >= 60 %}
+                        <span class="badge bg-warning">AE2</span>
+
+                    {% elif score.performance >= 55 %}
+                        <span class="badge bg-warning">BE2</span>
+
+                    {% elif score.performance >= 50 %}
+                        <span class="badge bg-warning">BE1</span>
+
+                    {% else %}
+                        <span class="badge bg-danger">F</span>
+                    {% endif %}
+
+                    </td>
+
+                </tr>
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+</div>
+</div>
+{% endblock %}

@@ -39,7 +39,10 @@
             <tr>
               {% for subject in subjects %}
               <th>
-                {{ subject }}
+                    <a href="{% url 'subject_review' exam.id subject.id %}"
+                       class="text-black text-decoration-none">
+                       {{ subject }}
+                    </a>
                 <br>
                 <span class="badge bg-warning text-dark">
                   {{ subject.teacher.first_name }}

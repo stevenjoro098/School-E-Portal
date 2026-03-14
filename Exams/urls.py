@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.GradesList.as_view(), name='exams'),
+    path("exam/<int:exam_id>/subject/<int:subject_id>/review/",views.SubjectReviewView.as_view(),name="subject_review"),
     path('grade/<int:pk>/exam/list', views.ExamsList.as_view(), name='exam_list'),
     path('student/<int:student_id>/exam/<int:exam_id>/term-summary/', views.StudentTermExamSummaryView.as_view(),name='student_term_exam_summary'),
     path('student/<int:pk>/exam/<int:id>/pdf/view/', views.StudentSingleExamPDF.as_view(), name='student_exam_pdf_view'),

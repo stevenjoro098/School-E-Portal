@@ -3,6 +3,7 @@ from django.views import View
 from django.views.generic import ListView, CreateView, TemplateView
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Sum, Avg
+from django.db.models import Avg, Max, Min, Count, Q
 from django.http import HttpResponse
 from django.contrib import messages
 from django.template.loader import render_to_string
@@ -167,6 +168,52 @@ class ExamPerformanceListView(View):
         }
 
         return render(request, self.template_name, context)
+class SubjectReviewView(TemplateView):
+    template_name = "subject_review.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        exam = get_object_or_404(Exam, id=self.kwargs["exam_id"])
+        subject = get_object_or_404(Subject, id=self.kwargs["subject_id"])
+
+        scores = (
+            StudentPerformance.objects
+            .filter(exam=exam, subject=subject)
+            .select_related("student")
+            .order_by("-performance")
+        )
+
+        stats = scores.aggregate(
+            average=Avg("performance"),
+            highest=Max("performance"),
+            lowest=Min("performance"),
+            total_students=Count("id"),
+            pass_count=Count("id", filter=Q(performance__gte=50))
+        )
+        # Score distribution bands
+        distribution = {
+            "90_100": scores.filter(performance__gte=90).count(),
+            "80_89": scores.filter(performance__gte=80, performance__lt=90).count(),
+            "70_79": scores.filter(performance__gte=70, performance__lt=80).count(),
+            "60_69": scores.filter(performance__gte=60, performance__lt=70).count(),
+            "below_60": scores.filter(performance__lt=60).count(),
+        }
+        stats["pass_rate"] = (
+            (stats["pass_count"] / stats["total_students"]) * 100
+            if stats["total_students"] else 0
+        )
+
+        context.update({
+            "exam": exam,
+            "subject": subject,
+            "scores": scores,
+            "stats": stats,
+            "top_students": scores[:5],
+            "distribution": distribution
+        })
+
+        return context
 
 class StudentSingleExamPDF(View):
     def get(self, request, id, pk):

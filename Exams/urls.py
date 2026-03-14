@@ -20,4 +20,19 @@ urlpatterns = [
     path("<int:pk>/performance/", views.ExamPerformanceListView.as_view(), name="exam_performance_list"),
     path("<int:pk>/performance/excel/", views.ExportExamExcelView.as_view(), name="export_exam_excel"),
     path("<int:pk>/performance/pdf/", views.ExportExamPDFView.as_view(), name="export_exam_pdf"),
+path(
+    'exam/select-report-exams/<int:grade_id>/<term>/',
+    views.SelectReportExams.as_view(),
+    name='select_report_exams'
+),
+
+path(
+    'exam/<int:grade_id>/generate-selected-reports/<str:term>/',
+    views.PrintTermReportCardsView.as_view(),
+    name='generate_pdf_selected_exam'
+),
+
+
 ]
+
+

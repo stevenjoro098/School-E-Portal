@@ -214,7 +214,65 @@ class SubjectReviewView(TemplateView):
         })
 
         return context
+class SelectReportExams(TemplateView):
+    template_name = "select_report_exams.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        grade_id = self.kwargs["grade_id"]
+        term = self.kwargs['term']
+
+        exams = Exam.objects.filter(grade_id=grade_id).filter(term=term)
+
+        context["exams"] = exams
+        context["grade_id"] = grade_id
+        #context['term'] =
+
+        return context
+class GenerateSelectedReports(View):
+
+    def post(self, request):
+
+        exam_ids = request.POST.getlist("exams")
+        grade_id = request.POST.get("grade_id")
+
+        exams = Exam.objects.filter(id__in=exam_ids)
+
+        students = Student.objects.filter(grade_id=grade_id)
+
+        report_data = []
+
+        for student in students:
+
+            student_total = 0
+            subject_count = 0
+
+            performances = StudentPerformance.objects.filter(
+                student=student,
+                exam__in=exams
+            )
+
+            for perf in performances:
+                student_total += perf.performance
+                subject_count += 1
+
+            average = student_total / subject_count if subject_count else 0
+
+            report_data.append({
+                "student": student,
+                "average": round(average, 2)
+            })
+
+        # send to PDF template
+        return render(
+            request,
+            "pdf/student_performance_pdf.html",
+            {
+                "report_data": report_data,
+                "exams": exams
+            }
+        )
 class StudentSingleExamPDF(View):
     def get(self, request, id, pk):
         exam = get_object_or_404(Exam, id=id)
@@ -554,6 +612,7 @@ class StudentTermExamSummaryView(View):
             ranks[e.id] = rank
 
         context = {
+            "grade":grade,
             "exam": exam,
             "student": student,
             "subjects": subjects,
@@ -568,22 +627,31 @@ class StudentTermExamSummaryView(View):
 
 
 class PrintTermReportCardsView(View):
-    def get(self, request, grade_id, term):
-        # Get grade, students, subjects (ordered by numbering), and exams
+    def post(self, request, grade_id, term):
         grade = get_object_or_404(Grade, pk=grade_id)
         students = Student.objects.filter(grade=grade)
         subjects = Subject.objects.filter(grade=grade).order_by("numbering")
-        exams = Exam.objects.filter(grade=grade, term=term).order_by("created")
 
-        # Total number of learners in this grade
+        # ✅ Get selected exams from request
+        exam_ids = request.POST.getlist("exams")
+
+        if exam_ids:
+            exams = Exam.objects.filter(id__in=exam_ids, grade=grade).order_by("created")
+        else:
+            # fallback to all exams for the term
+            exams = Exam.objects.filter(grade=grade, term=term).order_by("created")
+        from itertools import zip_longest
+
+        exam_pairs = list(zip_longest(exams[::2], exams[1::2]))
+
         num_students = students.count()
 
-        # Preload all performances to reduce DB hits
+        # Preload performances
         all_performances = StudentPerformance.objects.filter(
-            exam__in=exams, student__in=students
+            exam__in=exams,
+            student__in=students
         )
 
-        # Build a map of (student, exam, subject) → score
         perf_map = {
             (p.student_id, p.exam_id, p.subject_id): p.performance
             for p in all_performances
@@ -591,20 +659,23 @@ class PrintTermReportCardsView(View):
 
         reports = []
 
-        # Compute per-student, per-exam totals and averages
         for student in students:
+
             exam_scores = {}
             exam_totals = {}
             exam_averages = {}
 
             for exam in exams:
+
                 subject_scores = {}
                 total = 0
                 count = 0
 
                 for subject in subjects:
+
                     key = (student.id, exam.id, subject.id)
                     score = perf_map.get(key)
+
                     if score is not None:
                         subject_scores[subject.id] = score
                         total += score
@@ -612,7 +683,7 @@ class PrintTermReportCardsView(View):
 
                 exam_scores[exam.id] = subject_scores
                 exam_totals[exam.id] = total
-                exam_averages[exam.id] = round(total / count, 2) if count > 0 else 0
+                exam_averages[exam.id] = round(total / count, 2) if count else 0
 
             reports.append({
                 "student": student,
@@ -621,8 +692,9 @@ class PrintTermReportCardsView(View):
                 "exam_averages": exam_averages,
             })
 
-        # Calculate rank per exam (and include "out of" text)
+        # ✅ Ranking per exam
         for exam in exams:
+
             ranked = sorted(
                 [(r, r["exam_totals"].get(exam.id, 0)) for r in reports],
                 key=lambda x: x[1],
@@ -630,52 +702,57 @@ class PrintTermReportCardsView(View):
             )
 
             for rank, (report, score) in enumerate(ranked, start=1):
+
                 if "exam_ranks" not in report:
                     report["exam_ranks"] = {}
-                # Store as "X / N" format
+
                 report["exam_ranks"][exam.id] = f"{rank} out of {num_students}"
 
-        # Fixed or dynamic term dates
+        # Term dates
         opening_date = "10th January 2025"
         closing_date = "5th April 2025"
 
-        # ✅ Resolve absolute logo path for WeasyPrint
+        # Logo path for WeasyPrint
         logo_filename = "Logo.png"
         logo_relative_path = os.path.join("images", logo_filename)
 
-        # Prefer STATIC_ROOT if available (after collectstatic), else STATICFILES_DIRS
         if hasattr(settings, "STATIC_ROOT") and os.path.exists(settings.STATIC_ROOT):
             logo_path = os.path.join(settings.STATIC_ROOT, logo_relative_path)
+
         elif hasattr(settings, "STATICFILES_DIRS") and settings.STATICFILES_DIRS:
             logo_path = os.path.join(settings.STATICFILES_DIRS[0], logo_relative_path)
+
         else:
-            # Fallback to BASE_DIR/static
             logo_path = os.path.join(settings.BASE_DIR, "static", logo_relative_path)
 
         logo_uri = f"file://{os.path.abspath(logo_path)}"
 
-        # Context for templates
         context = {
             "school_name": "UNITED MATUNDA ACADEMY",
             "grade": grade,
             "term": term,
             "subjects": subjects,
-            "exams": exams,
+            "exams": exams,  # now only selected exams
             "reports": reports,
             "opening_date": opening_date,
             "closing_date": closing_date,
             "logo_path": logo_uri,
+            "exam_pairs":exam_pairs
         }
 
-        # Render HTML to string
         html_string = render_to_string("term_report_cards.html", context)
 
-        # ✅ Generate PDF with correct static resolution
-        pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+        pdf_file = HTML(
+            string=html_string,
+            base_url=request.build_absolute_uri()
+        ).write_pdf()
 
-        # Return downloadable PDF
         response = HttpResponse(pdf_file, content_type="application/pdf")
-        response["Content-Disposition"] = f'attachment; filename="{grade}_Term_{term}_Report_Cards.pdf"'
+
+        response["Content-Disposition"] = (
+            f'attachment; filename="{grade}_Term_{term}_Selected_Report_Cards.pdf"'
+        )
+
         return response
 
 class TermExamAnalysis(TemplateView):

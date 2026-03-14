@@ -5,22 +5,24 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    @page { size: A4; margin: 1.2cm; }
+    @page { size: A4; margin: 1.5cm; }
 
     body {
       font-family: "Century Gothic", sans-serif;
       font-size: 14px;
       color: #111;
+      margin: 0;
+      padding: 0;
     }
 
-    /* ===== HEADER SECTION ===== */
+    /* ===== HEADER ===== */
     .header {
       display: flex;
       align-items: center;
       border-bottom: 2px solid #333;
-      padding-bottom: 6px;
-      margin-bottom: 10px;
-      gap: 18px;
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+      gap: 20px;
     }
 
     .logo {
@@ -82,31 +84,28 @@
       border-collapse: collapse;
       margin-top: 10px;
       margin-bottom: 20px;
-      font-size: 14px;       /* Increased from 13px */
-      min-height: 60cm;      /* WeasyPrint understands cm, not vh */
+      font-size: 13px;
+      table-layout: fixed;
     }
-
 
     th, td {
       border: 1px solid #444;
-      padding: 8px 6px;
+      padding: 6px 4px;
       text-align: center;
       vertical-align: middle;
-      font-size: 14px;
+      word-wrap: break-word;
     }
 
     th {
       background-color: #eaeaea;
       font-weight: 600;
-      word-wrap: break-word;
-      white-space: normal;
-      max-width: 130px;
       font-size: 12px;
+      white-space: normal;
     }
 
     td {
       background-color: #fff;
-      font-size: 12.5px;
+      font-size: 12px;
     }
 
     tr:nth-child(even) td {
@@ -120,17 +119,16 @@
     /* ===== COMMENTS SECTION ===== */
     .comment-box {
       border: 1px solid #555;
-      padding: 10px 12px;
-      margin-top: 15px;
+      padding: 12px 15px;
+      margin-top: 20px;
       font-size: 13px;
       background-color: #f9f9f9;
-      line-height: 2.5;
+      line-height: 1.8;
     }
 
     .comment-box p {
-      margin: 5px 0;
+      margin: 6px 0;
     }
-
     /* ===== FOOTER INFO ===== */
     .footer-info {
       margin-top: 10px;
@@ -138,8 +136,7 @@
       font-size: 11px;
       color: #555;
     }
-
-    /* ===== PAGE BREAK BETWEEN STUDENTS ===== */
+    /* ===== PAGE BREAK ===== */
     .page-break {
       page-break-after: always;
     }
@@ -147,77 +144,95 @@
 </head>
 <body>
 
-  {% for report in reports %}
-    <!-- ===== School Header ===== -->
-    <div class="header">
-      <img src="{{ logo_path }}" class="logo" alt="School Logo">
-      <div class="school-info">
-        <h1>{{ school_name }}</h1>
-        <p><em>Faith + Effort makes a mighty pair</em></p>
-        <p>P.O. Box 311, Moi’s Bridge</p>
-      </div>
+{% for report in reports %}
+
+  <!-- ===== HEADER ===== -->
+  <div class="header">
+    <img src="{{ logo_path }}" class="logo" alt="School Logo">
+    <div class="school-info">
+      <h1>{{ school_name }}</h1>
+      <p><em>Faith + Effort makes a mighty pair</em></p>
+      <p>P.O. Box 311, Moi’s Bridge</p>
     </div>
+  </div>
 
-    <!-- ===== Report Title ===== -->
-    <h2>End of Term Report Card — {{ term }}, {{ exams.first.created.year }}</h2>
+  <!-- ===== REPORT TITLE ===== -->
+  <h2>End of Term Report Card — {{ term }}, {{ exams.first.created.year }}</h2>
 
-    <!-- ===== Student Info ===== -->
-    <h1 class="student-name">{{ report.student.first_name }} {{ report.student.second_name }}</h1>
-    <h2 class="grade-name">{{ grade }}</h2>
+  <!-- ===== STUDENT INFO ===== -->
+  <h1 class="student-name">{{ report.student.first_name }} {{ report.student.second_name }}</h1>
+  <h2 class="grade-name">{{ grade.name }}</h2>
 
-    <!-- ===== Results Table ===== -->
-    <table>
-      <tr>
-        <th>Subject</th>
-        {% for exam in exams %}
-          <th title="{{ exam.exam_name }}">Assessment - {{ forloop.counter }}</th>
-        {% endfor %}
-      </tr>
-
-      {% for subject in subjects %}
-        <tr>
-          <td style="text-align:left; padding-left:8px;">{{ subject.name }}</td>
-          {% for exam in exams %}
-            <td>{{ report.exam_scores|get_item:exam.id|get_item:subject.id|default:"-" }}</td>
-          {% endfor %}
-        </tr>
+  <!-- ===== RESULTS TABLE ===== -->
+  <table>
+    <!-- Table Header: just Assessment numbers -->
+    <tr>
+      <th>Subject</th>
+      {% for exam1, exam2 in exam_pairs %}
+        <th>Assessment {{ forloop.counter }}A</th>
+        {% if exam2 %}<th>Assessment {{ forloop.counter }}B</th>{% endif %}
       {% endfor %}
+    </tr>
+    <!-- Remove second header row (no exam names needed) -->
 
-      <!-- Totals, Averages, and Ranks -->
-      <tr style="background:#f0f0f0; font-weight:bold;">
-        <th>Total per Exam</th>
-        {% for exam in exams %}
-          <td>{{ report.exam_totals|get_item:exam.id|default:"-" }}</td>
-        {% endfor %}
-      </tr>
-      <tr style="background:#f0f0f0;">
-        <th>Average per Exam</th>
-        {% for exam in exams %}
-          <td>{{ report.exam_averages|get_item:exam.id|default:"-" }}</td>
-        {% endfor %}
-      </tr>
-      <tr style="background:#f0f0f0;">
-        <th>Rank per Exam</th>
-        {% for exam in exams %}
-          <td><i>{{ report.exam_ranks|get_item:exam.id|default:"-" }}</i></td>
-        {% endfor %}
-      </tr>
-    </table>
-    <hr>
-    <!-- ===== Comments Section ===== -->
-    <div class="comment-box">
-      <p><strong>Class Teacher's Name:</strong>............................................</p>
-      <p><strong>Class Teacher’s Comment:</strong> ____________________________________________________________</p>
-      <p>_________________________________________________________________________________________________</p>
-      <br>
-      <p><strong>Head Teacher’s Comment:</strong> ______________________________________________________________________</p>
-      <p>________________________________________________________________________________________________</p>
-      <p></p>
+    <!-- Subject Scores -->
+    {% for subject in subjects %}
+    <tr>
+        <td style="text-align:left; padding-left:8px;"><strong>{{ subject.name }}</strong></td>
+      {% for exam1, exam2 in exam_pairs %}
+        <td>{{ report.exam_scores|get_item:exam1.id|get_item:subject.id|default:"-" }}</td>
+        {% if exam2 %}
+          <td>{{ report.exam_scores|get_item:exam2.id|get_item:subject.id|default:"-" }}</td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+
+    <!-- TOTAL -->
+    <tr style="background:#f0f0f0; font-weight:bold;">
+      <th>Total</th>
+      {% for exam1, exam2 in exam_pairs %}
+        <td>{{ report.exam_totals|get_item:exam1.id|default:"-" }}</td>
+        {% if exam2 %}<td>{{ report.exam_totals|get_item:exam2.id|default:"-" }}</td>{% endif %}
+      {% endfor %}
+    </tr>
+
+    <!-- AVERAGE -->
+    <tr style="background:#f0f0f0;">
+      <th>Average</th>
+      {% for exam1, exam2 in exam_pairs %}
+        <td>{{ report.exam_averages|get_item:exam1.id|default:"-" }}</td>
+        {% if exam2 %}<td>{{ report.exam_averages|get_item:exam2.id|default:"-" }}</td>{% endif %}
+      {% endfor %}
+    </tr>
+
+    <!-- RANK -->
+    <tr style="background:#f0f0f0;">
+      <th>Rank</th>
+      {% for exam1, exam2 in exam_pairs %}
+        <td><i>{{ report.exam_ranks|get_item:exam1.id|default:"-" }}</i></td>
+        {% if exam2 %}<td><i>{{ report.exam_ranks|get_item:exam2.id|default:"-" }}</i></td>{% endif %}
+      {% endfor %}
+    </tr>
+  </table>
+
+  <!-- ===== COMMENTS ===== -->
+  <div class="comment-box">
+    <p><strong>Class Teacher's Name:</strong> ............................................</p>
+    <p><strong>Class Teacher’s Comment:</strong> ____________________________________________________________</p>
+    <p>_________________________________________________________________________________________________</p>
+    <br>
+    <p><strong>Head Teacher’s Comment:</strong> ______________________________________________________________________</p>
+    <p>________________________________________________________________________________________________</p>
+  </div>
+    <div class="footer-info">
+        <h5>United Matunda Academy| ICT</h5>
     </div>
+  {% if not forloop.last %}
+    <div class="page-break"></div>
+  {% endif %}
 
-    {% if not forloop.last %}
-      <div class="page-break"></div>
-    {% endif %}
-  {% endfor %}
+{% endfor %}
+
 </body>
 </html>

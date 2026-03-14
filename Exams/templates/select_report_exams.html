@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Select Exams{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">Generate Report Cards </div>
+
+        <div class="card-body">
+
+        <form method="POST" action="{% url 'generate_pdf_selected_exam' grade_id 2 %}">
+                {% csrf_token %}
+            <input type="hidden" name="grade_id" value="{{ grade_id }}">
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Select</th>
+                        <th>Exam</th>
+                        <th>Term</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for exam in exams %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="exams" value="{{ exam.id }}">
+                        </td>
+                        <td>{{ exam.exam_name }}</td>
+                        <td>{{ exam.term }}</td>
+                        <td>{{ exam.created }}</td>
+                    </tr>
+
+        {% endfor %}
+
+            </tbody>
+
+        </table>
+
+            <div class="text-end">
+                <button class="btn btn-success">
+                Generate Report Cards
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+    </div>
+</div>
+
+{% endblock %}

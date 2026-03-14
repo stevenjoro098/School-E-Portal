@@ -5,7 +5,7 @@
 {% block content %}
 <div id="quizApp">
     <h3>[[ assessment.title ]]</h3>
-    <h5 class="text-primary">
+    <h5 class="text-white">
         <strong>
             [[ assessment.subject.name ]] | Duration: [[ assessment.duration_minutes ]] minutes
         </strong>
@@ -14,15 +14,15 @@
     {% if taken %}
         <div class="alert alert-danger">
             You have already taken this assessment.
-            <a href="{% url 'assessment_result' result.pk %}">View Results</a>
+            <a href="{% url 'assessment_result' result.pk %}" class="btn btn-primary"> Click to View Results</a>
         </div>
     {% else %}
         <!-- Welcome screen -->
         <div v-if="!quizStarted" class="text-center my-4">
-            <h4 class="mb-3">
-                Welcome, {{ student.first_name }} {{ student.second_name }} from {{ student.grade }}!
-            </h4>
-            <p class="lead">Wishing you all the best in your assessment.</p>
+            <h1 class="mb-3 text-white">
+                Welcome, {{ student.first_name }} {{ student.second_name }} from {{ student.grade }} !
+            </h1>
+            <p class="lead text-white fw-bold">Wishing you all the best in your assessment.</p>
             <button class="btn btn-lg btn-success" @click="startAssessment">
                 Click to Start Assessment
             </button>

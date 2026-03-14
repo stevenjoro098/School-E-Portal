@@ -13,10 +13,14 @@
                    class="rounded-circle shadow-sm me-4"
                    style="width: 120px; height: 120px; object-fit: cover;">
             {% endif %}
-            <div class="text-center mb-4">
-                <h2 class="fw-bold">Hello, {{ student_name }} 👋</h2>
-                <h4 class="text-muted">Here's your result for <strong>{{ assessment.title }}</strong></h4>
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold">Hello, {{ student_name }} 👋</h2>
+                    <h4 class="text-muted">Here's your result for <strong>{{ assessment.title }}</strong></h4>
+                </div>
             </div>
+        </div>
         <div>
         </div>
     </div>
@@ -43,7 +47,7 @@
 
     <!-- PDF Download Button -->
     <div class="text-center mb-4">
-        <a class="btn btn-outline-primary btn-lg" href="{% url 'download_result_pdf' result.id %}">
+        <a class="btn btn-primary btn-lg" href="{% url 'download_result_pdf' result.id %}">
             📥 Download PDF Report
         </a>
     </div>

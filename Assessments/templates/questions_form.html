@@ -17,11 +17,10 @@
         <div class="col-md-8 mb-4">
             <div class="card shadow border-0">
                 <div class="card-body">
-                    <h4 class="card-title mb-1"><span class="text-warning">Add New Question</span></h4>
-                    <i><p class="text-primary">N/B: Questions once saved will be available even after logging out for all unpublished assessments.</p></i>
+                    <h4 class="card-title mb-1"><span class="text-success">Add New Question</span></h4>
+                    <i><p class="text-primary fw-bold">N/B: Questions once saved will be available even after logging out for all unpublished assessments.</p></i>
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-
                         <div class="mb-3">
                             <label class="form-label fw-semibold">{{ form.text.label }}</label>
                             <p>{{ form.text }}</p>

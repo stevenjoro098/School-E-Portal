@@ -4,25 +4,23 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <style>
-    @page { size: A4; margin: 1.5cm; }
+      <style>
+    @page { size: A4; margin: 1.2cm; }
 
     body {
       font-family: "Century Gothic", sans-serif;
       font-size: 14px;
       color: #111;
-      margin: 0;
-      padding: 0;
     }
 
-    /* ===== HEADER ===== */
+    /* ===== HEADER SECTION ===== */
     .header {
       display: flex;
       align-items: center;
       border-bottom: 2px solid #333;
-      padding-bottom: 8px;
-      margin-bottom: 15px;
-      gap: 20px;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+      gap: 18px;
     }
 
     .logo {
@@ -84,28 +82,31 @@
       border-collapse: collapse;
       margin-top: 10px;
       margin-bottom: 20px;
-      font-size: 13px;
-      table-layout: fixed;
+      font-size: 14px;       /* Increased from 13px */
+      min-height: 60cm;      /* WeasyPrint understands cm, not vh */
     }
+
 
     th, td {
       border: 1px solid #444;
-      padding: 6px 4px;
+      padding: 8px 6px;
       text-align: center;
       vertical-align: middle;
-      word-wrap: break-word;
+      font-size: 14px;
     }
 
     th {
       background-color: #eaeaea;
       font-weight: 600;
-      font-size: 12px;
+      word-wrap: break-word;
       white-space: normal;
+      max-width: 130px;
+      font-size: 12px;
     }
 
     td {
       background-color: #fff;
-      font-size: 12px;
+      font-size: 12.5px;
     }
 
     tr:nth-child(even) td {
@@ -119,16 +120,17 @@
     /* ===== COMMENTS SECTION ===== */
     .comment-box {
       border: 1px solid #555;
-      padding: 12px 15px;
-      margin-top: 20px;
+      padding: 10px 12px;
+      margin-top: 15px;
       font-size: 13px;
       background-color: #f9f9f9;
-      line-height: 1.8;
+      line-height: 2.5;
     }
 
     .comment-box p {
-      margin: 6px 0;
+      margin: 5px 0;
     }
+
     /* ===== FOOTER INFO ===== */
     .footer-info {
       margin-top: 10px;
@@ -136,7 +138,8 @@
       font-size: 11px;
       color: #555;
     }
-    /* ===== PAGE BREAK ===== */
+
+    /* ===== PAGE BREAK BETWEEN STUDENTS ===== */
     .page-break {
       page-break-after: always;
     }
@@ -157,7 +160,7 @@
   </div>
 
   <!-- ===== REPORT TITLE ===== -->
-  <h2>End of Term Report Card — {{ term }}, {{ exams.first.created.year }}</h2>
+  <h2>End of {{ term }} Report Card, {{ exams.first.created.year }}</h2>
 
   <!-- ===== STUDENT INFO ===== -->
   <h1 class="student-name">{{ report.student.first_name }} {{ report.student.second_name }}</h1>

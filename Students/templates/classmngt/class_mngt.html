@@ -2,6 +2,7 @@
 {% block title %} Class Management {% endblock %}
 {% block content %}
     <h1 class="text-white">{{ grade }}</h1>
+    {% if grade.class_teacher %}<h4 class="text-white">{{ grade.class_teacher }}</h4>{% endif %}
     <h5 class="text-white">Ream Paper Records</h5>
     <hr>
     <div class="card">

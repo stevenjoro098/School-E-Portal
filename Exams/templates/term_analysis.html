@@ -2,8 +2,13 @@
 {% block title %} 📊 Term Exam Analysis {% endblock %}
 {% block content %}
 <div class="container my-4">
-  <h3 class="text-success mb-3">📊 Term Exam Analysis — {{ term }} ({{ grade.name }})</h3>
+    <div class="card">
+        <div class="card-body">
+            <h3 class="text-black mb-3">📊 Term Exam Analysis — {{ term }} ({{ grade.name }})</h3>
+        </div>
+    </div>
 
+    <br>
   <!-- SUBJECT AVERAGES -->
   <div class="card mb-4 shadow-sm">
     <div class="card-header bg-light fw-bold">Subject Average Scores per Exam</div>

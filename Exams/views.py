@@ -18,20 +18,15 @@ from .models import Exam, StudentPerformance
 from Students.models import Student, Teachers
 #from .utils.cbc_kjsea_points import score_to_cbc
 
-
 class GradesList(ListView):
     template_name = 'grade_list.html'
     model = Grade
     context_object_name = 'grades_list'
-
 class CreateExam(CreateView):
     template_name = 'create_exam.html'
     model = Exam
     fields = ['exam_name','term','grade']
     success_url = reverse_lazy('exams')
-
-
-
 class ExamsList(ListView):
     template_name = 'exams_list.html'
     model = Exam
@@ -53,8 +48,6 @@ class ExamsList(ListView):
         context['grouped_exams'] = dict(grouped_exams)
         context['grade'] = self.grade
         return context
-
-
 class EnterExamPerformanceView(View):
     template_name = "enter_performance.html"
 
@@ -89,13 +82,6 @@ class EnterExamPerformanceView(View):
                     )
         messages.success(request, "Performance Added Success")
         return redirect("enter_exam_performance", pk=exam.id)
-
-
-from django.shortcuts import render, get_object_or_404
-from django.views import View
-from .models import Exam, Student, Subject, StudentPerformance
-
-
 class ExamPerformanceListView(View):
     template_name = "performance_list.html"
 
@@ -219,60 +205,14 @@ class SelectReportExams(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         grade_id = self.kwargs["grade_id"]
         term = self.kwargs['term']
-
         exams = Exam.objects.filter(grade_id=grade_id).filter(term=term)
-
         context["exams"] = exams
         context["grade_id"] = grade_id
-        #context['term'] =
+        context['term'] = term
 
         return context
-class GenerateSelectedReports(View):
-
-    def post(self, request):
-
-        exam_ids = request.POST.getlist("exams")
-        grade_id = request.POST.get("grade_id")
-
-        exams = Exam.objects.filter(id__in=exam_ids)
-
-        students = Student.objects.filter(grade_id=grade_id)
-
-        report_data = []
-
-        for student in students:
-
-            student_total = 0
-            subject_count = 0
-
-            performances = StudentPerformance.objects.filter(
-                student=student,
-                exam__in=exams
-            )
-
-            for perf in performances:
-                student_total += perf.performance
-                subject_count += 1
-
-            average = student_total / subject_count if subject_count else 0
-
-            report_data.append({
-                "student": student,
-                "average": round(average, 2)
-            })
-
-        # send to PDF template
-        return render(
-            request,
-            "pdf/student_performance_pdf.html",
-            {
-                "report_data": report_data,
-                "exams": exams
-            }
-        )
 class StudentSingleExamPDF(View):
     def get(self, request, id, pk):
         exam = get_object_or_404(Exam, id=id)
@@ -303,7 +243,6 @@ class StudentSingleExamPDF(View):
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="{student}_{exam.exam_name}_{exam.grade}_performance.pdf"'
         return response
-
 class ExportExamExcelView(View):
     def get(self, request, pk):
         exam = get_object_or_404(Exam, id=pk)
@@ -351,8 +290,6 @@ class ExportExamExcelView(View):
         response["Content-Disposition"] = f'attachment; filename="{exam.exam_name}.xlsx"'
         wb.save(response)
         return response
-
-
 class ExportExamPDFView(View):
     def get(self, request, pk):
         exam = get_object_or_404(Exam, pk=pk)
@@ -405,8 +342,6 @@ class ExportExamPDFView(View):
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="{exam.exam_name}_{exam.grade}_performances.pdf"'
         return response
-
-
 class StudentPerformanceDetailView(View):
     template_name = "student_performance_details.html"
 
@@ -433,7 +368,6 @@ class StudentPerformanceDetailView(View):
             "average": average,
         }
         return render(request, self.template_name, context)
-
 class TeacherSubjectExamPerformanceView(TemplateView):
     template_name = 'teacher_subjects_performance.html'
 
@@ -463,11 +397,6 @@ class TeacherSubjectExamPerformanceView(TemplateView):
         })
 
         return context
-
-
-
-from django.db.models import Sum
-
 class ExportStudentPDFView(View):
     def get(self, request, exam_id, student_id):
         exam = get_object_or_404(Exam, pk=exam_id)
@@ -516,7 +445,6 @@ class ExportStudentPDFView(View):
             f'attachment; filename="{student.first_name}_{student.second_name}_{exam.exam_name}_Report.pdf"'
         )
         return response
-
 class ExportClassPDFView(View):
     def get(self, request, exam_id):
         exam = get_object_or_404(Exam, pk=exam_id)
@@ -568,7 +496,6 @@ class ExportClassPDFView(View):
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="{exam.exam_name}_{ exam.term }_Class_Report.pdf"'
         return response
-
 class StudentTermExamSummaryView(View):
     template_name = "student_term_exam_summary.html"
 
@@ -624,14 +551,12 @@ class StudentTermExamSummaryView(View):
         }
 
         return render(request, self.template_name, context)
-
-
 class PrintTermReportCardsView(View):
     def post(self, request, grade_id, term):
         grade = get_object_or_404(Grade, pk=grade_id)
         students = Student.objects.filter(grade=grade)
         subjects = Subject.objects.filter(grade=grade).order_by("numbering")
-
+        print('term', term)
         # ✅ Get selected exams from request
         exam_ids = request.POST.getlist("exams")
 
@@ -754,7 +679,6 @@ class PrintTermReportCardsView(View):
         )
 
         return response
-
 class TermExamAnalysis(TemplateView):
     template_name = 'term_analysis.html'
 
@@ -852,8 +776,6 @@ class TermExamAnalysis(TemplateView):
         context['grade_trends'] = grade_trends
 
         return context
-
-
 class GenerateClassReportCardsView(View):
 
     def get(self, request, exam_id):

@@ -12,7 +12,7 @@
 
         <div class="card-body">
 
-        <form method="POST" action="{% url 'generate_pdf_selected_exam' grade_id 2 %}">
+        <form method="POST" action="{% url 'generate_pdf_selected_exam' grade_id term %}">
                 {% csrf_token %}
             <input type="hidden" name="grade_id" value="{{ grade_id }}">
             <table class="table table-bordered">

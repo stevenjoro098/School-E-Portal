@@ -1,5 +1,5 @@
 import json
-
+from braces.views import LoginRequiredMixin, SuperuserRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse, reverse_lazy
@@ -10,6 +10,8 @@ from django.contrib import messages
 from Students.models import Student, ReamPaperRecords
 from Subjects.models import Grade
 
+class AuthenticateMixin(LoginRequiredMixin, SuperuserRequiredMixin):
+    pass
 
 # Create your views here.
 class StudentCreateView(CreateView):
@@ -79,7 +81,7 @@ from django.shortcuts import get_object_or_404
 from Students.models import Student, ReamPaperRecords
 
 
-class EditStudentReam(TemplateView):
+class EditStudentReam(AuthenticateMixin, TemplateView):
     template_name = 'classmngt/update_student_ream.html'
 
     def get(self, request, *args, **kwargs):

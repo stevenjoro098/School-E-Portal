@@ -57,30 +57,29 @@
 
                     <td>
 
-                    {% if score.performance >= 85 %}
+                    {% if score.performance >= 90 %}
                         <span class="badge bg-success">EE1</span>
 
-                    {% elif score.performance >= 80 %}
+                    {% elif score.performance >= 75 %}
                         <span class="badge bg-primary">EE2</span>
 
-                    {% elif score.performance >= 75 %}
+                    {% elif score.performance >= 58 %}
                         <span class="badge bg-info">ME1</span>
 
-                    {% elif score.performance >= 70 %}
+                    {% elif score.performance >= 41 %}
                         <span class="badge bg-warning">ME2</span>
 
-                    {% elif score.performance >= 65 %}
+                    {% elif score.performance >= 31 %}
                         <span class="badge bg-warning">AE1</span>
 
-                    {% elif score.performance >= 60 %}
+                    {% elif score.performance >= 21 %}
                         <span class="badge bg-warning">AE2</span>
 
-                    {% elif score.performance >= 55 %}
-                        <span class="badge bg-warning">BE2</span>
-
-                    {% elif score.performance >= 50 %}
+                    {% elif score.performance >= 11 %}
                         <span class="badge bg-warning">BE1</span>
 
+                    {% elif score.performance >= 1 %}
+                        <span class="badge bg-warning">BE2</span>
                     {% else %}
                         <span class="badge bg-danger">F</span>
                     {% endif %}

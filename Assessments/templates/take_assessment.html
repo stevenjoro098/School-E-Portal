@@ -39,7 +39,7 @@
         <!-- Current Question -->
         <div v-if="currentQuestion">
             <div class="card mb-3">
-                <div class="card-header">
+                <div class="card-header text-bold">
                     Question [[ currentIndex + 1 ]] of [[ questions.length ]]
                 </div>
                 <div class="card-body">
@@ -54,7 +54,8 @@
                     </div>
 
                     <!-- Choices -->
-                    <ol class="list-group alpha-list">
+                    <div class="container">
+                        <ol class="list-group alpha-list">
                         <li v-for="choice in currentQuestion.choices"
                             :key="choice.id"
                             class="list-group-item"
@@ -63,6 +64,8 @@
                             [[ choice.text ]]
                         </li>
                     </ol>
+                    </div>
+
                 </div>
             </div>
 

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'ELearning.apps.ElearningConfig',
     'Students.apps.StudentsConfig',
     'Exams.apps.ExamsConfig',
+    'NoticeBoard.apps.NoticeboardConfig',
     'TimeTable.apps.TimetableConfig'
 # 'widget_tweaks'
 ]

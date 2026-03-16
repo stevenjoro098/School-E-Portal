@@ -6,3 +6,10 @@ def get_item(dictionary, key):
     if isinstance(dictionary, dict):
         return dictionary.get(key)
     return None
+
+@register.filter
+def index(sequence, position):
+    try:
+        return sequence[position]
+    except:
+        return None

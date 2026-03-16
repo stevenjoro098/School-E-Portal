@@ -25,6 +25,9 @@ urlpatterns = [
     path('api/save-notes/', views.save_notes, name='save_notes'),
     path('api/save-image/', views.save_image, name='save_image'),
     path('api/save-video/', views.save_video, name='save_video'),
+    path('upload-video/', views.upload_video, name='upload_video'),
+    path('videos/', views.video_list, name='video_list'),
+
     #========================Learners View URLConfig ======================================================
     path('learners/grades/list/',views.LearnersGradeList.as_view(),name='learners_grades_list'),
     path('<int:grade_id>/subject/list/', views.GradeSubjectList.as_view(), name='grade_subject_list'),

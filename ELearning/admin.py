@@ -1,5 +1,5 @@
 from django.contrib import admin
-
+from .models import VideosResource
 from ELearning.models import Subject, Strand, SubStrand, LearningOutcome, Note, ImageResource
 
 @admin.register(Strand)
@@ -22,3 +22,7 @@ class NoteAdmin(admin.ModelAdmin):
 @admin.register(LearningOutcome)
 class LearningOutcomeAdmin(admin.ModelAdmin):
     list_display = ['substrand','description']
+
+@admin.register(VideosResource)
+class VideosResources(admin.ModelAdmin):
+    list_display = ['title']

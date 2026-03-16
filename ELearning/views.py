@@ -13,6 +13,7 @@ from rest_framework.reverse import reverse_lazy
 
 from Subjects.models import Grade
 from .models import Subject, Strand, SubStrand, SubStrandNote, Note, ImageResource, VideoResource
+from .forms import VideoUploadForm
 
 class HomePage(TemplateView):
     template_name = 'main_home_page.html'
@@ -348,3 +349,23 @@ class SubStrandsList(ListView):
         context = super().get_context_data(**kwargs)
         context['strand'] = self.strand
         return context
+
+# views.py
+from django.shortcuts import render, redirect
+
+from .models import VideosResource
+
+def upload_video(request):
+    if request.method == "POST":
+        form = VideoUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('video_list')
+    else:
+        form = VideoUploadForm()
+
+    return render(request, "curriculum_management/upload_video.html", {"form": form})
+
+def video_list(request):
+    videos = VideosResource.objects.all()
+    return render(request, "learners_templates/video_list.html", {"videos": videos})

@@ -50,6 +50,7 @@ LOGGING = {
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     'crispy_forms',
     "crispy_bootstrap5",
     'django.contrib.admin',
@@ -64,7 +65,8 @@ INSTALLED_APPS = [
     'Students.apps.StudentsConfig',
     'Exams.apps.ExamsConfig',
     'NoticeBoard.apps.NoticeboardConfig',
-    'TimeTable.apps.TimetableConfig'
+    'TimeTable.apps.TimetableConfig',
+    'Library.apps.LibraryConfig'
 # 'widget_tweaks'
 ]
 MIDDLEWARE = [

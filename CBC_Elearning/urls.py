@@ -23,7 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('ELearning.urls')),
     path('assessment/', include('Assessments.urls')),
-    #path('api/', include('API.urls')),
+    path('api/', include('API.urls')),
     path('exams/', include('Exams.urls')),
     path('timetable/', include('TimeTable.urls')),
     path('students/', include('Students.urls')),

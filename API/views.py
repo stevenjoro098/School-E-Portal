@@ -1,6 +1,8 @@
 from django.shortcuts import render
-from rest_framework import generics
-from .serializers import StudentListSerializer, SubjectsSerializer, ExamSerializer
+from rest_framework import generics, viewsets
+
+from Library.models import Book, IssuedBooks
+from .serializers import IssuedBookSerializer, StudentListSerializer, SubjectsSerializer, ExamSerializer, BookSerializer
 from Students.models import Student
 from Subjects.models import Subject
 from Exams.models import Exam
@@ -28,3 +30,12 @@ class SubjectDetail(generics.RetrieveUpdateDestroyAPIView):
 class ExamListCreate(generics.ListCreateAPIView):
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
+
+# ==================== Library ==============================================
+class BooksViewsets(viewsets.ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+class IssueBooksViewset(viewsets.ModelViewSet):
+    queryset = IssuedBooks.objects.all()
+    serializer_class = IssuedBookSerializer

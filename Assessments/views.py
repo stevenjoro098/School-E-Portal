@@ -68,7 +68,7 @@ class AssessmentPublish(LoginRequiredMixin, View):
 
 class AssessmentAnalysis(LoginRequiredMixin, ListView):
     model = AssessmentResult
-    template_name = 'assessment_analysis.html'
+    template_name = 'manage_assessment/assessment_analysis.html'
     context_object_name = 'assessment_result_list'
 
     def get_queryset(self):

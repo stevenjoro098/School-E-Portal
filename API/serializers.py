@@ -6,7 +6,12 @@ from Library.models import Book, IssuedBooks
 
 # ================ Student List =========================
 class StudentListSerializer(serializers.ModelSerializer):
-    model = Student
+    class Meta:
+        model = Student
+        fields = ['first_name','second_name',
+                  'third_name','grade',
+                  'gender','image',
+                  'residence']
 
 class TeacherSerializer(serializers.ModelSerializer):
     model = Teachers
@@ -16,7 +21,9 @@ class SubjectsSerializer(serializers.ModelSerializer):
 
 
 class GradeSerializer(serializers.ModelSerializer):
-    model = Grade
+    class Meta:
+        model = Grade
+        fields = ['id','name']
 
 
 class ExamSerializer(serializers.ModelSerializer):
@@ -24,6 +31,8 @@ class ExamSerializer(serializers.ModelSerializer):
 
 # ==================  Library =======================
 class BookSerializer(serializers.ModelSerializer):
+    grade = serializers.PrimaryKeyRelatedField(queryset=Grade.objects.all())
+    category_display = serializers.CharField(source='get_category_display', read_only=True)
     class Meta:
         model = Book
         fields = '__all__'

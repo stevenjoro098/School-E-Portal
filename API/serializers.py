@@ -21,9 +21,10 @@ class SubjectsSerializer(serializers.ModelSerializer):
 
 
 class GradeSerializer(serializers.ModelSerializer):
+    class_teacher = serializers.StringRelatedField()
     class Meta:
         model = Grade
-        fields = ['id','name']
+        fields = ['id','name','class_teacher']
 
 
 class ExamSerializer(serializers.ModelSerializer):

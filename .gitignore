@@ -6213,3 +6213,13 @@ db.sqlite3
 /agriculture.json
 /data2.json
 /elearning.json
+/Library/migrations/0001_initial.py
+/NoticeBoard/migrations/0001_initial.py
+/Library/migrations/0002_alter_issuedbooks_return_date.py
+/Library/migrations/0003_alter_book_image.py
+/Library/migrations/0004_alter_issuedbooks_return_date.py
+/Library/migrations/0005_alter_book_library_code.py
+/Library/migrations/__init__.py
+/media/library/default.png
+/media/assessments/star.jpeg
+/media/videos/Wakadinali_-_Za_Kimotho_Official_Music_Video_6HBVh_hloAc.mp4

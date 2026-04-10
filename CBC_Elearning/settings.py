@@ -31,7 +31,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://192.168.8.26:9000"
 ]
 
-ALLOWED_HOSTS = ['192.168.8.26:9000','localhost','127.0.0.1']
+ALLOWED_HOSTS = ['192.168.8.26','localhost','127.0.0.1']
 
 LOGGING = {
     "version": 1,

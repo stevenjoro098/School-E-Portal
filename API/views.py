@@ -42,7 +42,7 @@ class SubjectDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SubjectsSerializer
 
 # ========================= EXAM =======================================
-class ExamListCreate(generics.ListCreateAPIView):
+class ExamViewset(viewsets.ModelViewSet):
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
 

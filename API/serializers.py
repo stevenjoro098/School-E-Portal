@@ -28,7 +28,9 @@ class GradeSerializer(serializers.ModelSerializer):
 
 
 class ExamSerializer(serializers.ModelSerializer):
-    model = Exam
+    class Meta:
+        model = Exam
+        fields ='__all__'
 
 # ==================  Library =======================
 class BookSerializer(serializers.ModelSerializer):

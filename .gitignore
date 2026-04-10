@@ -6220,8 +6220,6 @@ db.sqlite3
 /Library/migrations/0004_alter_issuedbooks_return_date.py
 /Library/migrations/0005_alter_book_library_code.py
 /Library/migrations/__init__.py
-/media/library/default.png
-/media/assessments/star.jpeg
 /media/videos/Wakadinali_-_Za_Kimotho_Official_Music_Video_6HBVh_hloAc.mp4
 /.idea/CBC_Elearning.iml
 /data.json

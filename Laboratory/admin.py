@@ -4,3 +4,4 @@ from .models import LabEquipment
 @admin.register(LabEquipment)
 class LabAdmin(admin.ModelAdmin):
     list_display = ['name','available_quantity','date_added']
+    search_fields = ['name']

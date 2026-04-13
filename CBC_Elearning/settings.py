@@ -72,7 +72,8 @@ INSTALLED_APPS = [
     'Exams.apps.ExamsConfig',
     'NoticeBoard.apps.NoticeboardConfig',
     'TimeTable.apps.TimetableConfig',
-    'Library.apps.LibraryConfig'
+    'Library.apps.LibraryConfig',
+    'Laboratory.apps.LaboratoryConfig'
 # 'widget_tweaks'
 ]
 MIDDLEWARE = [

@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from Laboratory.models import LabEquipment
 from Students.models import Student, Teachers
 from Subjects.models import Subject, Grade
 from Exams.models import Exam
@@ -43,4 +45,10 @@ class BookSerializer(serializers.ModelSerializer):
 class IssuedBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = IssuedBooks
+        fields = '__all__'
+
+
+class LabSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LabEquipment
         fields = '__all__'

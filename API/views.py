@@ -1,16 +1,19 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
-from rest_framework import generics, viewsets
-from rest_framework import viewsets, status
-from rest_framework.response import Response
+from Laboratory.models import LabEquipment
 from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
-
+from rest_framework import viewsets, status, generics
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.db.models import Avg, Count
+from django.shortcuts import get_object_or_404
 from Library.models import Book, IssuedBooks
-from .serializers import GradeSerializer,IssuedBookSerializer, StudentListSerializer, SubjectsSerializer, ExamSerializer, BookSerializer
+from .serializers import GradeSerializer, IssuedBookSerializer, StudentListSerializer, SubjectsSerializer, \
+    ExamSerializer, BookSerializer, LabSerializer
 from Students.models import Student
 from Subjects.models import Subject, Grade
-from Exams.models import Exam
+from Exams.models import Exam, StudentPerformance
 # Create your views here.
 
 class GradeViewSet(viewsets.ModelViewSet):
@@ -42,9 +45,52 @@ class SubjectDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SubjectsSerializer
 
 # ========================= EXAM =======================================
+
 class ExamViewset(viewsets.ModelViewSet):
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
+
+    def get_queryset(self):
+        queryset = Exam.objects.all()
+        gradeId = self.request.query_params.get('gradeId')
+
+        if gradeId:
+            grade = get_object_or_404(Grade, id=gradeId)
+            queryset = queryset.filter(grade=grade)
+
+        return queryset
+
+    # ✅ NEW: analysis endpoint
+    @action(detail=True, methods=['get'])
+    def analysis(self, request, pk=None):
+        exam = self.get_object()
+
+        # 📊 Subject averages
+        subject_averages = (
+            StudentPerformance.objects
+            .filter(exam=exam)
+            .values('subject__name')
+            .annotate(avg_score=Avg('performance'))
+            .order_by('-avg_score')
+        )
+
+        # 👨‍🎓 Student averages
+        student_averages = (
+            StudentPerformance.objects
+            .filter(exam=exam)
+            .values('student_id', 'student_name')
+            .annotate(
+                avg_score=Avg('performance'),
+                total_subjects=Count('subject')
+            )
+            .order_by('-avg_score')
+        )
+
+        return Response({
+            "exam": exam.exam_name,
+            "subject_averages": subject_averages,
+            "student_averages": student_averages
+        })
 
 # ==================== Library ==============================================
 class BooksViewsets(viewsets.ModelViewSet):
@@ -79,3 +125,8 @@ class IssueBooksViewset(viewsets.ModelViewSet):
         except Exception as e:
             # Returns JSON for any unexpected server error
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# ======================Laboratory ======================================================
+class LabViewSet(viewsets.ModelViewSet):
+    queryset = LabEquipment.objects.all()
+    serializer_class = LabSerializer
+

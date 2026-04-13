@@ -16,7 +16,6 @@ import os
 from Subjects.models import Subject, Grade
 from .models import Exam, StudentPerformance
 from Students.models import Student, Teachers
-#from .utils.cbc_kjsea_points import score_to_cbc
 
 class GradesList(ListView):
     template_name = 'grade_list.html'

@@ -1,3 +1,5 @@
+from itertools import count
+
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from Laboratory.models import LabEquipment
@@ -11,7 +13,7 @@ from django.shortcuts import get_object_or_404
 from Library.models import Book, IssuedBooks
 from .serializers import GradeSerializer, IssuedBookSerializer, StudentListSerializer, SubjectsSerializer, \
     ExamSerializer, BookSerializer, LabSerializer
-from Students.models import Student
+from Students.models import Student, Teachers
 from Subjects.models import Subject, Grade
 from Exams.models import Exam, StudentPerformance
 # Create your views here.
@@ -22,19 +24,45 @@ class GradeViewSet(viewsets.ModelViewSet):
 
 # ========================== STUDENTS ====================================
 class StudentViewset(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
+    queryset = Student.objects.all()  # ✅ REQUIRED for DRF router
     serializer_class = StudentListSerializer
 
     def get_queryset(self):
         queryset = Student.objects.all()
 
-        gradeId = self.request.query_params.get('gradeId')
-        grade = get_object_or_404(Grade, id=gradeId)
-        if grade:
-            queryset = queryset.filter(grade=grade)
+        grade_id = self.request.query_params.get('gradeId')
+
+        # ✅ ONLY filter if gradeId exists
+        if grade_id:
+            queryset = queryset.filter(grade_id=grade_id)
 
         return queryset
+    def detail(self,request):
+        return Response({'name':'name'})
 
+    @action(detail=False, methods=['get'])
+    def count(self, request):
+        count = Student.objects.filter(active=True).count()
+        teachers = Teachers.objects.all().count()
+        return Response({'student_count':str(count),
+                         'teachers_count': str(teachers)})
+
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        query = request.query_params.get('q', '').strip()
+
+        # ❌ reject empty or too short queries
+        if len(query) < 2:
+            return Response([])
+
+        students = Student.objects.filter(
+            Q(first_name__icontains=query) |
+            Q(second_name__icontains=query)|
+            Q(third_name__icontains=query)
+        )[:20]  # 🔥 limit results (important)
+        print(students)
+        serializer = self.get_serializer(students, many=True)
+        return Response(serializer.data)
 # ================= Subject ==================================================
 class SubjectListCreate(generics.ListCreateAPIView):
     queryset = Subject.objects.all()
@@ -96,6 +124,11 @@ class ExamViewset(viewsets.ModelViewSet):
 class BooksViewsets(viewsets.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+
+    @action(detail=False, methods=['get'])
+    def count(self, request):
+        books_count = Book.objects.all().count()
+        return Response({'books_count': str(books_count)})
 
 class SearchBook(APIView):
     def post(self, *args, **kwargs):

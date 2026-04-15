@@ -37,8 +37,7 @@ class StudentViewset(viewsets.ModelViewSet):
             queryset = queryset.filter(grade_id=grade_id)
 
         return queryset
-    def detail(self,request):
-        return Response({'name':'name'})
+
 
     @action(detail=False, methods=['get'])
     def count(self, request):

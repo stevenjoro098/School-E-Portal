@@ -10,7 +10,10 @@ from Library.models import Book, IssuedBooks
 class StudentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = ['first_name','second_name',
+        fields = [
+            'id',
+            'first_name',
+                  'second_name',
                   'third_name','grade',
                   'gender','image',
                   'residence']

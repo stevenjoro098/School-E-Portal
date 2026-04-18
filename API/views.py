@@ -11,8 +11,7 @@ from rest_framework.response import Response
 from django.db.models import Avg, Count
 from django.shortcuts import get_object_or_404
 from Library.models import Book, IssuedBooks
-from .serializers import GradeSerializer, IssuedBookSerializer, StudentListSerializer, SubjectsSerializer, \
-    ExamSerializer, BookSerializer, LabSerializer
+from .serializers import *
 from Students.models import Student, Teachers
 from Subjects.models import Subject, Grade
 from Exams.models import Exam, StudentPerformance
@@ -162,3 +161,6 @@ class LabViewSet(viewsets.ModelViewSet):
     queryset = LabEquipment.objects.all()
     serializer_class = LabSerializer
 
+class ReamPapersView(viewsets.ModelViewSet):
+    queryset = ReamPaperRecords.objects.all()
+    serializer_class = ReamPapersSerializer

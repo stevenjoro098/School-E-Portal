@@ -9,4 +9,5 @@ router.register(r'grades', views.GradeViewSet)
 router.register(r'books', views.BooksViewsets)
 router.register(r'issued-books', views.IssueBooksViewset)
 router.register(r'laboratory', views.LabViewSet)
+router.register('ream-papers', views.ReamPapersView)
 urlpatterns = router.urls

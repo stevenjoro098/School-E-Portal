@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from Laboratory.models import LabEquipment
-from Students.models import Student, Teachers
+from Students.models import Student, Teachers, ReamPaperRecords
 from Subjects.models import Subject, Grade
 from Exams.models import Exam
 from Library.models import Book, IssuedBooks
@@ -55,3 +55,16 @@ class LabSerializer(serializers.ModelSerializer):
     class Meta:
         model = LabEquipment
         fields = '__all__'
+
+
+class ReamPapersSerializer(serializers.ModelSerializer):
+    student = StudentListSerializer(read_only=True)
+    student_id = serializers.PrimaryKeyRelatedField(
+        queryset=Student.objects.all(),
+        source='student',
+        write_only=True
+    )
+    class Meta:
+        model = ReamPaperRecords
+        fields = '__all__'
+

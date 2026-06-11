@@ -174,7 +174,7 @@ class SubjectReviewView(TemplateView):
             highest=Max("performance"),
             lowest=Min("performance"),
             total_students=Count("id"),
-            pass_count=Count("id", filter=Q(performance__gte=50))
+            pass_count=Count("id", filter=Q(performance__gte=60))
         )
         # Score distribution bands
         distribution = {

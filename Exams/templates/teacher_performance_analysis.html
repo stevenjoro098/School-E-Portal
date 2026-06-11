@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% block title %}{{ teacher.full_name }} Analysis {% endblock %}
 {% block content%}
 <h2 class="text-white">{{ teacher.full_name }} Performance Analysis</h2>
 
@@ -30,7 +30,11 @@
             <tbody>
             {% for result in item.exam_results %}
                 <tr>
-                    <td>{{ result.exam.exam_name }}</td>
+                   <td>
+    <a href="{% url 'subject_review' result.exam.id item.subject.id %}">
+        {{ result.exam.exam_name }}
+    </a>
+</td>
                     <td>{{ result.average }}</td>
                     <td>{{ result.highest }}</td>
                     <td>{{ result.lowest }}</td>

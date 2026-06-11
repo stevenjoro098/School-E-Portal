@@ -992,7 +992,7 @@ class TeacherPerformance(TemplateView):
                     learners=Count("id"),
                     pass_count=Count(
                         "id",
-                        filter=Q(performance__gte=50)
+                        filter=Q(performance__gte=60)
                     )
                 )
 

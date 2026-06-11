@@ -943,3 +943,100 @@ class GenerateClassReportCardsView(View):
         )
 
         return response
+
+
+
+from django.views.generic import TemplateView
+from django.db.models import Avg, Max, Min, Count, Q
+from collections import defaultdict
+
+class TeacherPerformance(TemplateView):
+    template_name = "teacher_performance_analysis.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        teacher = get_object_or_404(
+            Teachers,
+            pk=self.kwargs["teacher_id"]
+        )
+
+        subjects = Subject.objects.filter(
+            teacher=teacher
+        ).select_related("grade")
+
+        performance_data = []
+
+        for subject in subjects:
+
+            exams = Exam.objects.filter(
+                grade=subject.grade
+            ).order_by("term", "created")
+
+            exam_results = []
+
+            for exam in exams:
+
+                performances = StudentPerformance.objects.filter(
+                    exam=exam,
+                    subject=subject
+                )
+
+                if not performances.exists():
+                    continue
+
+                stats = performances.aggregate(
+                    average=Avg("performance"),
+                    highest=Max("performance"),
+                    lowest=Min("performance"),
+                    learners=Count("id"),
+                    pass_count=Count(
+                        "id",
+                        filter=Q(performance__gte=50)
+                    )
+                )
+
+                pass_rate = (
+                    stats["pass_count"] /
+                    stats["learners"] * 100
+                ) if stats["learners"] else 0
+
+                exam_results.append({
+                    "exam": exam,
+                    "average": round(stats["average"], 2),
+                    "highest": stats["highest"],
+                    "lowest": stats["lowest"],
+                    "pass_rate": round(pass_rate, 2)
+                })
+
+            if exam_results:
+
+                averages = [x["average"] for x in exam_results]
+
+                performance_data.append({
+                    "subject": subject,
+                    "exam_results": exam_results,
+                    "best_exam": max(
+                        exam_results,
+                        key=lambda x: x["average"]
+                    ),
+                    "worst_exam": min(
+                        exam_results,
+                        key=lambda x: x["average"]
+                    ),
+                    "overall_average": round(
+                        sum(averages) / len(averages),
+                        2
+                    ),
+                    "improvement":
+                        round(
+                            averages[-1] - averages[0],
+                            2
+                        ) if len(averages) > 1 else 0
+                })
+
+        context["teacher"] = teacher
+        context["performance_data"] = performance_data
+
+        return context
+

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content%}
+<h2>{{ teacher.full_name }} Performance Analysis</h2>
+
+{% for item in performance_data %}
+
+<div class="card mb-4">
+
+    <div class="card-header">
+        <strong>
+            {{ item.subject.name }}
+            ({{ item.subject.grade.name }})
+        </strong>
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Exam</th>
+                    <th>Average</th>
+                    <th>Highest</th>
+                    <th>Lowest</th>
+                    <th>Pass Rate</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for result in item.exam_results %}
+                <tr>
+                    <td>{{ result.exam.exam_name }}</td>
+                    <td>{{ result.average }}</td>
+                    <td>{{ result.highest }}</td>
+                    <td>{{ result.lowest }}</td>
+                    <td>{{ result.pass_rate }}%</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="mt-3">
+            <p><strong>Overall Average:</strong> {{ item.overall_average }}</p>
+            <p><strong>Best Exam:</strong> {{ item.best_exam.exam.exam_name }}</p>
+            <p><strong>Lowest Exam:</strong> {{ item.worst_exam.exam.exam_name }}</p>
+            <p><strong>Improvement:</strong> {{ item.improvement }}</p>
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% endblock %}

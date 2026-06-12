@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}
+{{ student.full_name }} Progress Analysis
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <h3 class="mb-0">
+                                {{ student.full_name }}
+                            </h3>
+                            <small>Learner Progress Dashboard</small>
+                        </div>
+
+                        <!-- YEAR FILTER -->
+                        <form method="get" class="d-flex">
+
+                            <select name="year" class="form-select me-2">
+                                <option value="">All Years</option>
+
+                                {% for year in years %}
+                                    <option value="{{ year }}"
+                                        {% if selected_year|stringformat:"s" == year|stringformat:"s" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ year }}
+                                    </option>
+                                {% endfor %}
+
+                            </select>
+
+                            <button type="submit" class="btn btn-light">
+                                Filter
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- PERFORMANCE MATRIX -->
+    <!-- ========================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-success text-white">
+            <strong>Subject Performance Matrix</strong>
+        </div>
+
+        <div class="card-body bg-light">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover text-center align-middle">
+
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Exam</th>
+
+                            {% for subject in subjects %}
+                                <th>{{ subject.name }}</th>
+                            {% endfor %}
+
+                            <th class="bg-primary text-white">
+                                Average
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {% for row in exam_rows %}
+
+                        <tr>
+
+                            <!-- EXAM -->
+                            <td class="fw-bold">
+                                {{ row.exam.exam_name }}
+                                <br>
+                                <small class="text-muted">
+                                    {{ row.exam.term }}
+                                </small>
+                            </td>
+
+                            <!-- SUBJECT SCORES -->
+                            {% for subject in subjects %}
+
+                                {% with score=row.scores|get_item:subject.id %}
+
+                                <td>
+                                    {% if score is not None %}
+
+                                        <span class="badge
+                                            {% if score >= 75 %}
+                                                bg-success
+                                            {% elif score >= 50 %}
+                                                bg-warning text-dark
+                                            {% else %}
+                                                bg-danger
+                                            {% endif %}
+                                        ">
+                                            {{ score }}
+                                        </span>
+
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+
+                                {% endwith %}
+
+                            {% endfor %}
+
+                            <!-- AVERAGE -->
+                            <td>
+                                <span class="badge bg-primary">
+                                    {{ row.average }}
+                                </span>
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+                        <tr>
+                            <td colspan="{{ subjects|length|add:2 }}">
+                                No exam data available for this year.
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- OVERALL TREND CHART -->
+    <!-- ========================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-dark text-white">
+            <strong>Overall Average Trend</strong>
+        </div>
+
+        <div class="card-body">
+            <canvas id="overallTrendChart"></canvas>
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- SUBJECT TREND CHARTS -->
+    <!-- ========================= -->
+
+    <div class="row">
+
+        {% for subject_id, trend in subject_trends.items %}
+
+            <div class="col-md-6 mb-4">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-header bg-secondary text-white">
+                        <strong>{{ trend.subject }} Trend</strong>
+                    </div>
+
+                    <div class="card-body">
+                        <canvas id="subjectChart{{ subject_id }}"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+
+<!-- ========================= -->
+<!-- CHART JS -->
+<!-- ========================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // =========================
+    // OVERALL TREND
+    // =========================
+    new Chart(
+        document.getElementById("overallTrendChart"),
+        {
+            type: "line",
+            data: {
+                labels: [
+                    {% for label in exam_labels %}
+                        "{{ label }}",
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: "Overall Average",
+                    data: [
+                        {% for avg in overall_trend %}
+                            {{ avg }},
+                        {% endfor %}
+                    ],
+                    borderColor: "#0d6efd",
+                    backgroundColor: "rgba(13,110,253,0.15)",
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        }
+    );
+
+
+    // =========================
+    // SUBJECT TRENDS
+    // =========================
+    {% for subject_id, trend in subject_trends.items %}
+
+    new Chart(
+        document.getElementById("subjectChart{{ subject_id }}"),
+        {
+            type: "line",
+            data: {
+                labels: [
+                    {% for label in exam_labels %}
+                        "{{ label }}",
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: "{{ trend.subject }}",
+                    data: [
+                        {% for value in trend.data %}
+                            {{ value }},
+                        {% endfor %}
+                    ],
+                    borderColor: "#198754",
+                    backgroundColor: "rgba(25,135,84,0.15)",
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        }
+    );
+
+    {% endfor %}
+
+});
+
+</script>
+
+{% endblock %}

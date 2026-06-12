@@ -102,7 +102,7 @@
               <td class="rank-col">{{ forloop.counter }}</td>
 
               <td class="student-col text-start">
-                <strong>{{ row.student.first_name }} {{ row.student.second_name }}</strong>
+                <a href="{% url 'learner_progress' row.student.pk %}"><strong>{{ row.student.first_name }} {{ row.student.second_name }}</strong></a>
               </td>
 
               {% for subject in subjects %}

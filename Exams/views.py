@@ -12,6 +12,7 @@ from openpyxl import Workbook
 from weasyprint import HTML
 from django.conf import settings
 import os
+from django.db.models.functions import ExtractYear
 
 from Subjects.models import Subject, Grade
 from .models import Exam, StudentPerformance
@@ -1040,3 +1041,132 @@ class TeacherPerformance(TemplateView):
 
         return context
 
+class StudentProgressView(TemplateView):
+    template_name = "learners_progress_analysis.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        student = get_object_or_404(
+            Student,
+            pk=self.kwargs["student_id"]
+        )
+
+        year = self.request.GET.get("year")
+
+        # =========================
+        # BASE QUERY
+        # =========================
+        performances = (
+            StudentPerformance.objects
+            .select_related("exam", "subject")
+            .filter(student=student)
+        )
+
+        # filter by year (CORRECT WAY)
+        if year:
+            performances = performances.filter(
+                exam__created__year=year
+            )
+
+        # =========================
+        # EXAMS
+        # =========================
+        exams = (
+            Exam.objects
+            .filter(exam_performance__student=student)
+            .distinct()
+            .order_by("created")
+        )
+
+        if year:
+            exams = exams.filter(created__year=year)
+
+        # =========================
+        # SUBJECTS
+        # =========================
+        subjects = (
+            Subject.objects
+            .filter(studentperformance__student=student)
+            .distinct()
+            .order_by("name")
+        )
+
+        # =========================
+        # MATRIX BUILD
+        # =========================
+        exam_rows = []
+
+        for exam in exams:
+
+            exam_scores = performances.filter(exam=exam)
+
+            scores = {
+                p.subject_id: p.performance
+                for p in exam_scores
+            }
+
+            avg = exam_scores.aggregate(
+                avg=Avg("performance")
+            )["avg"] or 0
+
+            exam_rows.append({
+                "exam": exam,
+                "scores": scores,
+                "average": round(avg, 2)
+            })
+
+        # =========================
+        # SUBJECT TRENDS
+        # =========================
+        subject_trends = {}
+
+        for subject in subjects:
+
+            trend = []
+
+            for exam in exams:
+
+                score = performances.filter(
+                    exam=exam,
+                    subject=subject
+                ).values_list("performance", flat=True).first()
+
+                trend.append(score or 0)
+
+            subject_trends[subject.id] = {
+                "subject": subject.name,
+                "data": trend
+            }
+
+        # =========================
+        # OVERALL TREND
+        # =========================
+        overall_trend = [
+            row["average"]
+            for row in exam_rows
+        ]
+
+        # =========================
+        # YEARS (FIXED - IMPORTANT)
+        # =========================
+        years = (
+            Exam.objects
+            .annotate(year=ExtractYear("created"))
+            .values_list("year", flat=True)
+            .distinct()
+            .order_by("year")
+        )
+
+        context.update({
+            "student": student,
+            "subjects": subjects,
+            "exam_rows": exam_rows,
+            "subject_trends": subject_trends,
+            "overall_trend": overall_trend,
+            "exam_labels": [e.exam_name for e in exams],
+            "years": years,
+            "selected_year": year
+        })
+
+        return context

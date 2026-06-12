@@ -58,10 +58,7 @@
     </div>
 
 
-    <!-- ========================= -->
-    <!-- PERFORMANCE MATRIX -->
-    <!-- ========================= -->
-
+    <!-- MATRIX -->
     <div class="card shadow-sm border-0 mb-4">
 
         <div class="card-header bg-success text-white">
@@ -82,9 +79,7 @@
                                 <th>{{ subject.name }}</th>
                             {% endfor %}
 
-                            <th class="bg-primary text-white">
-                                Average
-                            </th>
+                            <th class="bg-primary text-white">Average</th>
                         </tr>
                     </thead>
 
@@ -94,7 +89,6 @@
 
                         <tr>
 
-                            <!-- EXAM -->
                             <td class="fw-bold">
                                 {{ row.exam.exam_name }}
                                 <br>
@@ -103,36 +97,24 @@
                                 </small>
                             </td>
 
-                            <!-- SUBJECT SCORES -->
                             {% for subject in subjects %}
-
                                 {% with score=row.scores|get_item:subject.id %}
-
                                 <td>
                                     {% if score is not None %}
-
                                         <span class="badge
-                                            {% if score >= 75 %}
-                                                bg-success
-                                            {% elif score >= 50 %}
-                                                bg-warning text-dark
-                                            {% else %}
-                                                bg-danger
-                                            {% endif %}
+                                            {% if score >= 75 %}bg-success
+                                            {% elif score >= 50 %}bg-warning text-dark
+                                            {% else %}bg-danger{% endif %}
                                         ">
                                             {{ score }}
                                         </span>
-
                                     {% else %}
                                         -
                                     {% endif %}
                                 </td>
-
                                 {% endwith %}
-
                             {% endfor %}
 
-                            <!-- AVERAGE -->
                             <td>
                                 <span class="badge bg-primary">
                                     {{ row.average }}
@@ -160,10 +142,7 @@
     </div>
 
 
-    <!-- ========================= -->
-    <!-- OVERALL TREND CHART -->
-    <!-- ========================= -->
-
+    <!-- OVERALL TREND -->
     <div class="card shadow-sm border-0 mb-4">
 
         <div class="card-header bg-dark text-white">
@@ -177,29 +156,26 @@
     </div>
 
 
-    <!-- ========================= -->
-    <!-- SUBJECT TREND CHARTS -->
-    <!-- ========================= -->
-
+    <!-- SUBJECT TRENDS -->
     <div class="row">
 
         {% for subject_id, trend in subject_trends.items %}
 
-            <div class="col-md-6 mb-4">
+        <div class="col-md-6 mb-4">
 
-                <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0">
 
-                    <div class="card-header bg-secondary text-white">
-                        <strong>{{ trend.subject }} Trend</strong>
-                    </div>
+                <div class="card-header bg-secondary text-white">
+                    <strong>{{ trend.subject }} Trend</strong>
+                </div>
 
-                    <div class="card-body">
-                        <canvas id="subjectChart{{ subject_id }}"></canvas>
-                    </div>
-
+                <div class="card-body">
+                    <canvas id="subjectChart{{ subject_id }}"></canvas>
                 </div>
 
             </div>
+
+        </div>
 
         {% endfor %}
 
@@ -208,108 +184,124 @@
 </div>
 
 
-<!-- ========================= -->
 <!-- CHART JS -->
-<!-- ========================= -->
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // =========================
+    Chart.register(ChartDataLabels);
+
+    // ======================
     // OVERALL TREND
-    // =========================
-    new Chart(
-        document.getElementById("overallTrendChart"),
-        {
-            type: "line",
-            data: {
-                labels: [
-                    {% for label in exam_labels %}
-                        "{{ label }}",
+    // ======================
+    new Chart(document.getElementById("overallTrendChart"), {
+
+        type: "line",
+
+        data: {
+            labels: [
+                {% for label in exam_labels %}
+                    "{{ label }}",
+                {% endfor %}
+            ],
+
+            datasets: [{
+                label: "Overall Average",
+                data: [
+                    {% for avg in overall_trend %}
+                        {{ avg }},
                     {% endfor %}
                 ],
-                datasets: [{
-                    label: "Overall Average",
-                    data: [
-                        {% for avg in overall_trend %}
-                            {{ avg }},
-                        {% endfor %}
-                    ],
-                    borderColor: "#0d6efd",
-                    backgroundColor: "rgba(13,110,253,0.15)",
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 5,
-                    pointHoverRadius: 8
-                }]
+                borderColor: "#0d6efd",
+                backgroundColor: "rgba(13,110,253,0.15)",
+                tension: 0.3,
+                fill: true,
+                pointRadius: 5,
+                pointHoverRadius: 8
+            }]
+        },
+
+        options: {
+            responsive: true,
+
+            plugins: {
+                legend: { position: 'top' },
+
+                datalabels: {
+                    color: "#000",
+                    anchor: "end",
+                    align: "top",
+                    font: { weight: "bold", size: 10 }
+                }
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
+
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
                 }
             }
         }
-    );
+    });
 
 
-    // =========================
-    // SUBJECT TRENDS
-    // =========================
+    // ======================
+    // SUBJECT CHARTS
+    // ======================
     {% for subject_id, trend in subject_trends.items %}
 
-    new Chart(
-        document.getElementById("subjectChart{{ subject_id }}"),
-        {
-            type: "line",
-            data: {
-                labels: [
-                    {% for label in exam_labels %}
-                        "{{ label }}",
+    new Chart(document.getElementById("subjectChart{{ subject_id }}"), {
+
+        type: "line",
+
+        data: {
+            labels: [
+                {% for label in exam_labels %}
+                    "{{ label }}",
+                {% endfor %}
+            ],
+
+            datasets: [{
+                label: "{{ trend.subject }}",
+                data: [
+                    {% for value in trend.data %}
+                        {{ value }},
                     {% endfor %}
                 ],
-                datasets: [{
-                    label: "{{ trend.subject }}",
-                    data: [
-                        {% for value in trend.data %}
-                            {{ value }},
-                        {% endfor %}
-                    ],
-                    borderColor: "#198754",
-                    backgroundColor: "rgba(25,135,84,0.15)",
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 5,
-                    pointHoverRadius: 8
-                }]
+                borderColor: "#198754",
+                backgroundColor: "rgba(25,135,84,0.15)",
+                tension: 0.3,
+                fill: true,
+                pointRadius: 5,
+                pointHoverRadius: 8
+            }]
+        },
+
+        options: {
+            responsive: true,
+
+            plugins: {
+                legend: { position: 'top' },
+
+                datalabels: {
+                    color: "#333",
+                    anchor: "end",
+                    align: "top",
+                    font: { size: 10 }
+                }
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100
-                    }
+
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
                 }
             }
         }
-    );
+    });
 
     {% endfor %}
 

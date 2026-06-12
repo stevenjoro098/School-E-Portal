@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
-{% block title %}{{ teacher.full_name }} Analysis {% endblock %}
+
+{% block title %}
+{{ teacher.full_name }} Analysis
+{% endblock %}
 
 {% block content %}
 
@@ -11,7 +14,7 @@
 
 <div class="card mb-4 shadow-sm border-0">
 
-    <!-- HEADER -->
+    <!-- SUBJECT HEADER -->
     <div class="card-header bg-primary text-white">
         <strong>
             {{ item.subject.name }} ({{ item.subject.grade.name }})
@@ -30,7 +33,7 @@
                         <th class="text-center">Average</th>
                         <th class="text-center">Highest</th>
                         <th class="text-center">Lowest</th>
-                        <th class="text-center">Pass Rate (60% and above)</th>
+                        <th class="text-center">Pass Rate (60%+)</th>
                     </tr>
                 </thead>
 
@@ -38,34 +41,29 @@
                 {% for result in item.exam_results %}
                     <tr>
 
-                        <!-- Exam -->
                         <td>
                             <a class="fw-bold text-decoration-none"
                                href="{% url 'subject_review' result.exam.id item.subject.id %}">
-                                {{ result.exam.exam_name }} ({{ result.exam.term}})
+                                {{ result.exam.exam_name }} ({{ result.exam.term }})
                             </a>
                         </td>
 
-                        <!-- Average -->
                         <td class="text-center">
                             <h5>{{ result.average }}</h5>
                         </td>
 
-                        <!-- Highest -->
                         <td class="text-center">
                             <span class="badge bg-success">
                                 {{ result.highest }}
                             </span>
                         </td>
 
-                        <!-- Lowest -->
                         <td class="text-center">
                             <span class="badge bg-danger">
                                 {{ result.lowest }}
                             </span>
                         </td>
 
-                        <!-- Pass Rate -->
                         <td class="text-center">
                             {% if result.pass_rate >= 50 %}
                                 <span class="badge bg-success">
@@ -124,7 +122,7 @@
 
         </div>
 
-        <!-- INSIGHT PANEL -->
+        <!-- INSIGHT -->
         <div class="alert mt-4
             {% if item.improvement > 0 %}alert-success
             {% elif item.improvement < 0 %}alert-danger
@@ -140,6 +138,7 @@
             {% else %}
                 Performance is stable with no significant change.
             {% endif %}
+
         </div>
 
         <!-- CHART -->
@@ -152,66 +151,112 @@
 
 {% endfor %}
 
-<!-- CHART.JS -->
+
+<!-- ===================== -->
+<!-- CHART JS -->
+<!-- ===================== -->
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
+    Chart.register(ChartDataLabels);
+
     {% for item in performance_data %}
 
-    const ctx{{ item.subject.id }} = document
-        .getElementById("chart-{{ item.subject.id }}")
-        .getContext("2d");
+    new Chart(
+        document.getElementById("chart-{{ item.subject.id }}"),
+        {
+            type: 'line',
 
-    new Chart(ctx{{ item.subject.id }}, {
-        type: 'line',
-        data: {
-            labels: [
-                {% for result in item.exam_results %}
-                    "{{ result.exam.exam_name }}",
-                {% endfor %}
-            ],
-            datasets: [
-                {
-                    label: "Average Score",
-                    data: [
-                        {% for result in item.exam_results %}
-                            {{ result.average }},
-                        {% endfor %}
-                    ],
-                    borderColor: "blue",
-                    backgroundColor: "rgba(0, 123, 255, 0.1)",
-                    tension: 0.3
-                },
-                {
-                    label: "Pass Rate (%)",
-                    data: [
-                        {% for result in item.exam_results %}
-                            {{ result.pass_rate }},
-                        {% endfor %}
-                    ],
-                    borderColor: "green",
-                    backgroundColor: "rgba(40, 167, 69, 0.1)",
-                    tension: 0.3
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top'
-                }
+            data: {
+                labels: [
+                    {% for result in item.exam_results %}
+                        "{{ result.exam.exam_name }}",
+                    {% endfor %}
+                ],
+
+                datasets: [
+
+                    {
+                        label: "Average Score",
+                        data: [
+                            {% for result in item.exam_results %}
+                                {{ result.average }},
+                            {% endfor %}
+                        ],
+                        borderColor: "#0d6efd",
+                        backgroundColor: "rgba(13,110,253,0.1)",
+                        tension: 0.3,
+                        pointRadius: 5
+                    },
+
+                    {
+                        label: "Pass Rate (%)",
+                        data: [
+                            {% for result in item.exam_results %}
+                                {{ result.pass_rate }},
+                            {% endfor %}
+                        ],
+                        borderColor: "#198754",
+                        backgroundColor: "rgba(25,135,84,0.1)",
+                        tension: 0.3,
+                        pointRadius: 5
+                    }
+
+                ]
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100
+
+            options: {
+
+                responsive: true,
+
+                plugins: {
+
+                    legend: {
+                        position: 'top'
+                    },
+
+                    datalabels: {
+
+                        display: true,
+
+                        align: "top",
+                        anchor: "end",
+                        offset: 3,
+
+                        color: "#111",
+                        font: {
+                            weight: "bold",
+                            size: 10
+                        },
+
+                        formatter: function(value, context) {
+
+                            const isLast =
+                                context.dataIndex === context.dataset.data.length - 1;
+
+                            if (isLast) {
+                                return context.dataset.label + ": " + value;
+                            }
+
+                            return value;
+                        }
+                    }
+
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
                 }
             }
         }
-    });
+    );
 
     {% endfor %}
 

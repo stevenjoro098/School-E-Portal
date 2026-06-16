@@ -327,13 +327,24 @@ class ExportExamPDFView(View):
         class_total = sum(s["total"] for s in student_data)
         num_students = len(student_data)
         class_mean_score = class_total / num_students if num_students > 0 else 0
+        # Average total score per learner
+        class_average_total = (
+            sum(s["total"] for s in student_data) / len(student_data)
+            if student_data else 0
+        )
 
+        # Average mean score per learner
+        class_mean_score = (
+            sum(s["mean"] for s in student_data) / len(student_data)
+            if student_data else 0
+        )
         # Render to HTML
         html_string = render_to_string("exam_performance_pdf.html", {
             "exam": exam,
             "subjects": subjects,
             "ranked_students": ranked_students,
             "subject_averages": subject_averages,
+            "class_average_total": class_average_total,
             "class_mean_score": class_mean_score,  # overall class mean
         })
 

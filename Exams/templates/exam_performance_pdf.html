@@ -1,104 +1,200 @@
 {% load dict_extras %}
 {% load static %}
-<head xmlns="http://www.w3.org/1999/html">
-  <meta charset="utf-8">
-  <style>
-    body { font-family: "Helvetica", sans-serif; margin: 20px; }
-    h2 { text-align: center; margin-bottom: 10px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
-    th, td { border: 1px solid #000; padding: 6px; text-align: center; }
-    th { background: #f2f2f2; }
-    .avg-table { margin-bottom: 20px; }
 
-    @page {
-      size: A4 landscape;
-      margin: 20mm;
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+
+```
+<style>
+    body {
+        font-family: Helvetica, sans-serif;
+        margin: 20px;
+    }
+
+    h2, h3 {
+        text-align: center;
+        margin: 5px 0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        font-size: 12px;
+    }
+
+    th, td {
+        border: 1px solid #000;
+        padding: 6px;
+        text-align: center;
+    }
+
+    th {
+        background: #f2f2f2;
+        font-weight: bold;
+    }
+
+    .summary-row {
+        background: #f2f2f2;
+        font-weight: bold;
     }
 
     .header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      margin-bottom: 10px;
+        text-align: center;
+        margin-bottom: 10px;
     }
 
     .logo {
-      width: 60px;
-      height: auto;
-      margin-right: 20px;
+        width: 70px;
+        height: auto;
     }
 
-    .school-info h1 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: bold;
+    .school-name {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 5px 0;
     }
 
-    .school-info p {
-      margin: 0;
-      font-size: 12px;
+    .school-motto,
+    .school-address {
+        font-size: 12px;
+        margin: 0;
     }
-  </style>
+
+    .section-title {
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    @page {
+        size: A4 landscape;
+        margin: 15mm;
+    }
+</style>
+```
+
 </head>
+
 <body>
-  <div class="header">
+
+```
+<!-- SCHOOL HEADER -->
+<div class="header">
     <img src="{% static 'school_logo.png' %}" class="logo">
-    <div class="school-info">
-      <h1>UNITED MATUNDA ACADEMY</h1>
-      <p>Faith + Effort makes a mighty pair</p>
-      <p>P.O Box 311, Moi’s Bridge</p>
+
+    <div class="school-name">
+        UNITED MATUNDA ACADEMY
     </div>
-  </div>
-  <hr>
 
-  <h2><u>{{ exam.exam_name }} - {{ exam.grade }} </u> ( {{ exam.term }}, {{ exam.created.year }})</h2>
-  <p><strong>Averages:</strong></p>
-  <!-- Averages Table -->
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        {% for subject in subjects %}
-          <th>{{ subject.name }}</th>
-        {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        {% for subject in subjects %}
-          <td>{{ subject_averages|get_item:subject.id|floatformat:2 }}</td>
-        {% endfor %}
-      </tr>
-    </tbody>
-  </table>
+    <p class="school-motto">
+        Faith + Effort Makes A Mighty Pair
+    </p>
 
-  <p><strong><h3>Student(s) Performance</h3></strong></p>
-  <hr>
-  <!-- Student Ranking Table -->
-  <table>
+    <p class="school-address">
+        P.O Box 311, Moi's Bridge
+    </p>
+</div>
+
+<hr>
+
+<!-- EXAM DETAILS -->
+<h2>
+    {{ exam.exam_name }} - {{ exam.grade }}
+</h2>
+
+<h3>
+    {{ exam.term }} , {{ exam.created.year }}
+</h3>
+
+<!-- SUBJECT AVERAGES -->
+<p class="section-title">
+    Subject Averages
+</p>
+
+<table>
     <thead>
-      <tr>
-        <th>#</th>
-        <th>Student</th>
-        {% for subject in subjects %}
-          <th>{{ subject.name }}</th>
-        {% endfor %}
-        <th>Total</th>
-        <th>Student Average</th>
-      </tr>
+        <tr>
+            {% for subject in subjects %}
+                <th>{{ subject.name }}</th>
+            {% endfor %}
+            <th>Class Mean</th>
+        </tr>
     </thead>
+
     <tbody>
-      {% for item in ranked_students %}
-      <tr>
-        <td><strong>{{ forloop.counter }}</strong></td>
-        <td><h3>{{ item.student.first_name }} {{ item.student.second_name }}</h3></td>
-        {% for subject in subjects %}
-          <td>{{ item.scores|get_item:subject.id|default:"-" }}</td>
-        {% endfor %}
-        <td><h3><strong>{{ item.total }}</strong></h3></td>
-        <td>{{ item.mean|floatformat:2 }}</td>
-      </tr>
-      {% endfor %}
+        <tr class="summary-row">
+            {% for subject in subjects %}
+                <td>
+                    {{ subject_averages|get_item:subject.id|floatformat:2 }}
+                </td>
+            {% endfor %}
+
+            <td>
+                {{ class_mean_score|floatformat:2 }}
+            </td>
+        </tr>
     </tbody>
-  </table>
+</table>
+
+<!-- STUDENT PERFORMANCE -->
+<p class="section-title">
+    Student Performance Ranking
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Position</th>
+            <th>Student Name</th>
+
+            {% for subject in subjects %}
+                <th>{{ subject.name }}</th>
+            {% endfor %}
+
+            <th>Total</th>
+            <th>Average</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for item in ranked_students %}
+        <tr>
+
+            <td>
+                {{ forloop.counter }}
+            </td>
+
+            <td style="text-align:left;">
+                {{ item.student.first_name }}
+                {{ item.student.second_name }}
+            </td>
+
+            {% for subject in subjects %}
+                <td>
+                    {{ item.scores|get_item:subject.id|default:"-" }}
+                </td>
+            {% endfor %}
+
+            <td>
+                <strong>{{ item.total }}</strong>
+            </td>
+
+            <td>
+                {{ item.mean|floatformat:2 }}
+            </td>
+
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+```
+
 </body>
+</html>

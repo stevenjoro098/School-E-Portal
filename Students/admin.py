@@ -21,7 +21,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(Teachers)
 class TeachersAdmin(admin.ModelAdmin):
-    list_display = ['first_name','second_name','gender']
+    list_display = ['first_name','second_name','telephone','gender']
 
 
 @admin.register(ReamPaperRecords)

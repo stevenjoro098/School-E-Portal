@@ -44,7 +44,8 @@ def global_search(request):
         # Students search
         students = Student.objects.filter(
             Q(first_name__icontains=query) |
-            Q(second_name__icontains=query)
+            Q(second_name__icontains=query) |
+            Q(third_name__icontains=query)
         )[:20]
 
 

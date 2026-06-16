@@ -22,7 +22,7 @@ class StudentAdmin(admin.ModelAdmin):
 @admin.register(Teachers)
 class TeachersAdmin(admin.ModelAdmin):
     list_display = ['first_name','second_name','telephone','gender']
-
+    list_filter = ['gender']
 
 @admin.register(ReamPaperRecords)
 class ReamPaperMngmtAdmin(admin.ModelAdmin):

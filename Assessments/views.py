@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.template.loader import get_template, render_to_string
 from django.shortcuts import get_object_or_404
 from weasyprint import HTML
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -32,6 +33,29 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
+def global_search(request):
+    query = request.GET.get("q", "").strip()
+
+    students = []
+    exams = []
+    subjects = []
+
+    if query:
+        # Students search
+        students = Student.objects.filter(
+            Q(first_name__icontains=query) |
+            Q(second_name__icontains=query)
+        )[:20]
+
+
+    context = {
+        "query": query,
+        "students": students,
+        "exams": exams,
+        "subjects": subjects,
+    }
+
+    return render(request, "search_results.html", context)
 
 def Home(request):
     #user_profile = request.user.studentprofile

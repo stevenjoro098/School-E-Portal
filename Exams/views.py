@@ -436,9 +436,32 @@ class ExportStudentPDFView(View):
                 break
 
         total_students = all_totals.count()
+        # -------------------------------------------------
+        # Resolve logo path safely
+        # -------------------------------------------------
 
+        logo_filename = "Logo.png"
+        logo_relative_path = os.path.join("images", logo_filename)
+
+        logo_path = None
+
+        if hasattr(settings, "STATIC_ROOT") and settings.STATIC_ROOT:
+            candidate = os.path.join(settings.STATIC_ROOT, logo_relative_path)
+            if os.path.exists(candidate):
+                logo_path = candidate
+
+        if not logo_path and settings.STATICFILES_DIRS:
+            candidate = os.path.join(settings.STATICFILES_DIRS[0], logo_relative_path)
+            if os.path.exists(candidate):
+                logo_path = candidate
+
+        if not logo_path:
+            logo_path = os.path.join(settings.BASE_DIR, "static", logo_relative_path)
+
+        logo_uri = f"file://{os.path.abspath(logo_path)}"
         context = {
             "exam": exam,
+            "logo_url": logo_uri,
             "student": student,
             "subjects": subjects,
             "scores": scores,
@@ -469,6 +492,29 @@ class ExportClassPDFView(View):
             .annotate(total_score=Sum("performance"))
             .order_by("-total_score")
         )
+        # -------------------------------------------------
+        # Resolve logo path safely
+        # -------------------------------------------------
+
+        logo_filename = "Logo.png"
+        logo_relative_path = os.path.join("images", logo_filename)
+
+        logo_path = None
+
+        if hasattr(settings, "STATIC_ROOT") and settings.STATIC_ROOT:
+            candidate = os.path.join(settings.STATIC_ROOT, logo_relative_path)
+            if os.path.exists(candidate):
+                logo_path = candidate
+
+        if not logo_path and settings.STATICFILES_DIRS:
+            candidate = os.path.join(settings.STATICFILES_DIRS[0], logo_relative_path)
+            if os.path.exists(candidate):
+                logo_path = candidate
+
+        if not logo_path:
+            logo_path = os.path.join(settings.BASE_DIR, "static", logo_relative_path)
+
+        logo_uri = f"file://{os.path.abspath(logo_path)}"
 
         # Make student_id → rank lookup
         rank_lookup = {}

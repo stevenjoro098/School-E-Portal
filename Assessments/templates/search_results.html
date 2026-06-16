@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+
+<div class="content-wrapper">
+
+    <h3>Search Results</h3>
+
+    {% if query %}
+        <p>Results for: <strong>{{ query }}</strong></p>
+    {% endif %}
+
+    <hr>
+
+    <!-- STUDENTS -->
+    <h5>Students</h5>
+    {% if students %}
+        <ul class="list-group mb-3">
+            {% for student in students %}
+                <li class="list-group-item">
+                    {{ student.first_name }} {{ student.second_name }} - {{ student.grade }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No students found.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

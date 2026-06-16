@@ -20,7 +20,7 @@
         <ul class="list-group mb-3">
             {% for student in students %}
                 <li class="list-group-item">
-                    {{ student.first_name }} {{ student.second_name }} - {{ student.grade }}
+                    {{ student.first_name }} {{ student.second_name }} - <span class="badge bg-warning text-dark">{{ student.grade }}</span>
                 </li>
             {% endfor %}
         </ul>

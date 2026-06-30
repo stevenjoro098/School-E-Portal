@@ -4,7 +4,7 @@ from .models import Book, IssuedBooks
 # Register your models here.
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ['title','category','grade','available']
+    list_display = ['title','library_code','category','grade','available']
     list_filter = ['grade','category','available']
 
 @admin.register(IssuedBooks)

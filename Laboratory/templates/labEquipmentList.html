@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Laboratory Equipment{% endblock %}
+
+{% block content %}
+
+<div id="labApp">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <div class="d-flex justify-content-between">
+
+                <h4>
+                    <i class="bi bi-flask"></i>
+                    Laboratory Equipment
+                </h4>
+
+                <span class="badge bg-light text-dark">
+                    [[ equipment.length ]] Items
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row mb-4">
+
+                <div class="col-md-6">
+
+                    <div class="input-group">
+
+                        <span class="input-group-text">
+
+                            <i class="bi bi-search"></i>
+
+                        </span>
+
+                        <input
+                                class="form-control"
+                                type="text"
+                                placeholder="Search equipment..."
+                                v-model="search"
+                                @input="debouncedSearch">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div v-if="loading" class="text-center py-5">
+
+                <div class="spinner-border text-primary"></div>
+
+            </div>
+
+            <div class="row" v-if="!loading">
+
+                <div
+                        class="col-lg-4 col-md-6 mb-4"
+                        v-for="item in equipment"
+                        :key="item.id">
+
+                    <div class="card h-100 shadow-sm">
+
+                        <img
+                                v-if="item.image"
+                                :src="item.image"
+                                class="card-img-top"
+                                style="height:220px;object-fit:cover;">
+
+                        <img
+                                v-else
+                                src="{% static 'images/no-image.png' %}"
+                                class="card-img-top"
+                                style="height:220px;object-fit:cover;">
+
+                        <div class="card-body">
+
+                            <h5>
+
+                                [[ item.name ]]
+
+                            </h5>
+
+                            <p class="text-muted">
+
+                                [[ item.description ]]
+
+                            </p>
+
+                            <h6>
+
+                                Quantity:
+                                <span class="badge bg-info">
+
+                                    [[ item.available_quantity ]]
+
+                                </span>
+
+                            </h6>
+
+                            <span
+                                    class="badge"
+                                    :class="item.available_quantity>0 ? 'bg-success':'bg-danger'">
+
+                                [[ item.available_quantity>0 ? 'Available':'Out of Stock' ]]
+
+                            </span>
+
+                        </div>
+
+                        <div class="card-footer">
+
+                            <small class="text-muted">
+
+                                Added [[ item.date_added ]]
+
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div
+                        v-if="equipment.length==0"
+                        class="col-12">
+
+                    <div class="alert alert-warning text-center">
+
+                        <i class="bi bi-search fs-2"></i>
+
+                        <h5 class="mt-3">
+
+                            No equipment found
+
+                        </h5>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const {createApp} = Vue;
+
+createApp({
+
+    delimiters:['[[',']]'],
+
+    data(){
+
+        return{
+
+            search:'',
+            loading:false,
+            timer:null,
+
+            equipment:[
+
+                {% for item in equipment %}
+
+                {
+                    id:{{ item.id }},
+                    name:"{{ item.name|escapejs }}",
+                    description:"{{ item.description|escapejs }}",
+                    available_quantity:{{ item.available_quantity }},
+                    image:"{% if item.image %}{{ item.image.url }}{% endif %}",
+                    date_added:"{{ item.date_added|date:'d M Y' }}"
+                },
+
+                {% endfor %}
+
+            ]
+
+        }
+
+    },
+
+    methods:{
+
+        debouncedSearch(){
+
+            clearTimeout(this.timer);
+
+            this.timer=setTimeout(()=>{
+
+                this.loadEquipment();
+
+            },300);
+
+        },
+
+        loadEquipment(){
+
+            this.loading=true;
+
+            axios.get("{% url 'lab_equipment_list' %}",{
+
+                params:{
+                    search:this.search
+                },
+
+                headers:{
+                    "X-Requested-With":"XMLHttpRequest"
+                }
+
+            })
+
+            .then((response)=>{
+
+                this.equipment=response.data;
+
+            })
+
+            .finally(()=>{
+
+                this.loading=false;
+
+            });
+
+        }
+
+    }
+
+}).mount("#labApp");
+
+</script>
+
+{% endblock %}

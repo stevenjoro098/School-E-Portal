@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}Curriculum Coverage{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+                    <h3 class="mb-1">{{ subject.name }}</h3>
+                    <small class="text-muted">
+                        Curriculum Coverage Tracker
+                    </small>
+                </div>
+
+                <div>
+                    <span class="badge bg-primary fs-6">
+                        {{ strand_data|length }} Strands
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    {% for item in strand_data %}
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-primary text-white">
+
+            <div class="d-flex justify-content-between">
+
+                <div>
+
+                    <h5 class="mb-0">
+
+                        {{ item.strand.name }}
+
+                    </h5>
+
+                </div>
+
+                <div>
+
+                    {% if item.finished %}
+
+                    <span class="badge bg-success">
+
+                        Completed
+
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge bg-warning text-dark">
+
+                        {{ item.completed }}/{{ item.total }}
+
+                        Completed
+
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th width="60">Done</th>
+
+                        <th>Sub-Strand</th>
+
+                        <th width="180">Status</th>
+
+                        <th width="180">Completed On</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for ss in item.substrands %}
+
+                    <tr>
+
+                        <td>
+
+                            <input
+                                class="form-check-input coverage-check"
+                                type="checkbox"
+                                data-id="{{ ss.substrand.id }}"
+                                {% if ss.coverage and ss.coverage.status == 'completed' %}
+                                checked
+                                {% endif %}
+                            >
+
+                        </td>
+
+                        <td>
+
+                            {{ ss.substrand.name }}
+
+                        </td>
+
+                        <td>
+
+                            {% if ss.coverage %}
+
+                                {% if ss.coverage.status == "completed" %}
+
+                                    <span class="badge bg-success">
+
+                                        Completed
+
+                                    </span>
+
+                                {% elif ss.coverage.status == "in_progress" %}
+
+                                    <span class="badge bg-warning text-dark">
+
+                                        In Progress
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+
+                                        Not Started
+
+                                    </span>
+
+                                {% endif %}
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    Not Started
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if ss.coverage.completed_on %}
+
+                                {{ ss.coverage.completed_on }}
+
+                            {% else %}
+
+                                -
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="alert alert-info">
+
+        No strands have been created.
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+document.querySelectorAll(".coverage-check").forEach(function(box){
+
+    box.addEventListener("change",function(){
+
+        fetch("#",{
+
+            method:"POST",
+
+            headers:{
+                "X-CSRFToken":"{{ csrf_token }}",
+                "Content-Type":"application/x-www-form-urlencoded"
+            },
+
+            body:new URLSearchParams({
+
+                substrand:this.dataset.id
+
+            })
+
+        })
+
+        .then(r=>r.json())
+
+        .then(data=>{
+
+            if(data.status=="success"){
+
+                location.reload();
+
+            }
+
+        });
+
+    });
+
+});
+
+</script>
+
+{% endblock %}>

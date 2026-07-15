@@ -1,4 +1,6 @@
 import json
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 
 from django.core.serializers.json import DjangoJSONEncoder
@@ -12,7 +14,7 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework.reverse import reverse_lazy
 
 from Subjects.models import Grade
-from .models import Subject, Strand, SubStrand, SubStrandNote, Note, ImageResource, VideoResource
+from .models import Subject, Strand, SubStrand, SubStrandNote, Note, ImageResource, VideoResource, SubStrandCoverage
 from .forms import VideoUploadForm
 
 class HomePage(TemplateView):
@@ -369,3 +371,112 @@ def upload_video(request):
 def video_list(request):
     videos = VideosResource.objects.all()
     return render(request, "learners_templates/video_list.html", {"videos": videos})
+
+
+class TeacherCoverageView(LoginRequiredMixin, TemplateView):
+    template_name = "curriculum_management/curriculum_coverage.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        subject = Subject.objects.get(pk=self.kwargs["subject_id"])
+
+        strands = (
+            Strand.objects
+            .filter(subject=subject)
+            .prefetch_related("substrands")
+        )
+
+        completed = {
+            c.substrand_id: c
+            for c in SubStrandCoverage.objects.all()
+        }
+
+        strand_data = []
+
+        for strand in strands:
+
+            total = strand.substrands.count()
+
+            completed_count = 0
+
+            subs = []
+
+            for ss in strand.substrands.all():
+
+                coverage = completed.get(ss.id)
+
+                if coverage and coverage.status == "completed":
+                    completed_count += 1
+
+                subs.append({
+                    "substrand": ss,
+                    "coverage": coverage
+                })
+
+            strand_data.append({
+                "strand": strand,
+                "total": total,
+                "completed": completed_count,
+                "finished": total == completed_count,
+                "substrands": subs
+            })
+
+        context["strand_data"] = strand_data
+
+        return context
+
+from django.http import JsonResponse
+from django.utils import timezone
+from django.views import View
+
+class CompleteSubStrandView(LoginRequiredMixin, View):
+
+    def post(self, request):
+
+        substrand = SubStrand.objects.get(
+            pk=request.POST["substrand"]
+        )
+
+        coverage, created = SubStrandCoverage.objects.get_or_create(
+            teacher=request.user,
+            substrand=substrand,
+            defaults={
+                "status":"completed",
+                "completed_on":timezone.now().date(),
+            }
+        )
+
+        if not created:
+
+            coverage.status="completed"
+            coverage.completed_on=timezone.now().date()
+            coverage.save()
+
+        return JsonResponse({
+            "status":"success"
+        })
+
+class StartSubStrandView(LoginRequiredMixin, View):
+
+    def post(self, request):
+
+        substrand = SubStrand.objects.get(
+            pk=request.POST["substrand"]
+        )
+
+        coverage, created = SubStrandCoverage.objects.get_or_create(
+            teacher=request.user,
+            substrand=substrand
+        )
+
+        coverage.status="in_progress"
+
+        if not coverage.started_on:
+            coverage.started_on=timezone.now().date()
+
+        coverage.save()
+
+        return JsonResponse({
+            "status":"success"
+        })

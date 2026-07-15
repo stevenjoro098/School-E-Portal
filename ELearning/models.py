@@ -39,6 +39,44 @@ class Activity(models.Model):
 
     def __str__(self):
         return f"{self.activity_type} - {self.resource_link}"
+class SubStrandCoverage(models.Model):
+    STATUS_CHOICES = [
+        ('not_started', 'Not Started'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+    ]
+
+
+    grade = models.ForeignKey(
+        Grade,
+        on_delete=models.CASCADE
+    )
+
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.CASCADE
+    )
+    substrand = models.ForeignKey(
+        SubStrand,
+        on_delete=models.CASCADE
+    )
+    term = models.CharField(max_length=200)
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='not_started'
+    )
+
+    started_on = models.DateField(null=True, blank=True)
+
+    completed_on = models.DateField(null=True, blank=True)
+
+    remarks = models.TextField(blank=True)
+
+
+    def __str__(self):
+        return f"{self.substrand} - {self.grade} - {self.status}"
+
 
 class Assessment(models.Model):
     outcome = models.ForeignKey(LearningOutcome, related_name='assessments', on_delete=models.CASCADE)

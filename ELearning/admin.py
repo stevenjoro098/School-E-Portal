@@ -1,6 +1,11 @@
 from django.contrib import admin
-from .models import VideosResource
+from .models import VideosResource, SubStrandCoverage
 from ELearning.models import Subject, Strand, SubStrand, LearningOutcome, Note, ImageResource
+
+
+@admin.register(SubStrandCoverage)
+class SubstrandCoverageAdmin(admin.ModelAdmin):
+    list_display = ['grade', 'substrand','status']
 
 @admin.register(Strand)
 class StrandAdmin(admin.ModelAdmin):

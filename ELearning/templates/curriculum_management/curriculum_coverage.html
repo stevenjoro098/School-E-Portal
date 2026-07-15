@@ -92,6 +92,8 @@
 
                         <th width="180">Completed On</th>
 
+                        <th width="180">Action</th>
+
                     </tr>
 
                 </thead>
@@ -177,6 +179,28 @@
 
                         </td>
 
+                        <td>
+
+{% if ss.coverage and ss.coverage.status == "completed" %}
+
+    <button class="btn btn-success btn-sm" disabled>
+        <i class="bi bi-check-circle-fill"></i>
+        Completed
+    </button>
+
+                        {% else %}
+
+                            <button
+                                class="btn btn-outline-success btn-sm complete-btn"
+                                data-url="{% url 'complete_substrand' ss.substrand.id %}">
+                                <i class="bi bi-check-circle"></i>
+                                Mark Completed
+                            </button>
+
+                        {% endif %}
+
+                        </td>
+
                     </tr>
 
                     {% endfor %}
@@ -207,30 +231,21 @@
 
 <script>
 
-document.querySelectorAll(".coverage-check").forEach(function(box){
+document.querySelectorAll(".complete-btn").forEach(function(button){
 
-    box.addEventListener("change",function(){
+    button.addEventListener("click", function(){
 
-        fetch("#",{
+        fetch(this.dataset.url, {
 
-            method:"POST",
+            method: "POST",
 
             headers:{
-                "X-CSRFToken":"{{ csrf_token }}",
-                "Content-Type":"application/x-www-form-urlencoded"
-            },
-
-            body:new URLSearchParams({
-
-                substrand:this.dataset.id
-
-            })
+                "X-CSRFToken":"{{ csrf_token }}"
+            }
 
         })
-
-        .then(r=>r.json())
-
-        .then(data=>{
+        .then(r => r.json())
+        .then(data => {
 
             if(data.status=="success"){
 
@@ -243,7 +258,6 @@ document.querySelectorAll(".coverage-check").forEach(function(box){
     });
 
 });
-
 </script>
 
 {% endblock %}>

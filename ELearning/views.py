@@ -439,8 +439,8 @@ class CompleteSubStrandView(LoginRequiredMixin, View):
         )
 
         coverage, created = SubStrandCoverage.objects.get_or_create(
-            teacher=request.user,
             substrand=substrand,
+            term='Term',
             defaults={
                 "status":"completed",
                 "completed_on":timezone.now().date(),

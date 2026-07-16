@@ -4,8 +4,9 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<div id="app" class="container-fluid">
 
+    <!-- Header -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
 
@@ -18,65 +19,64 @@
                     </small>
                 </div>
 
-                <div>
-                    <span class="badge bg-primary fs-6">
-                        {{ strand_data|length }} Strands
-                    </span>
-                </div>
+                <span class="badge bg-primary fs-6">
+                    [[ strands.length ]] Strands
+                </span>
 
             </div>
 
         </div>
     </div>
 
+    <!-- No Data -->
+    <div
+        v-if="strands.length===0"
+        class="alert alert-info">
 
-    {% for item in strand_data %}
+        No strands have been created.
 
-    <div class="card shadow-sm border-0 mb-4">
+    </div>
 
+    <!-- Strands -->
+    <div
+        v-for="strand in strands"
+        :key="strand.id"
+        class="card shadow-sm border-0 mb-4">
+
+        <!-- Card Header -->
         <div class="card-header bg-primary text-white">
 
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between align-items-center">
 
-                <div>
+                <h5 class="mb-0">
 
-                    <h5 class="mb-0">
+                    [[ strand.name ]]
 
-                        {{ item.strand.name }}
+                </h5>
 
-                    </h5>
+                <span
+                    v-if="strand.finished"
+                    class="badge bg-success">
 
-                </div>
+                    Completed
 
-                <div>
+                </span>
 
-                    {% if item.finished %}
+                <span
+                    v-else
+                    class="badge bg-warning text-dark">
 
-                    <span class="badge bg-success">
+                    [[ strand.completed ]]/[[ strand.total ]]
+                    Completed
 
-                        Completed
-
-                    </span>
-
-                    {% else %}
-
-                    <span class="badge bg-warning text-dark">
-
-                        {{ item.completed }}/{{ item.total }}
-
-                        Completed
-
-                    </span>
-
-                    {% endif %}
-
-                </div>
+                </span>
 
             </div>
 
         </div>
 
-        <div class="card-body p-0">
+        <!-- Table -->
+        <div class="table-responsive">
 
             <table class="table table-hover align-middle mb-0">
 
@@ -84,15 +84,19 @@
 
                     <tr>
 
-                        <th width="60">Done</th>
-
                         <th>Sub-Strand</th>
 
-                        <th width="180">Status</th>
+                        <th width="180">
+                            Status
+                        </th>
 
-                        <th width="180">Completed On</th>
+                        <th width="170">
+                            Completed On
+                        </th>
 
-                        <th width="180">Action</th>
+                        <th width="180">
+                            Action
+                        </th>
 
                     </tr>
 
@@ -100,110 +104,91 @@
 
                 <tbody>
 
-                    {% for ss in item.substrands %}
+                    <tr
+                        v-for="ss in strand.substrands"
+                        :key="ss.id">
 
-                    <tr>
-
+                        <!-- Name -->
                         <td>
 
-                            <input
-                                class="form-check-input coverage-check"
-                                type="checkbox"
-                                data-id="{{ ss.substrand.id }}"
-                                {% if ss.coverage and ss.coverage.status == 'completed' %}
-                                checked
-                                {% endif %}
-                            >
+                            <strong>
+
+                                [[ ss.name ]]
+
+                            </strong>
 
                         </td>
 
+                        <!-- Status -->
                         <td>
 
-                            {{ ss.substrand.name }}
+                            <span
+                                v-if="ss.completed"
+                                class="badge bg-success">
+
+                                Completed
+
+                            </span>
+
+                            <span
+                                v-else-if="ss.status=='In Progress'"
+                                class="badge bg-warning text-dark">
+
+                                In Progress
+
+                            </span>
+
+                            <span
+                                v-else
+                                class="badge bg-secondary">
+
+                                Not Started
+
+                            </span>
 
                         </td>
 
+                        <!-- Completed Date -->
                         <td>
 
-                            {% if ss.coverage %}
-
-                                {% if ss.coverage.status == "completed" %}
-
-                                    <span class="badge bg-success">
-
-                                        Completed
-
-                                    </span>
-
-                                {% elif ss.coverage.status == "in_progress" %}
-
-                                    <span class="badge bg-warning text-dark">
-
-                                        In Progress
-
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="badge bg-secondary">
-
-                                        Not Started
-
-                                    </span>
-
-                                {% endif %}
-
-                            {% else %}
-
-                                <span class="badge bg-secondary">
-
-                                    Not Started
-
-                                </span>
-
-                            {% endif %}
+                            [[ ss.completed_on || "-" ]]
 
                         </td>
 
+                        <!-- Button -->
                         <td>
-
-                            {% if ss.coverage.completed_on %}
-
-                                {{ ss.coverage.completed_on }}
-
-                            {% else %}
-
-                                -
-
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-
-{% if ss.coverage and ss.coverage.status == "completed" %}
-
-    <button class="btn btn-success btn-sm" disabled>
-        <i class="bi bi-check-circle-fill"></i>
-        Completed
-    </button>
-
-                        {% else %}
 
                             <button
-                                class="btn btn-outline-success btn-sm complete-btn"
-                                data-url="{% url 'complete_substrand' ss.substrand.id %}">
+
+                                v-if="!ss.completed"
+
+                                class="btn btn-outline-success btn-sm"
+
+                                @click="markCompleted(strand, ss)">
+
                                 <i class="bi bi-check-circle"></i>
+
                                 Mark Completed
+
                             </button>
 
-                        {% endif %}
+                            <button
+
+                                v-else
+
+                                class="btn btn-success btn-sm"
+
+                                disabled>
+
+                                <i class="bi bi-check-circle-fill"></i>
+
+                                Completed
+
+                            </button>
 
                         </td>
 
                     </tr>
-
-                    {% endfor %}
 
                 </tbody>
 
@@ -213,51 +198,102 @@
 
     </div>
 
-    {% empty %}
-
-    <div class="alert alert-info">
-
-        No strands have been created.
-
-    </div>
-
-    {% endfor %}
-
 </div>
 
 {% endblock %}
-
 {% block scripts %}
-
 <script>
+const { createApp } = Vue;
 
-document.querySelectorAll(".complete-btn").forEach(function(button){
+createApp({
 
-    button.addEventListener("click", function(){
+    delimiters: ['[[', ']]'],
 
-        fetch(this.dataset.url, {
+    data() {
+        return {
 
-            method: "POST",
+            strands: {{ strand_data_json|safe }},
 
-            headers:{
-                "X-CSRFToken":"{{ csrf_token }}"
+            csrfToken: "{{ csrf_token }}"
+
+        }
+    },
+
+    methods: {
+
+        async markCompleted(strand, ss) {
+
+            if (ss.completed) {
+                return;
             }
 
-        })
-        .then(r => r.json())
-        .then(data => {
+            if (!confirm(`Mark "${ss.name}" as completed?`)) {
+                return;
+            }
 
-            if(data.status=="success"){
+            try {
 
-                location.reload();
+                const response = await axios.post(
+
+                    `/completed/${ss.id}/`,
+
+                    {},
+
+                    {
+                        headers: {
+                            "X-CSRFToken": this.csrfToken
+                        }
+                    }
+
+                );
+
+                if (response.data.status === "success") {
+
+                    // Update the sub-strand
+
+                    ss.completed = true;
+
+                    ss.status = "Completed";
+
+                    if (response.data.completed_on) {
+                        ss.completed_on = response.data.completed_on;
+                    } else {
+
+                        const today = new Date();
+
+                        ss.completed_on = today.toLocaleDateString(
+                            "en-GB",
+                            {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric"
+                            }
+                        );
+
+                    }
+
+                    // Update completed count
+
+                    strand.completed++;
+
+                    // Check if strand is complete
+
+                    strand.finished = strand.completed >= strand.total;
+
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert("Unable to mark sub-strand as completed.");
 
             }
 
-        });
+        }
 
-    });
+    }
 
-});
+}).mount("#app");
 </script>
-
-{% endblock %}>
+{% endblock %}

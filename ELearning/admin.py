@@ -5,7 +5,7 @@ from ELearning.models import Subject, Strand, SubStrand, LearningOutcome, Note, 
 
 @admin.register(SubStrandCoverage)
 class SubstrandCoverageAdmin(admin.ModelAdmin):
-    list_display = ['grade', 'substrand','status']
+    list_display = ['substrand','status']
 
 @admin.register(Strand)
 class StrandAdmin(admin.ModelAdmin):

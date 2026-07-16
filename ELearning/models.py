@@ -45,7 +45,7 @@ class SubStrandCoverage(models.Model):
         ('in_progress', 'In Progress'),
         ('completed', 'Completed'),
     ]
-    grade = models.ForeignKey(Grade,on_delete=models.CASCADE)
+    #grade = models.ForeignKey(Grade,on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject,on_delete=models.CASCADE)
     substrand = models.ForeignKey(SubStrand,on_delete=models.CASCADE)
     term = models.CharField(max_length=200)

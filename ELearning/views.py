@@ -397,32 +397,46 @@ class TeacherCoverageView(LoginRequiredMixin, TemplateView):
         for strand in strands:
 
             total = strand.substrands.count()
-
             completed_count = 0
-
-            subs = []
+            substrands = []
 
             for ss in strand.substrands.all():
 
                 coverage = completed.get(ss.id)
 
-                if coverage and coverage.status == "completed":
-                    completed_count += 1
+                is_completed = False
+                status = "Not Started"
+                completed_on = ""
 
-                subs.append({
-                    "substrand": ss,
-                    "coverage": coverage
+                if coverage:
+                    status = coverage.status.replace("_", " ").title()
+
+                    if coverage.status == "completed":
+                        is_completed = True
+                        completed_count += 1
+
+                    if coverage.completed_on:
+                        completed_on = coverage.completed_on.strftime("%d %b %Y")
+
+                substrands.append({
+                    "id": ss.id,
+                    "name": ss.name,
+                    "status": status,
+                    "completed": is_completed,
+                    "completed_on": completed_on,
                 })
 
             strand_data.append({
-                "strand": strand,
+                "id": strand.id,
+                "name": strand.name,
                 "total": total,
                 "completed": completed_count,
                 "finished": total == completed_count,
-                "substrands": subs
+                "substrands": substrands
             })
 
-        context["strand_data"] = strand_data
+        context["subject"] = subject
+        context["strand_data_json"] = json.dumps(strand_data)
 
         return context
 
@@ -447,29 +461,27 @@ from django.views import View
 
 class CompleteSubStrandView(LoginRequiredMixin, View):
 
-    def post(self, request):
-
-        substrand = SubStrand.objects.get(
-            pk=request.POST["substrand"]
-        )
-
+    def post(self, request, substrand_id):
+        substrand = get_object_or_404(SubStrand, pk=substrand_id)
+        subject = get_object_or_404(Subject, pk=substrand.strand.subject.id)
         coverage, created = SubStrandCoverage.objects.get_or_create(
             substrand=substrand,
+            subject=subject,
             term='Term',
             defaults={
-                "status":"completed",
-                "completed_on":timezone.now().date(),
+                "status": "completed",
+                "completed_on": timezone.now().date(),
             }
         )
 
         if not created:
-
-            coverage.status="completed"
-            coverage.completed_on=timezone.now().date()
+            coverage.status = "completed"
+            coverage.completed_on = timezone.now().date()
             coverage.save()
 
         return JsonResponse({
-            "status":"success"
+            "status": "success",
+            "completed_on": coverage.completed_on.strftime("%d %b %Y")
         })
 
 class StartSubStrandView(LoginRequiredMixin, View):

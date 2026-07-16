@@ -426,6 +426,21 @@ class TeacherCoverageView(LoginRequiredMixin, TemplateView):
 
         return context
 
+from django.views import View
+from django.shortcuts import get_object_or_404
+
+class DeleteSubStrandView(View):
+
+    def post(self, request, pk):
+
+        substrand = get_object_or_404(SubStrand, pk=pk)
+
+        substrand.delete()
+
+        return JsonResponse({
+            "status": "success"
+        })
+
 from django.http import JsonResponse
 from django.utils import timezone
 from django.views import View

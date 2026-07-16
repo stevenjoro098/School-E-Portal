@@ -19,7 +19,13 @@ urlpatterns = [
     path('delete/strand/<int:subject_id>/<int:pk>/', views.StrandDelete.as_view(), name='strand_delete'),
 
     path('api/subjects/<int:subject_id>/add-strand/', views.AddStrandAPI.as_view(), name='api_add_strand'),
+
     path('api/add-substrand/', views.AddSubStrandView.as_view(), name='add_substrand'),
+path(
+    "api/delete-substrand/<int:pk>/",
+    views.DeleteSubStrandView.as_view(),
+    name="delete_substrand",
+),
     path('add-note/<int:substrand_id>/', views.AddNoteView.as_view(), name='add_notes'),
     path('note/edit/<int:pk>/<int:substrand_id>/', views.NoteEditView.as_view(),name='edit_notes'),
     path('api/save-notes/', views.save_notes, name='save_notes'),

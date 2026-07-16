@@ -191,54 +191,35 @@
                     </tr>
 
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
-
 </div>
 
 {% endblock %}
 {% block scripts %}
 <script>
 const { createApp } = Vue;
-
 createApp({
-
     delimiters: ['[[', ']]'],
-
     data() {
         return {
-
             strands: {{ strand_data_json|safe }},
-
             csrfToken: "{{ csrf_token }}"
-
         }
     },
-
     methods: {
-
         async markCompleted(strand, ss) {
-
             if (ss.completed) {
                 return;
             }
-
             if (!confirm(`Mark "${ss.name}" as completed?`)) {
                 return;
             }
-
             try {
-
                 const response = await axios.post(
-
                     `/completed/${ss.id}/`,
-
                     {},
-
                     {
                         headers: {
                             "X-CSRFToken": this.csrfToken
@@ -248,17 +229,12 @@ createApp({
                 );
 
                 if (response.data.status === "success") {
-
                     // Update the sub-strand
-
                     ss.completed = true;
-
                     ss.status = "Completed";
-
                     if (response.data.completed_on) {
                         ss.completed_on = response.data.completed_on;
                     } else {
-
                         const today = new Date();
 
                         ss.completed_on = today.toLocaleDateString(

@@ -1,6 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
-
 from Subjects.models import Grade, Subject
 
 
@@ -104,3 +102,8 @@ class VideosResource(models.Model):
 
     def __str__(self):
         return self.title
+    
+class ImageGeneralResource(models.Model):
+    image_title = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='image_general_images/')
+    date = models.DateField(auto_now_add=True)

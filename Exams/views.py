@@ -738,101 +738,416 @@ class PrintTermReportCardsView(View):
         return response
 class TermExamAnalysis(TemplateView):
     template_name = 'term_analysis.html'
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         grade_id = self.kwargs.get('grade_id')
         term = self.kwargs.get('term')
 
-        grade = get_object_or_404(Grade, id=grade_id)
+        grade = get_object_or_404(
+            Grade,
+            id=grade_id
+        )
+
         context['grade'] = grade
         context['term'] = term
 
-        # Exams in this grade and term
-        exams = Exam.objects.filter(grade=grade, term=term).order_by('created')
-        students = Student.objects.filter(grade=grade)
-        subjects = Subject.objects.filter(grade=grade)
+
+        # ===== EXAMS, STUDENTS AND SUBJECTS =====
+
+        exams = Exam.objects.filter(
+            grade=grade,
+            term=term
+        ).order_by('created')
+
+        students = Student.objects.filter(
+            grade=grade
+        )
+
+        subjects = Subject.objects.filter(
+            grade=grade
+        )
 
         context['exams'] = exams
         context['subjects'] = subjects
 
-        # ===== SUBJECT AVERAGES ====+
+        # ===== SUBJECT AVERAGES =====
+
         subject_averages = {}
+
         for subject in subjects.order_by('name'):
-            teacher_name = subject.teacher.full_name if subject.teacher else "N/A"
+            teacher_name = (
+                subject.teacher.full_name
+                if subject.teacher
+                else "N/A"
+            )
+        exam_avgs = []
+        for exam in exams:
+            avg_score = StudentPerformance.objects.filter(
+                exam=exam,
+                subject=subject
+            ).aggregate(
+                avg=Avg('performance')
+            )['avg'] or 0
 
-            exam_avgs = []
-            for exam in exams:
-                avg_score = StudentPerformance.objects.filter(
-                    exam=exam, subject=subject
-                ).aggregate(avg=Avg('performance'))['avg'] or 0
-                exam_avgs.append(round(avg_score, 2))
-            overall_avg = round(sum(exam_avgs) / len(exams), 2) if exams else 0
-            exam_avgs.append(overall_avg)
+            exam_avgs.append(
+                round(avg_score, 2)
+            )
 
-            subject_averages[subject.name] = {
-                "teacher": teacher_name,
-                "averages": exam_avgs
-            }
+        # Calculate the average across all exams
+        termly_average = (
+            round(
+                sum(exam_avgs) / len(exam_avgs),
+                2
+            )
+            if exam_avgs
+            else 0
+        )
+
+        # Compare the first exam with the latest exam
+        improvement = (
+            round(
+                exam_avgs[-1] - exam_avgs[0],
+                2
+            )
+            if len(exam_avgs) > 1
+            else 0
+        )
+
+        subject_averages[subject.name] = {
+
+            "teacher": teacher_name,
+
+            "averages": exam_avgs,
+
+            "termly_average": termly_average,
+
+            "improvement": improvement,
+
+        }
+
+        # ===== SUBJECT RANKING =====
+
+        # Sort subjects using the termly average
+
+        ranked_subjects = sorted(
+            subject_averages.items(),
+            key = lambda item:
+        item[1]["termly_average"],
+
+        reverse = True
+
+        )
+
+        # Add position/rank to every subject
+
+        for position, (subject_name, data) in enumerate(ranked_subjects,start=1):
+            subject_averages[
+                subject_name
+            ]["rank"] = position
+
+
         context["subject_averages"] = subject_averages
 
         # ===== TOP/BOTTOM SUBJECTS =====
-        # Sort subjects by their overall average (last value in averages list)
+
         sorted_subjects = sorted(
+
             subject_averages.items(),
-            key=lambda x: x[1]["averages"][-1],  # sort by overall average
+
+            key=lambda x:
+                sum(x[1]["averages"])
+                / len(x[1]["averages"])
+                if x[1]["averages"]
+                else 0,
+
             reverse=True
+
         )
 
-        context["top_subjects"] = sorted_subjects[:3]
-        context["subjects_needing_improvement"] = sorted_subjects[-3:]
+
+        context["top_subjects"] = (
+            sorted_subjects[:3]
+        )
+
+
+        context["subjects_needing_improvement"] = (
+            sorted_subjects[-3:]
+        )
+
 
         # ===== LEARNER PERFORMANCE =====
-        student_performance_data = []
-        for student in students:
-            exam_scores = []
-            for exam in exams:
-                avg_score = StudentPerformance.objects.filter(
-                    exam=exam, student=student
-                ).aggregate(avg=Avg('performance'))['avg'] or 0
-                exam_scores.append(round(avg_score, 2))
 
-            average_score = round(sum(exam_scores) / len(exams), 2) if exams else 0
-            improvement = exam_scores[-1] - exam_scores[0] if len(exam_scores) > 1 else 0
+        student_performance_data = []
+
+
+        for student in students:
+
+            exam_scores = []
+
+
+            for exam in exams:
+
+                avg_score = (
+                    StudentPerformance.objects.filter(
+
+                        exam=exam,
+
+                        student=student
+
+                    ).aggregate(
+
+                        avg=Avg('performance')
+
+                    )['avg']
+
+                    or 0
+                )
+
+
+                exam_scores.append(
+
+                    round(
+                        avg_score,
+                        2
+                    )
+
+                )
+
+
+            average_score = (
+
+                round(
+
+                    sum(exam_scores)
+                    / len(exams),
+
+                    2
+
+                )
+
+                if exams
+
+                else 0
+
+            )
+
+
+            improvement = (
+
+                exam_scores[-1]
+                - exam_scores[0]
+
+                if len(exam_scores) > 1
+
+                else 0
+
+            )
+
 
             student_performance_data.append({
+
                 'student': student,
+
                 'exam_scores': exam_scores,
+
                 'average_score': average_score,
+
                 'improvement': improvement,
+
             })
 
-        # Sort by improvement (descending)
-        student_performance_data.sort(key=lambda x: x['improvement'], reverse=True)
-        context['student_performance_data'] = student_performance_data
+
+        # Sort learners by improvement
+
+        student_performance_data.sort(
+
+            key=lambda x:
+                x['improvement'],
+
+            reverse=True
+
+        )
+
+
+        context[
+            'student_performance_data'
+        ] = student_performance_data
+
 
         # ===== CONSISTENT IMPROVEMENT / DECLINE =====
+
         consistently_improving = []
+
         declining_students = []
+
+
         for data in student_performance_data:
-            scores = data['exam_scores']
+
+            scores = data[
+                'exam_scores'
+            ]
+
+
             if len(scores) > 1:
-                if all(x < y for x, y in zip(scores, scores[1:])):
-                    consistently_improving.append(data['student'])
-                elif all(x > y for x, y in zip(scores, scores[1:])):
-                    declining_students.append(data['student'])
 
-        context['consistently_improving'] = consistently_improving
-        context['declining_students'] = declining_students
 
-        # ===== GRADE-LEVEL TRENDS =====
+                if all(
+
+                    x < y
+
+                    for x, y
+
+                    in zip(
+
+                        scores,
+
+                        scores[1:]
+
+                    )
+
+                ):
+
+                    consistently_improving.append(
+
+                        data['student']
+
+                    )
+
+
+                elif all(
+
+                    x > y
+
+                    for x, y
+
+                    in zip(
+
+                        scores,
+
+                        scores[1:]
+
+                    )
+
+                ):
+
+                    declining_students.append(
+
+                        data['student']
+
+                    )
+
+
+        context[
+            'consistently_improving'
+        ] = consistently_improving
+
+
+        context[
+            'declining_students'
+        ] = declining_students
+
+
+        # ===== GRADE-LEVEL EXAM AVERAGES =====
+
         grade_trends = []
+
+
         for exam in exams:
-            avg_score = StudentPerformance.objects.filter(exam=exam).aggregate(avg=Avg('performance'))['avg'] or 0
-            grade_trends.append(round(avg_score, 2))
-        context['grade_trends'] = grade_trends
+
+            avg_score = (
+
+                StudentPerformance.objects.filter(
+
+                    exam=exam
+
+                ).aggregate(
+
+                    avg=Avg('performance')
+
+                )['avg']
+
+                or 0
+
+            )
+
+
+            grade_trends.append(
+
+                round(
+
+                    avg_score,
+
+                    2
+
+                )
+
+            )
+
+
+        context[
+            'grade_trends'
+        ] = grade_trends
+
+
+        # ===== EXAM PERFORMANCE RANKING =====
+
+        ranked_exams = []
+
+
+        for exam, average in zip(
+
+            exams,
+
+            grade_trends
+
+        ):
+
+
+            ranked_exams.append({
+
+                'exam': exam,
+
+                'average': average,
+
+            })
+
+
+        # Highest average gets rank 1
+
+        ranked_exams.sort(
+
+            key=lambda item:
+
+                item['average'],
+
+            reverse=True
+
+        )
+
+
+        # Add rank number
+
+        for rank, exam_data in enumerate(
+
+            ranked_exams,
+
+            start=1
+
+        ):
+
+
+            exam_data['rank'] = rank
+
+
+        context[
+            'ranked_exams'
+        ] = ranked_exams
+
 
         return context
+
+
 class GenerateClassReportCardsView(View):
 
     def get(self, request, exam_id):

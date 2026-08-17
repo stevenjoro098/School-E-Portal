@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import VideosResource, SubStrandCoverage
+from .models import VideosResource, SubStrandCoverage, VideoResource, ImageGeneralResource
 from ELearning.models import Subject, Strand, SubStrand, LearningOutcome, Note, ImageResource
 
 
@@ -31,3 +31,8 @@ class LearningOutcomeAdmin(admin.ModelAdmin):
 @admin.register(VideosResource)
 class VideosResources(admin.ModelAdmin):
     list_display = ['title']
+
+@admin.register(ImageGeneralResource)
+class ImageResourceAdmin(admin.ModelAdmin):
+    list_display = ['image_title']
+

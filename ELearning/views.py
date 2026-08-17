@@ -14,7 +14,8 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework.reverse import reverse_lazy
 
 from Subjects.models import Grade
-from .models import Subject, Strand, SubStrand, SubStrandNote, Note, ImageResource, VideoResource, SubStrandCoverage
+from .models import Subject, Strand, SubStrand, SubStrandNote, Note, ImageResource, VideoResource, SubStrandCoverage, \
+    FileResource, ImageGeneralResource
 from .forms import VideoUploadForm
 
 class HomePage(TemplateView):
@@ -485,7 +486,6 @@ class CompleteSubStrandView(LoginRequiredMixin, View):
         })
 
 class StartSubStrandView(LoginRequiredMixin, View):
-
     def post(self, request):
 
         substrand = SubStrand.objects.get(
@@ -507,3 +507,47 @@ class StartSubStrandView(LoginRequiredMixin, View):
         return JsonResponse({
             "status":"success"
         })
+
+
+
+class ResourcesPageView(TemplateView):
+    template_name = "curriculum_management/resources_page_mngt.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["files"] = FileResource.objects.all().order_by("-id")
+        context["images"] = ImageGeneralResource.objects.all().order_by("-id")
+        context["videos"] = VideosResource.objects.all().order_by("-id")
+
+        return context
+
+class CreateVideoResource(CreateView):
+    model = VideosResource
+    template_name = 'curriculum_management/create_video_form.html'
+    fields = ['title','description','video']
+    success_url = reverse_lazy('resource_mngt_page')
+
+class CreateFileResource(CreateView):
+    model = FileResource
+    template_name = 'curriculum_management/create_file_form.html'
+    fields = ['file_title','file_description','grade','file']
+    success_url = reverse_lazy('resource_mngt_page')
+
+class CreateImageResource(CreateView):
+    model = ImageGeneralResource
+    template_name = 'curriculum_management/create_image_form.html'
+    fields = ['image_title','image_description','image']
+    success_url = reverse_lazy('resource_mngt_page')
+
+
+class LearnerResourcePage(TemplateView):
+    template_name = "learners_templates/resources_main_page.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["files"] = FileResource.objects.all().order_by("-id")
+        context["images"] = ImageGeneralResource.objects.all().order_by("-id")
+        context["videos"] = VideosResource.objects.all().order_by("-id")
+
+        return context

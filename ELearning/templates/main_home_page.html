@@ -77,11 +77,27 @@
                 </div>
             </div>
         </div>
+        <!-- Resource Center -->
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 hover-card glass-card">
+                <img src="{% static 'images/resources.jpeg' %}" class="card-img-top fixed-img" alt="Resources">
 
+                <div class="card-body text-center d-flex flex-column">
+                    <h5 class="card-title fw-bold">Resource Center</h5>
+                    <p class="card-text flex-grow-1">
+                        Access to learning material, documents and important files.
+                    </p>
+
+                    <a href="{% url 'learners_resource_page' %}" class="btn btn-info w-100 mt-auto">
+                        View
+                    </a>
+                </div>
+            </div>
+        </div>
         <!-- Notice Board -->
         <div class="col">
             <div class="card h-100 shadow-sm border-0 hover-card glass-card">
-                <img src="{% static 'images/notice.jpg' %}" class="card-img-top fixed-img" alt="Noticeboard">
+                <img src="{% static 'images/notices.jpeg' %}" class="card-img-top fixed-img" alt="Noticeboard">
 
                 <div class="card-body text-center d-flex flex-column">
                     <h5 class="card-title fw-bold">📢 Notice Board</h5>

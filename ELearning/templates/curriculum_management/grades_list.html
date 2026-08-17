@@ -3,7 +3,11 @@
 {% block title %} Grades {% endblock %}
 
 {% block content %}
-    <h3 class="text-white">Select Grade</h3>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-3">
+        <h3 class="text-white">Select Grade</h3>
+        <a class="btn btn-outline-danger" href="{% url 'resource_mngt_page' %}">Resources</a>
+    </div>
+
     <hr>
     <div class="row row-cols-1 row-cols-md-4 g-4">
         {% for item in grades_list %}

@@ -1,0 +1,449 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Resource Center{% endblock %}
+
+{% block content %}
+
+<style>
+    .resource-header {
+        background: linear-gradient(135deg, #212529, #343a40);
+        border-radius: 18px;
+        padding: 25px 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    }
+
+    .resource-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .resource-column {
+        background: #f8f9fa;
+        border-radius: 18px;
+        padding: 18px;
+        height: 100%;
+        box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    .column-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .column-header h4 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .resource-card {
+        background: white;
+        border: none;
+        border-radius: 14px;
+        overflow: hidden;
+        margin-bottom: 15px;
+        transition: all .25s ease;
+        box-shadow: 0 3px 12px rgba(0,0,0,.07);
+    }
+
+    .resource-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,.14);
+    }
+
+    .resource-preview {
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f3f5;
+        overflow: hidden;
+    }
+
+    .resource-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .file-icon {
+        font-size: 55px;
+    }
+
+    .video-preview {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .video-preview iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+
+    .resource-body {
+        padding: 15px;
+    }
+
+    .resource-title {
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .resource-description {
+        font-size: .85rem;
+        color: #6c757d;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 12px;
+    }
+
+    .empty-resource {
+        text-align: center;
+        padding: 45px 15px;
+        color: #6c757d;
+    }
+
+    .empty-resource i {
+        font-size: 45px;
+        opacity: .5;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .resource-count {
+        font-size: .75rem;
+        padding: 5px 9px;
+        border-radius: 20px;
+    }
+</style>
+
+
+<div class="container-fluid py-4">
+
+    <!-- HEADER -->
+    <div class="resource-header">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+
+            <div>
+                <h1 class="text-white">
+                    <i class="bi bi-collection-play me-2"></i>
+                    Resource Center
+                </h1>
+
+                <p class="text-white-50 mb-0 mt-1">
+                    Manage your files, images and videos
+                </p>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a class="btn btn-warning"
+                   href="{% url 'create_image_resource' %}">
+                    <i class="bi bi-image me-1"></i>
+                    Add Image
+                </a>
+
+                <a class="btn btn-success"
+                   href="{% url 'create_file_resource' %}">
+                    <i class="bi bi-file-earmark-plus me-1"></i>
+                    Add File
+                </a>
+
+                <a class="btn btn-info text-white"
+                   href="{% url 'create_video_resource' %}">
+                    <i class="bi bi-camera-video me-1"></i>
+                    Add Video
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- RESOURCE COLUMNS -->
+    <div class="row g-4">
+
+        <!-- ================= FILES ================= -->
+        <div class="col-lg-4">
+
+            <div class="resource-column">
+
+                <div class="column-header">
+
+                    <div>
+                        <h4>
+                            <i class="bi bi-files text-success me-2"></i>
+                            Files
+                        </h4>
+                        <small class="text-muted">
+                            Documents and downloads
+                        </small>
+                    </div>
+
+                    <span class="badge bg-success resource-count">
+                        {{ files|length }}
+                    </span>
+
+                </div>
+
+
+                {% for resource in files %}
+
+                <div class="resource-card">
+
+                    <div class="resource-preview">
+
+                        {% if resource.file.name|lower|slice:"-4:" == ".pdf" %}
+                            <i class="bi bi-file-earmark-pdf text-danger file-icon"></i>
+
+                        {% elif resource.file.name|lower|slice:"-5:" == ".docx" %}
+                            <i class="bi bi-file-earmark-word text-primary file-icon"></i>
+
+                        {% elif resource.file.name|lower|slice:"-5:" == ".xlsx" %}
+                            <i class="bi bi-file-earmark-excel text-success file-icon"></i>
+
+                        {% else %}
+                            <i class="bi bi-file-earmark text-secondary file-icon"></i>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="resource-body">
+
+                        <div class="resource-title">
+                            {{ resource.title }}
+                        </div>
+
+                        <div class="resource-description">
+                            {{ resource.description|default:"No description available." }}
+                        </div>
+
+                        <a href="{{ resource.file.url }}"
+                           target="_blank"
+                           class="btn btn-sm btn-success w-100">
+
+                            <i class="bi bi-download me-1"></i>
+                            Open File
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <div class="empty-resource">
+                    <i class="bi bi-folder2-open"></i>
+                    <strong>No files yet</strong>
+                    <p class="small mb-0">
+                        Uploaded documents will appear here.
+                    </p>
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= IMAGES ================= -->
+        <div class="col-lg-4">
+            <div class="resource-column">
+                <div class="column-header">
+                    <div>
+                        <h4>
+                            <i class="bi bi-images text-warning me-2"></i>
+                            Images
+                        </h4>
+                        <small class="text-muted">
+                            Photos and illustrations
+                        </small>
+                    </div>
+                    <span class="badge bg-warning text-dark resource-count">
+                        {{ images|length }}
+                    </span>
+                </div>
+                {% for resource in images %}
+                <div class="resource-card">
+
+                    <div class="resource-preview">
+
+                        <img src="{{ resource.image.url }}"
+                             alt="{{ resource.title }}"
+                             loading="lazy">
+
+                    </div>
+
+                    <div class="resource-body">
+
+                        <div class="resource-title">
+                            {{ resource.title }}
+                        </div>
+
+                        <div class="resource-description">
+                            {{ resource.description|default:"No description available." }}
+                        </div>
+
+                        <a href="{{ resource.image.url }}"
+                           target="_blank"
+                           class="btn btn-sm btn-warning w-100">
+
+                            <i class="bi bi-eye me-1"></i>
+                            View Image
+
+                        </a>
+
+                    </div>
+
+                </div>
+                {% empty %}
+                <div class="empty-resource">
+                    <i class="bi bi-image"></i>
+                    <strong>No images yet</strong>
+                    <p class="small mb-0">
+                        Uploaded images will appear here.
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- ================= VIDEOS ================= -->
+        <div class="col-lg-4">
+
+            <div class="resource-column">
+
+                <div class="column-header">
+
+                    <div>
+                        <h4>
+                            <i class="bi bi-play-circle text-info me-2"></i>
+                            Videos
+                        </h4>
+                        <small class="text-muted">
+                            Learning and media videos
+                        </small>
+                    </div>
+
+                    <span class="badge bg-info resource-count">
+                        {{ videos|length }}
+                    </span>
+
+                </div>
+
+
+                {% for resource in videos %}
+
+                <div class="resource-card">
+
+                    <div class="resource-preview">
+
+                        {% if resource.video_url %}
+
+                            <div class="video-preview">
+
+                                <iframe
+                                    src="{{ resource.video_url }}"
+                                    title="{{ resource.title }}"
+                                    allowfullscreen>
+                                </iframe>
+
+                            </div>
+
+                        {% elif resource.video %}
+
+                            <video
+                                controls
+                                style="width:100%; height:100%; object-fit:cover;">
+
+                                <source src="{{ resource.video.url }}">
+
+                                Your browser does not support video playback.
+
+                            </video>
+
+                        {% else %}
+
+                            <i class="bi bi-camera-video text-info file-icon"></i>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="resource-body">
+
+                        <div class="resource-title">
+                            {{ resource.title }}
+                        </div>
+
+                        <div class="resource-description">
+                            {{ resource.description|default:"No description available." }}
+                        </div>
+
+                        {% if resource.video_url %}
+
+                        <a href="{{ resource.video_url }}"
+                           target="_blank"
+                           class="btn btn-sm btn-info text-white w-100">
+
+                            <i class="bi bi-play-fill me-1"></i>
+                            Watch Video
+
+                        </a>
+
+                        {% elif resource.video %}
+
+                        <a href="{{ resource.video.url }}"
+                           target="_blank"
+                           class="btn btn-sm btn-info text-white w-100">
+
+                            <i class="bi bi-play-fill me-1"></i>
+                            Watch Video
+
+                        </a>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <div class="empty-resource">
+                    <i class="bi bi-camera-video"></i>
+                    <strong>No videos yet</strong>
+                    <p class="small mb-0">
+                        Uploaded videos will appear here.
+                    </p>
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

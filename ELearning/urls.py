@@ -39,9 +39,14 @@ path(
         views.CompleteSubStrandView.as_view(),
         name="complete_substrand",
     ),
+    path('resources/mngt/', views.ResourcesPageView.as_view(), name='resource_mngt_page'),
+    path('resources/create/image/', views.CreateImageResource.as_view(), name='create_image_resource'),
+    path('resources/create/file/', views.CreateFileResource.as_view(), name='create_file_resource'),
+    path('resources/create/video/', views.CreateVideoResource.as_view(), name='create_video_resource'),
     #========================Learners View URLConfig ======================================================
     path('learners/grades/list/',views.LearnersGradeList.as_view(),name='learners_grades_list'),
     path('<int:grade_id>/subject/list/', views.GradeSubjectList.as_view(), name='grade_subject_list'),
     path('subject/<int:subject_id>/strand/list/', views.SubjectStrandsList.as_view(), name='subject_strands'),
-    path('strands/<int:strand_id>/substrands/list/', views.SubStrandsList.as_view(),name='substrands_list')
+    path('strands/<int:strand_id>/substrands/list/', views.SubStrandsList.as_view(),name='substrands_list'),
+    path('resources/main/page/', views.LearnerResourcePage.as_view(), name='learners_resource_page'),
 ]

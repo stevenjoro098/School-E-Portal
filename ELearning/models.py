@@ -94,6 +94,16 @@ class VideoResource(models.Model):
     substrand = models.ForeignKey(SubStrand, on_delete=models.CASCADE, related_name="videos")
     url = models.URLField()
 
+class FileResource(models.Model):
+    file_title = models.CharField(max_length=200)
+    file = models.FileField(upload_to='file_resources/')
+    grade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True, blank=True)
+    file_description = models.TextField()
+    created = models.DateTimeField(auto_created=True, auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.file_title}-{self.grade}-{self.created}"
+
 class VideosResource(models.Model):
     title = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
@@ -106,4 +116,9 @@ class VideosResource(models.Model):
 class ImageGeneralResource(models.Model):
     image_title = models.CharField(max_length=200)
     image = models.ImageField(upload_to='image_general_images/')
-    date = models.DateField(auto_now_add=True)
+    image_description = models.TextField()
+    grade = models.ForeignKey(Grade, on_delete=models.SET_NULL, null=True, blank=True)
+    created = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.image_title}-{self.created}"

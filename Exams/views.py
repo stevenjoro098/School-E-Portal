@@ -773,79 +773,83 @@ class TermExamAnalysis(TemplateView):
 
         # ===== SUBJECT AVERAGES =====
 
+        # ===== SUBJECT AVERAGES =====
+
         subject_averages = {}
 
         for subject in subjects.order_by('name'):
+
             teacher_name = (
                 subject.teacher.full_name
                 if subject.teacher
                 else "N/A"
             )
-        exam_avgs = []
-        for exam in exams:
-            avg_score = StudentPerformance.objects.filter(
-                exam=exam,
-                subject=subject
-            ).aggregate(
-                avg=Avg('performance')
-            )['avg'] or 0
 
-            exam_avgs.append(
-                round(avg_score, 2)
+            exam_avgs = []
+
+            # Calculate this subject's average for EVERY exam
+            for exam in exams:
+                avg_score = (
+                        StudentPerformance.objects.filter(
+                            exam=exam,
+                            subject=subject
+                        ).aggregate(
+                            avg=Avg('performance')
+                        )['avg']
+                        or 0
+                )
+
+                exam_avgs.append(
+                    round(avg_score, 2)
+                )
+
+            # Average of all exam averages for this subject
+            termly_average = (
+                round(
+                    sum(exam_avgs) / len(exam_avgs),
+                    2
+                )
+                if exam_avgs
+                else 0
             )
 
-        # Calculate the average across all exams
-        termly_average = (
-            round(
-                sum(exam_avgs) / len(exam_avgs),
-                2
+            # Compare first exam against latest exam
+            improvement = (
+                round(
+                    exam_avgs[-1] - exam_avgs[0],
+                    2
+                )
+                if len(exam_avgs) > 1
+                else 0
             )
-            if exam_avgs
-            else 0
-        )
 
-        # Compare the first exam with the latest exam
-        improvement = (
-            round(
-                exam_avgs[-1] - exam_avgs[0],
-                2
-            )
-            if len(exam_avgs) > 1
-            else 0
-        )
+            subject_averages[subject.name] = {
 
-        subject_averages[subject.name] = {
+                "teacher": teacher_name,
 
-            "teacher": teacher_name,
+                # IMPORTANT:
+                # This contains one value for EVERY exam
+                "averages": exam_avgs,
 
-            "averages": exam_avgs,
+                "termly_average": termly_average,
 
-            "termly_average": termly_average,
+                "improvement": improvement,
 
-            "improvement": improvement,
-
-        }
+            }
 
         # ===== SUBJECT RANKING =====
 
-        # Sort subjects using the termly average
-
         ranked_subjects = sorted(
             subject_averages.items(),
-            key = lambda item:
-        item[1]["termly_average"],
-
-        reverse = True
-
+            key=lambda item: item[1]["termly_average"],
+            reverse=True
         )
 
-        # Add position/rank to every subject
-
-        for position, (subject_name, data) in enumerate(ranked_subjects,start=1):
-            subject_averages[
-                subject_name
-            ]["rank"] = position
-
+        for position, (subject_name, data) in enumerate(
+                ranked_subjects,
+                start=1
+        ):
+            subject_averages[subject_name]["rank"] = position
 
         context["subject_averages"] = subject_averages
 

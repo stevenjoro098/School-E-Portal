@@ -79,14 +79,44 @@
         }
 
         @media (max-width: 768px) {
-            .content-wrapper {
-                padding: 15px;
-            }
+    .content-wrapper {
+        padding: 15px;
+    }
 
-            .card {
-                border-radius: 0.7rem;
-            }
-        }
+    .card {
+        border-radius: 0.7rem;
+    }
+
+    .school-name {
+        font-size: 0.85rem;
+    }
+
+    .school-motto {
+        font-size: 0.62rem;
+    }
+}
+        /* School Branding */
+.school-brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.1;
+}
+
+.school-name {
+    font-size: clamp(0.85rem, 2vw, 1.15rem);
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+}
+
+.school-motto {
+    font-size: clamp(0.6rem, 1.3vw, 0.75rem);
+    font-weight: 400;
+    opacity: 0.85;
+    margin-top: 4px;
+    letter-spacing: 0.3px;
+}
     </style>
 
     {% block extra_head %}{% endblock %}
@@ -98,15 +128,26 @@
     <div class="container-fluid">
 
         <!-- Logo + Brand -->
-        <a class="navbar-brand d-flex align-items-center fw-semibold text-wrap"
-           href="{% url 'home_page' %}">
-            <img src="{% static 'images/Logo.png' %}"
-                 alt="UMA Logo"
-                 width="40"
-                 height="40"
-                 class="me-2 rounded">
+        <!-- Logo + Brand -->
+<a class="navbar-brand d-flex align-items-center"
+   href="{% url 'home_page' %}">
+
+    <img src="{% static 'images/Logo.png' %}"
+         alt="UMA Logo"
+         width="45"
+         height="45"
+         class="me-2 rounded">
+
+    <div class="school-brand">
+        <div class="school-name">
             UNITED MATUNDA ACADEMY
-        </a>
+        </div>
+        <div class="school-motto">
+            Faith + Effort makes a mighty pair.
+        </div>
+    </div>
+
+</a>
 
         <!-- Mobile Toggle -->
         <button class="navbar-toggler"

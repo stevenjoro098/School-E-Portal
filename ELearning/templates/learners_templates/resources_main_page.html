@@ -205,11 +205,11 @@
                     <div class="resource-body">
 
                         <div class="resource-title">
-                            {{ resource.title }}
+                            {{ resource.file_title }}
                         </div>
 
                         <div class="resource-description">
-                            {{ resource.description|default:"No description available." }}
+                            {{ resource.file_description|default:"No description available." }}
                         </div>
 
                         <a href="{{ resource.file.url }}"

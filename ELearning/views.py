@@ -553,27 +553,20 @@ class LearnerResourcePage(TemplateView):
         return context
 
 class CurriculumCoverageSummaryView(TemplateView):
-
             template_name = (
                 "curriculum_management/"
                 "curriculum_coverage_summary.html"
             )
-
             def get_context_data(self, **kwargs):
-
                 context = super().get_context_data(**kwargs)
-
                 # --------------------------------------------------
                 # Filters
                 # --------------------------------------------------
-
                 grade_id = self.request.GET.get("grade")
                 term = self.request.GET.get("term")
                 year = self.request.GET.get("year")
-
                 if not term:
                     term = "Term 1"
-
                 if not year:
                     year = 2026
                 else:
@@ -581,11 +574,8 @@ class CurriculumCoverageSummaryView(TemplateView):
                         year = int(year)
                     except ValueError:
                         year = 2026
-
                 grades = Grade.objects.all()
-
                 grade = None
-
                 if grade_id:
                     grade = grades.filter(id=grade_id).first()
 

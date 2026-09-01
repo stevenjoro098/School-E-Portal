@@ -638,7 +638,7 @@ class CurriculumCoverageSummaryView(TemplateView):
                                 SubStrandCoverage.objects
                                 .filter(
                                     #grade=grade,
-                                    #sub_strand__in=substrands,
+                                    substrand__in=substrands,
                                     #term=term,
                                     #year=year,
                                     status="completed",
@@ -666,10 +666,8 @@ class CurriculumCoverageSummaryView(TemplateView):
                                 coverage = (
                                     SubStrandCoverage.objects
                                     .filter(
-                                        #grade=grade,
-                                        #sub_strand=substrand,
-                                        #term=term,
-                                        #year=year,
+                                        substrand=substrand,
+                                        term=term,
                                     )
                                     .first()
                                 )

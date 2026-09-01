@@ -1,0 +1,743 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Curriculum Coverage
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid py-4">
+
+    <!-- ========================================================= -->
+    <!-- HEADER -->
+    <!-- ========================================================= -->
+
+    <div class="d-flex flex-wrap justify-content-between
+                align-items-center gap-3 mb-4">
+
+        <div>
+            <h3 class="fw-bold mb-1">
+                <i class="bi bi-journal-check me-2"></i>
+                Curriculum Coverage
+            </h3>
+
+            <p class="text-muted mb-0">
+                Strand and sub-strand coverage overview
+            </p>
+        </div>
+
+        <button class="btn btn-outline-secondary"
+                onclick="window.print()">
+
+            <i class="bi bi-printer me-2"></i>
+            Print Report
+
+        </button>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- FILTERS -->
+    <!-- ========================================================= -->
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <form method="get">
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Grade
+                        </label>
+
+                        <select name="grade"
+                                class="form-select">
+
+                            {% for item in grades %}
+
+                                <option value="{{ item.id }}"
+                                    {% if grade.id == item.id %}
+                                        selected
+                                    {% endif %}>
+
+                                    {{ item.name }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <label class="form-label fw-semibold">
+                            Term
+                        </label>
+
+                        <select name="term"
+                                class="form-select">
+
+                            <option value="Term 1"
+                                {% if term == "Term 1" %}selected{% endif %}>
+                                Term 1
+                            </option>
+
+                            <option value="Term 2"
+                                {% if term == "Term 2" %}selected{% endif %}>
+                                Term 2
+                            </option>
+
+                            <option value="Term 3"
+                                {% if term == "Term 3" %}selected{% endif %}>
+                                Term 3
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-md-2">
+
+                        <label class="form-label fw-semibold">
+                            Year
+                        </label>
+
+                        <input type="number"
+                               name="year"
+                               class="form-control"
+                               value="{{ year }}">
+
+                    </div>
+
+
+                    <div class="col-md-3">
+
+                        <button class="btn btn-primary w-100">
+
+                            <i class="bi bi-funnel me-2"></i>
+                            Apply Filters
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- SUMMARY CARDS -->
+    <!-- ========================================================= -->
+
+    <div class="row g-3 mb-4">
+
+
+        <!-- Overall -->
+
+        <div class="col-12 col-md-6 col-xl-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center">
+
+                        <div>
+
+                            <small class="text-muted">
+                                Overall Coverage
+                            </small>
+
+                            <h2 class="fw-bold mb-1">
+                                {{ overall_percentage }}%
+                            </h2>
+
+                        </div>
+
+                        <div class="bg-primary-subtle
+                                    rounded-circle
+                                    p-3">
+
+                            <i class="bi bi-bar-chart-fill
+                                      text-primary fs-4"></i>
+
+                        </div>
+
+                    </div>
+
+                    <div class="progress mt-3"
+                         style="height:7px;">
+
+                        <div class="progress-bar"
+                             style="width: {{ overall_percentage }}%">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Strands -->
+
+        <div class="col-12 col-md-6 col-xl-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Strands Covered
+                    </small>
+
+                    <h2 class="fw-bold mb-1">
+
+                        {{ covered_strands }}
+                        <span class="fs-5 text-muted">
+                            / {{ total_strands }}
+                        </span>
+
+                    </h2>
+
+                    <div class="text-muted small">
+                        Completed strands
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Sub-strands -->
+
+        <div class="col-12 col-md-6 col-xl-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Sub-strands Covered
+                    </small>
+
+                    <h2 class="fw-bold mb-1">
+
+                        {{ covered_substrands }}
+
+                        <span class="fs-5 text-muted">
+                            / {{ total_substrands }}
+                        </span>
+
+                    </h2>
+
+                    <div class="text-muted small">
+                        Completed sub-strands
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Subjects -->
+
+        <div class="col-12 col-md-6 col-xl-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Subjects
+                    </small>
+
+                    <h2 class="fw-bold mb-1">
+                        {{ subjects_data|length }}
+                    </h2>
+
+                    <div class="text-muted small">
+                        Curriculum subjects
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- SUBJECT SUMMARY -->
+    <!-- ========================================================= -->
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white border-0 py-3">
+
+            <h5 class="fw-bold mb-0">
+                Subject Coverage
+            </h5>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table
+                              table-hover
+                              align-middle
+                              mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th class="ps-4">
+                                Subject
+                            </th>
+
+                            <th>
+                                Strands
+                            </th>
+
+                            <th>
+                                Sub-strands
+                            </th>
+
+                            <th style="min-width:220px;">
+                                Coverage
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th></th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for subject in subjects_data %}
+
+                        <tr>
+
+                            <td class="ps-4">
+
+                                <div class="fw-semibold">
+
+                                    {{ subject.name }}
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="fw-semibold">
+                                    {{ subject.covered_strands }}
+                                </span>
+
+                                <span class="text-muted">
+                                    /
+                                    {{ subject.total_strands }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="fw-semibold">
+                                    {{ subject.covered_substrands }}
+                                </span>
+
+                                <span class="text-muted">
+                                    /
+                                    {{ subject.total_substrands }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="d-flex
+                                            justify-content-between
+                                            mb-1">
+
+                                    <small class="text-muted">
+                                        {{ subject.percentage }}%
+                                    </small>
+
+                                </div>
+
+                                <div class="progress"
+                                     style="height:8px;">
+
+                                    <div class="progress-bar
+                                                {% if subject.percentage >= 80 %}
+                                                    bg-success
+                                                {% elif subject.percentage >= 50 %}
+                                                    bg-warning
+                                                {% else %}
+                                                    bg-danger
+                                                {% endif %}"
+                                         style="width:{{ subject.percentage }}%">
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                {% if subject.percentage >= 80 %}
+
+                                    <span class="badge
+                                                 rounded-pill
+                                                 text-bg-success">
+
+                                        On Track
+
+                                    </span>
+
+                                {% elif subject.percentage >= 50 %}
+
+                                    <span class="badge
+                                                 rounded-pill
+                                                 text-bg-warning">
+
+                                        In Progress
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge
+                                                 rounded-pill
+                                                 text-bg-danger">
+
+                                        Needs Attention
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                <button
+                                    class="btn btn-sm
+                                           btn-light"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#subject{{ subject.id }}">
+
+                                    <i class="bi bi-chevron-down"></i>
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- ================================================= -->
+                        <!-- STRAND DETAILS -->
+                        <!-- ================================================= -->
+
+                        <tr class="collapse"
+                            id="subject{{ subject.id }}">
+
+                            <td colspan="6"
+                                class="bg-light p-0">
+
+                                <div class="p-4">
+
+                                    {% for strand in subject.strands %}
+
+                                    <div class="card
+                                                border-0
+                                                shadow-sm
+                                                mb-3">
+
+                                        <div class="card-body">
+
+
+                                            <div class="d-flex
+                                                        flex-wrap
+                                                        justify-content-between
+                                                        gap-2">
+
+                                                <div>
+
+                                                    <h6 class="fw-bold mb-1">
+
+                                                        {{ strand.name }}
+
+                                                    </h6>
+
+                                                    <small class="text-muted">
+
+                                                        {{ strand.completed }}
+                                                        /
+                                                        {{ strand.total }}
+                                                        sub-strands covered
+
+                                                    </small>
+
+                                                </div>
+
+
+                                                <span class="badge
+                                                             {% if strand.status == 'completed' %}
+                                                                 text-bg-success
+                                                             {% elif strand.status == 'in_progress' %}
+                                                                 text-bg-warning
+                                                             {% else %}
+                                                                 text-bg-secondary
+                                                             {% endif %}">
+
+                                                    {{ strand.percentage }}%
+
+                                                </span>
+
+                                            </div>
+
+
+                                            <div class="progress mt-3"
+                                                 style="height:6px;">
+
+                                                <div class="progress-bar
+                                                            {% if strand.status == 'completed' %}
+                                                                bg-success
+                                                            {% elif strand.status == 'in_progress' %}
+                                                                bg-warning
+                                                            {% endif %}"
+                                                     style="width:{{ strand.percentage }}%">
+                                                </div>
+
+                                            </div>
+
+
+                                            <!-- SUB-STRANDS -->
+
+                                            <div class="row g-2 mt-3">
+
+                                                {% for substrand in strand.substrands %}
+
+                                                <div class="col-12 col-md-6 col-xl-4">
+
+                                                    <div class="border
+                                                                rounded-3
+                                                                p-3
+                                                                bg-white">
+
+                                                        <div class="d-flex
+                                                                    justify-content-between
+                                                                    align-items-center">
+
+                                                            <span class="small">
+
+                                                                {{ substrand.name }}
+
+                                                            </span>
+
+
+                                                            {% if substrand.status == "completed" %}
+
+                                                                <i class="bi
+                                                                          bi-check-circle-fill
+                                                                          text-success"></i>
+
+                                                            {% elif substrand.status == "in_progress" %}
+
+                                                                <i class="bi
+                                                                          bi-clock-fill
+                                                                          text-warning"></i>
+
+                                                            {% else %}
+
+                                                                <i class="bi
+                                                                          bi-circle
+                                                                          text-secondary"></i>
+
+                                                            {% endif %}
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                                {% empty %}
+
+                                                <div class="col-12">
+
+                                                    <small class="text-muted">
+                                                        No sub-strands available.
+                                                    </small>
+
+                                                </div>
+
+                                                {% endfor %}
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    {% empty %}
+
+                                    <div class="text-muted">
+                                        No strands available.
+                                    </div>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="6"
+                                class="text-center py-5">
+
+                                <i class="bi bi-journal-x
+                                          fs-1
+                                          text-muted"></i>
+
+                                <p class="text-muted mt-3 mb-0">
+
+                                    No curriculum data found
+                                    for this grade.
+
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- LEGEND -->
+    <!-- ========================================================= -->
+
+    <div class="d-flex flex-wrap
+                gap-4
+                text-muted
+                small
+                mb-4">
+
+        <span>
+            <i class="bi bi-check-circle-fill text-success me-1"></i>
+            Completed
+        </span>
+
+        <span>
+            <i class="bi bi-clock-fill text-warning me-1"></i>
+            In Progress
+        </span>
+
+        <span>
+            <i class="bi bi-circle text-secondary me-1"></i>
+            Not Started
+        </span>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    .card {
+        border-radius: 14px;
+    }
+
+    .progress {
+        border-radius: 20px;
+        background-color: #edf0f2;
+    }
+
+    .progress-bar {
+        border-radius: 20px;
+    }
+
+    .table > :not(caption) > * > * {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    @media print {
+
+        .btn,
+        form,
+        .navbar,
+        .sidebar {
+            display: none !important;
+        }
+
+        .card {
+            box-shadow: none !important;
+        }
+
+    }
+
+</style>
+
+{% endblock %}>

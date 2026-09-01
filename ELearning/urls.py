@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import CurriculumCoverageSummaryView
 
 urlpatterns = [
     path('', views.HomePage.as_view(), name='home_page'),
@@ -49,4 +50,10 @@ path(
     path('subject/<int:subject_id>/strand/list/', views.SubjectStrandsList.as_view(), name='subject_strands'),
     path('strands/<int:strand_id>/substrands/list/', views.SubStrandsList.as_view(),name='substrands_list'),
     path('resources/main/page/', views.LearnerResourcePage.as_view(), name='learners_resource_page'),
+    path(
+        "curriculum/coverage/summary/",
+        CurriculumCoverageSummaryView.as_view(),
+        name="curriculum_coverage_summary"
+    ),
+
 ]

@@ -551,3 +551,228 @@ class LearnerResourcePage(TemplateView):
         context["videos"] = VideosResource.objects.all().order_by("-id")
 
         return context
+
+class CurriculumCoverageSummaryView(TemplateView):
+
+            template_name = (
+                "curriculum_management/"
+                "curriculum_coverage_summary.html"
+            )
+
+            def get_context_data(self, **kwargs):
+
+                context = super().get_context_data(**kwargs)
+
+                # --------------------------------------------------
+                # Filters
+                # --------------------------------------------------
+
+                grade_id = self.request.GET.get("grade")
+                term = self.request.GET.get("term")
+                year = self.request.GET.get("year")
+
+                if not term:
+                    term = "Term 1"
+
+                if not year:
+                    year = 2026
+                else:
+                    try:
+                        year = int(year)
+                    except ValueError:
+                        year = 2026
+
+                grades = Grade.objects.all()
+
+                grade = None
+
+                if grade_id:
+                    grade = grades.filter(id=grade_id).first()
+
+                # Default to first grade
+                if grade is None:
+                    grade = grades.first()
+
+                # --------------------------------------------------
+                # Subjects
+                # --------------------------------------------------
+
+                subjects_data = []
+
+                total_strands = 0
+                covered_strands = 0
+
+                total_substrands = 0
+                covered_substrands = 0
+
+                if grade:
+
+                    subjects = (
+                        Subject.objects
+                        .filter(grade=grade)
+                    )
+
+                    for subject in subjects:
+
+                        strands = (
+                            Strand.objects
+                            .filter(subject=subject)
+                            .prefetch_related("substrands")
+                        )
+
+                        subject_total_strands = 0
+                        subject_covered_strands = 0
+
+                        subject_total_substrands = 0
+                        subject_covered_substrands = 0
+
+                        strand_data = []
+
+                        for strand in strands:
+
+                            substrands = strand.substrands.all()
+
+                            strand_total = substrands.count()
+
+                            strand_completed = (
+                                SubStrandCoverage.objects
+                                .filter(
+                                    #grade=grade,
+                                    #sub_strand__in=substrands,
+                                    #term=term,
+                                    #year=year,
+                                    status="completed",
+                                )
+                                .count()
+                            )
+
+                            if strand_total:
+                                strand_percentage = round(
+                                    (strand_completed / strand_total) * 100
+                                )
+                            else:
+                                strand_percentage = 0
+
+                            if strand_completed == strand_total and strand_total > 0:
+                                strand_status = "completed"
+                            elif strand_completed > 0:
+                                strand_status = "in_progress"
+                            else:
+                                strand_status = "not_started"
+
+                            substrand_data = []
+
+                            for substrand in substrands:
+                                coverage = (
+                                    SubStrandCoverage.objects
+                                    .filter(
+                                        #grade=grade,
+                                        #sub_strand=substrand,
+                                        #term=term,
+                                        #year=year,
+                                    )
+                                    .first()
+                                )
+
+                                status = (
+                                    coverage.status
+                                    if coverage
+                                    else "not_started"
+                                )
+
+                                substrand_data.append({
+                                    "id": substrand.id,
+                                    "name": substrand.name,
+                                    "status": status,
+                                    "remarks": (
+                                        coverage.remarks
+                                        if coverage
+                                        else ""
+                                    ),
+                                })
+
+                            strand_data.append({
+                                "id": strand.id,
+                                "name": strand.name,
+                                "total": strand_total,
+                                "completed": strand_completed,
+                                "percentage": strand_percentage,
+                                "status": strand_status,
+                                "substrands": substrand_data,
+                            })
+
+                            # Subject totals
+                            subject_total_substrands += strand_total
+                            subject_covered_substrands += strand_completed
+
+                            subject_total_strands += 1
+
+                            if strand_completed == strand_total and strand_total > 0:
+                                subject_covered_strands += 1
+
+                        # Subject percentage
+                        if subject_total_substrands:
+                            subject_percentage = round(
+                                (
+                                        subject_covered_substrands
+                                        / subject_total_substrands
+                                ) * 100
+                            )
+                        else:
+                            subject_percentage = 0
+
+                        subjects_data.append({
+                            "id": subject.id,
+                            "name": subject.name,
+
+                            "total_strands": subject_total_strands,
+                            "covered_strands": subject_covered_strands,
+
+                            "total_substrands": subject_total_substrands,
+                            "covered_substrands": subject_covered_substrands,
+
+                            "percentage": subject_percentage,
+
+                            "strands": strand_data,
+                        })
+
+                        # Overall totals
+                        total_strands += subject_total_strands
+                        covered_strands += subject_covered_strands
+
+                        total_substrands += subject_total_substrands
+                        covered_substrands += subject_covered_substrands
+
+                # --------------------------------------------------
+                # Overall percentage
+                # --------------------------------------------------
+
+                if total_substrands:
+                    overall_percentage = round(
+                        (covered_substrands / total_substrands) * 100
+                    )
+                else:
+                    overall_percentage = 0
+
+                # --------------------------------------------------
+                # Context
+                # --------------------------------------------------
+
+                context.update({
+                    "grades": grades,
+                    "grade": grade,
+                    "subjects_data": subjects_data,
+
+                    "term": term,
+                    "year": year,
+
+                    "total_strands": total_strands,
+                    "covered_strands": covered_strands,
+
+                    "total_substrands": total_substrands,
+                    "covered_substrands": covered_substrands,
+
+                    "overall_percentage": overall_percentage,
+                })
+
+                return context

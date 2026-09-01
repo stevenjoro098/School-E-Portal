@@ -13,7 +13,9 @@
                 <h2 class="fw-bold m-0 text-center text-md-start">
                     Welcome to UMA Digital Learning.
                 </h2>
-
+                {% if user.is_superuser %}
+                    <a href="{% url 'curriculum_coverage_summary' %}" class="btn btn-warning">Curriculum Coverage Summary</a>
+                {% endif %}
                 <a href="{% url 'timetable' %}" class="btn btn-primary align-self-center align-self-md-auto">
                     School TimeTable
                 </a>
